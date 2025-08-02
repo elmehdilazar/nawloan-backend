@@ -15,4 +15,5 @@ yarn-error.log
 /.idea
 /.vscode
 .zip
-/web-site
+/web-sitebackend.zip
+*.zip
