@@ -1,0 +1,7 @@
+
+
+RewriteEngine On
+RewriteCond %{REQUEST_URI} !^/\.well-known
+RewriteCond %{REQUEST_URI} ^/server_node 
+RewriteRule ^(.*)$ http://127.0.0.1:3210/$1 [P,L]
+

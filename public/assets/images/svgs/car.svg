@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19.693" height="16" viewBox="0 0 19.693 16">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.5" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#01b6eb"/>
+      <stop offset="1" stop-color="#0c00ff"/>
+    </linearGradient>
+  </defs>
+  <g id="car" transform="translate(16922.322 -15701.42)">
+    <path id="truck-svgrepo-com" d="M13.539,2H0V15.539H2.462a2.462,2.462,0,0,0,4.923,0h4.923a2.462,2.462,0,0,0,4.923,0h2.462V9.385A3.692,3.692,0,0,0,16,5.692H13.539Zm0,6.154v2.462h3.692V8.154Z" transform="translate(-16922.322 15699.42)" fill-rule="evenodd" fill="url(#linear-gradient)"/>
+    <line id="Line_13" data-name="Line 13" x2="5.737" transform="translate(-16918.275 15707.986)" fill="none" stroke="#fff" stroke-width="1.5"/>
+    <line id="Line_14" data-name="Line 14" x2="5.737" transform="translate(-16918.275 15710.854)" fill="none" stroke="#fff" stroke-width="1.5"/>
+  </g>
+</svg>

@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "nawloan-eff12",
+  "private_key_id": "52564a9e549828bad3cf4f380f457ad79195f489",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCmFjeGLlVc9oYh\nRLlLhNulex6wtykbq/iPjxV3WiG3eFb9IeqPYpsDNQN0UpP5XAJM3zIl4RvIs8R5\nvSlfRrE0oC8hFGYO2EoUYOyxMTv9dLe0gawxGYC4P88dTMN8lDaHQYaWIBgEyTAP\nlRo4PA5SWu9RO4KuBchhODiwfVAQIbrT/UXQWPh8kUWQrJ84+Is8VAXu7Kq5G5QH\nFJ4qgpouXuRDR8bUa+J7OBlsKpiiIpk9Rzp6NI7CLBaMjcTfeFw35rm+/ewxnXOi\nIzN9ho9II5rsocM/Al47O4GzM2BQNfdpaeNB9KNeYA4aqLCabfER/et98NV+hYCg\ncCdXX83FAgMBAAECggEAJ+ZX9fING111GSpxqmETRGS42YLTCx0MBG7/HPJn/bPZ\nEAxVFZe+fi1+9DO/bU0rl0yad0umWVfIiGeHeCZbPXWLBPMp1oCjAVTMn//gNdJT\nrLdnRs9l4z2fE96kavoPRHybKNcydfngRCoRh7dzyFikvBrkGMr2WdbAFbQxJwKT\nuvYk0Q/JrrmxVmrP3+si1hV244DsCwAMQssdDIU2ey2VBe+X7vryBmJkpaKCjfuJ\nFq9EjvOE/og8VlcrtYo+h4pFpINfQr9VAeiXATqbjQtxpKNB5pVn0h8ZQ824tt4m\nOQe33jOC70OKSeagmN6D25tPEmsysDi3WDHZ/yCzeQKBgQDmMwdKSJwc78NSo8K2\nP66uS16wFEcRxckFhLi/EgHXOq+cHiPm2oOT2poNj0vbHYYdBWhrqFl+LjYf+EAz\naneGXxZO9QPScrw81v3qc1c5c6LwG8LNVNR6rX+0qPX/FqqU56p9e6yhrUiru3L9\nkAmEL1zEhXpqZ1I66C7f3gZvHQKBgQC4s6VCgWP+RuKGWipnfxlnhl+0PDeuBDYD\nIcPPuES/BuL5DGk2nKFiqpxD70HqHW/IEjkN9iaPdQ0RC42SB+VgE20aTUeN4lU8\ni66BCau/WKSS/mqi+b9ITbtbCxwhzj5W/vdUR7p0LFurww8jmISuaSQS9o5HKmm0\nkrY1jUfQyQKBgQDfkG9kFWCIOdLYT3KqzO45F7m+B/N9rzirw1opNrPS84vZcuwr\nJ8zhq0wyHxjslJ/LT5U5+SXxBbBLHC49wQiT14Uy6YHswMFP1PyE1b/AbC2yQ0PN\nZrV070s3iWBffQPt2ZAajiH6YvBQ2Ju05k5XsifGNFvPOskBrLzZbieRgQKBgCT1\nfaozLgkhsg5kWHvhSPoYP2pXamTd3tj9lqsoGkmHXT+sphkRepG9xgsqAyyPu2Bz\nlQsgKFMofvbcMvX3soRpHrnWoOzZT2kQIlkb0Ew3tqbbVgdKpmYXd9gd/wEcvgi2\neFNbDwpUHfveyla7HEGyNE+/GnVPHVvOx7srjCVRAoGBALBn2qi7fws8NHimRK0j\nMVYf1I/TozYG+T/MyKPmfAUsV4exK7XmRyTMhNWp95WlX3VaS44zrG90/BjJIhtY\n2BpzcnADdrGUWHj3kjERoR2gHDiJTwAfp52KILve5+CMpxthA6bK2a0fUFtWK7WF\nunFiXoPjwU57bQDktlX0Mhd7\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-xgjap@nawloan-eff12.iam.gserviceaccount.com",
+  "client_id": "110635527675955581527",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-xgjap%40nawloan-eff12.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

@@ -1,0 +1,88 @@
+<?php
+return [
+    'roles_structure' => [
+        'superadministrator' => [
+            'users' => 'c,r,u,d,e,ex',
+            'customers' => 'c,r,u,d,e,ex',
+            'drivers' => 'c,r,u,d,e,ex',
+            'factories'=>'c,r,u,d,e,ex',
+            'driverCompanies' => 'c,r,u,d,e,ex',
+            'cars'  =>  'c,r,u,d,e,ex',
+            'countries'=>'c,r,u,d,e,ex',
+            'shipments_types' => 'c,r,u,d,e,ex',
+            'orders'=>'c,r,u,d,e,ex',
+            'offers'=>'c,r,u,d,e,ex',
+            'transactions'=>'c,r,u,d,e,ex',
+            'messages' => 'c,r,u,d,e,ex',
+            'careers' => 'c,r,u,d,e,ex',
+            'careercategories' => 'c,r,u,d,e,ex',
+            'policies' => 'c,r,u,d,e,ex',
+            'articlecategories' => 'c,r,u,d,e,ex',
+            'articles' => 'c,r,u,d,e,ex',
+            'coupons' => 'c,r,u,d,e,ex',
+        ],
+        'admin' => [
+            'users' => 'c,r,u,d,e,ex',
+            'customers' => 'c,r,u,d,e,ex',
+            'drivers' => 'c,r,u,d,e,ex',
+            'factories'=>'c,r,u,d,e,ex',
+            'driverCompanies' => 'c,r,u,d,e,ex',
+            'countries' => 'c,r,u,d,e,ex',
+            'cars'  =>  'c,r,u,d,e,ex',
+            'shipments_types'=>'c,r,u,d,e,ex',
+            'orders'=>'c,r,u,d,e,ex',
+            'offers'=>'c,r,u,d,e,ex',
+            'transactions'=>'c,r,u,d,e,ex',
+            'messages' => 'c,r,u,d,e,ex',
+            'careers' => 'c,r,u,d,e,ex',
+            'careercategories' => 'c,r,u,d,e,ex',
+            'policies' => 'c,r,u,d,e,ex',
+            'articlecategories' => 'c,r,u,d,e,ex',
+            'articles' => 'c,r,u,d,e,ex',
+            'coupons' => 'c,r,u,d,e,ex',
+        ],
+        'emp' => [
+            'users' => 'c,r,u,d,e,ex',
+            'customers' => 'c,r,u,d,e,ex',
+            'drivers' => 'c,r,u,d,e,ex',
+            'factories'=>'c,r,u,d,e,ex',
+            'driverCompanies' => 'c,r,u,d,e,ex',
+            'countries' => 'c,r,u,d,e,ex',
+            'cars'  =>  'c,r,u,d,e,ex',
+            'shipments_types' => 'c,r,u,d,e,ex',
+            'orders'=>'c,r,u,d,e,ex',
+            'offers'=>'c,r,u,d,e,ex',
+            'messages' => 'c,r,u,d,e,ex',
+            'careers' => 'c,r,u,d,e,ex',
+            'careercategories' => 'c,r,u,d,e,ex',
+            'policies' => 'c,r,u,d,e,ex',
+            'articlecategories' => 'c,r,u,d,e,ex',
+            'articles' => 'c,r,u,d,e,ex',
+            'coupons' => 'c,r,u,d,e,ex',
+        ],
+        'driver' => [
+            'cars'  =>  'c,r,u,d,e',
+            'offers'=>'c,r,u,d,e,ex',
+            'orders'=>'c,r,u,d,e,ex',
+        ],
+        'driverCompany' => [
+            'cars'  =>  'c,r,u,d,e',
+            'offers'=>'c,r,u,d,e',
+            'providers' => 'c,r,u,d,e',
+        ],
+        'user'=>[
+            'orders'=>'c,r,u,d,e'
+        ],
+        'factory'=>[
+            'orders'=>'c,r,u,d,e'
+        ]
+    ],
+    'permissions_map' => [
+        'c' => 'create',
+        'r' => 'read',
+        'u' => 'update',
+        'd' => 'disable',
+        'e'  =>'enable',
+        'ex'=> 'export'
+    ],
+];

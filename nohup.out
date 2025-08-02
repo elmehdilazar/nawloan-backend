@@ -1,0 +1,6 @@
+
+   INFO  Processing jobs from the [default] queue.  
+
+  2023-02-04 02:14:21 App\Jobs\SendPayNotifyJob ................. 19.15ms DONE
+  2023-02-04 02:14:39 App\Jobs\SendPayNotifyJob ................. 10.16ms DONE
+  2023-02-04 15:49:30 App\Jobs\SendPayNotifyJob ................ 104.50ms DONE

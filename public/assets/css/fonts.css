@@ -1,0 +1,39 @@
+@font-face {
+    font-family: Poppins-Regular;
+    src: url('../font/poppins/Poppins-Regular.ttf');
+}
+
+@font-face {
+    font-family: Poppins-Medium;
+    src: url('../font/Poppins/Poppins-Medium.ttf');
+}
+
+@font-face {
+    font-family: Poppins-Bold;
+    src: url('../font/Poppins/Poppins-Bold.ttf');
+}
+
+@font-face {
+    font-family: Poppins-SemiBold;
+    src: url('../font/Poppins/Poppins-SemiBold.ttf');
+}
+
+@font-face {
+    font-family: SST-Bold;
+    src: url('../font/SST/SST Arabic Bold.ttf');
+}
+
+@font-face {
+    font-family: SST-Light;
+    src: url('../font/SST/SST Arabic Light.ttf');
+}
+
+@font-face {
+    font-family: SST-Medium;
+    src: url('../font/SST/SST Arabic Medium.ttf');
+}
+
+@font-face {
+    font-family: SST-Roman;
+    src: url('../font/SST/SST Arabic Roman.ttf');
+}

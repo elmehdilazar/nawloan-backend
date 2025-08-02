@@ -1,0 +1,274 @@
+<!doctype html>
+{{--<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"--}}
+{{--      dir="{{ LaravelLocalization::getCurrentLocaleDirection() }}">--}}
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    @auth
+        <meta name="user-id" content="{{ auth()->user()->id }}">
+        <meta name="user-type" content="{{ auth()->user()->type }}">
+        <meta name="user-name" content="{{ auth()->user()->name }}">
+    @endauth
+    <title>
+        @if(app()->getLocale()=='ar')
+            {{setting('app_name_ar')!='' ? setting('app_name_ar') : __('site.app_name')}}
+        @else
+            {{setting('app_name_en')!='' ? setting('app_name_en') : __('site.app_name')}}@endif @yield('title')
+    </title>
+    <!-- Favicon icon -->
+    <meta name="theme-color" content="#768dea">
+    <link rel="shortcut icon" href="{{setting('favoico') !='' ? asset(setting('favoico')) : asset('assets/images/favicon.png')}}">
+
+    <!-- Simple bar CSS -->
+    <link rel="stylesheet" href="{{asset('assets/tiny/css/simplebar.css')}}">
+    <!-- FontAwesome CSS -->
+    <link rel="stylesheet" href="{{asset('assets/css/fontawesome.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/tiny/css/select2.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/tiny/css/dropzone.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/tiny/css/jquery.steps.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/tiny/css/jquery.timepicker.css')}}">
+    @yield('styles')
+    <!-- App CSS -->
+    <link rel="stylesheet" href="{{asset('assets/tiny/css/app-light.css')}}" id="lightTheme">
+    <link rel="stylesheet" href="{{asset('assets/tiny/css/app-dark.css')}}" id="darkTheme" disabled>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{asset('assets/css/custom.css')}}">
+
+    {{--<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css">--}}
+    {{--<link rel="stylesheet" href="{{asset('assets/css/flag-icon-css/flag-icon.min.css')}}">--}}
+    {{--<link href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/8.4.6/css/intlTelInput.css" rel="stylesheet">--}}
+    <script src="https://cdn.tiny.cloud/1/mnj29klrtnj3dl6wh238jbr4bxbq3c4iqtnyfelx3974syvy/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+
+    {{--@if(app()->getLocale()=='ar' )--}}
+    {{--@elseif(app()->getLocale()== 'en')--}}
+    {{--@endif--}}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"
+            integrity="sha512-odNmoc1XJy5x1TMVMdC7EMs3IVdItLPlCeL5vSUPN2llYKMJ2eByTTAIiiuqLg+GdNr9hF6z81p27DArRFKT7A=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- SweetAlert Script -->
+    <script href="{{asset('/firebase-messaging-sw.js')}}"></script>
+    @vite(['resources/js/app.js'])
+</head>
+
+<body class="vertical  light {{app()->getLocale()=='ar' ? 'rtl' : 'ltr'}} ">
+<!--=== Start Wrapper ===-->
+<div class="wrapper">
+    <!--=== Start TopNav ===-->
+    @include('layouts.admin.sections.navbar')
+    <!--=== End TopNav ===-->
+    <!--=== Start SideBar ===-->
+    @include('layouts.admin.sections.aside')
+    <!--=== End SideBar ===-->
+    <!--=== Start Main ===-->
+    <main role="main" class="main-content {{request()->routeIs('admin.orders.show') ? 'yellow-background' : '' }}">
+        <div class="container-fluid {{request()->routeIs('admin.orders.show') ? 'order-card' : '' }}">
+            @yield('content')
+        </div>
+    </main>
+    <!--=== End Main ===-->
+</div>
+{{--@include('layouts.admin.sections.footer') --}}
+
+@include('sweetalert::alert')
+<script src="{{asset('assets/tiny/js/jquery.min.js')}}"></script>
+<script src="{{asset('assets/tiny/js/popper.min.js')}}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
+        integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="{{asset('assets/tiny/js/bootstrap.min.js')}}"></script>
+<script src="{{asset('assets/tiny/js/simplebar.min.js')}}"></script>
+{{--    <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>--}}
+<script src="{{asset('assets/tiny/js/jquery.stickOnScroll.js')}}"></script>
+<script src="{{asset('assets/tiny/js/tinycolor-min.js')}}"></script>
+{{--<script src="{{asset('assets/tiny/js/config.js')}}"></script>--}}
+<script src="{{asset('assets/tiny/js/d3.min.js')}}"></script>
+<script src="{{asset('assets/tiny/js/topojson.min.js')}}"></script>
+<script src="{{asset('assets/tiny/js/datamaps.all.min.js')}}"></script>
+<script src="{{asset('assets/tiny/js/datamaps-zoomto.js')}}"></script>
+<script src="{{asset('assets/tiny/js/datamaps.custom.js')}}"></script>
+<script src="{{asset('assets/tiny/js/Chart.min.js')}}"></script>
+<script src="{{asset('assets/tiny/js/gauge.min.js')}}"></script>
+<script src="{{asset('assets/tiny/js/jquery.sparkline.min.js')}}"></script>
+<script src="{{asset('assets/tiny/js/jquery.mask.min.js')}}"></script>
+<script src="{{asset('assets/tiny/js/select2.min.js')}}"></script>
+<script src="{{asset('assets/tiny/js/jquery.steps.min.js')}}"></script>
+<script src="{{asset('assets/tiny/js/jquery.validate.min.js')}}"></script>
+<script src="{{asset('assets/tiny/js/jquery.timepicker.js')}}"></script>
+<script src="{{asset('assets/tiny/js/apps.js')}}"></script>
+
+
+<script>
+    $(document).ready(function () {
+        StickyHeader();
+        $(window).on("scroll", function () {
+            StickyHeader();
+        });
+    });
+    function StickyHeader() {
+        // Sticky Header
+        if ($(".vertical .topnav").length) {
+            var windowpos = $(this).scrollTop();
+            if (windowpos >= 10) {
+                $(".vertical .topnav").addClass("sticky");
+            } else {
+                $(".vertical .topnav").removeClass("sticky");
+            }
+        }
+    }
+</script>
+<script>
+    $('.select2').select2({
+        theme: 'bootstrap4',
+    });
+
+    $('.select2-multi').select2({
+        multiple: true,
+        theme: 'bootstrap4',
+        placeholder: "Select",
+        allowClear: true
+    });
+
+    // $('.drgpicker').daterangepicker({
+    //     singleDatePicker: true,
+    //     timePicker: true,
+    //     showDropdowns: true,
+    //     locale: {
+    //         format: 'YYYY/MM/DD HH:mm:ss'
+    //     }
+    // });
+
+    // image preview
+    $(".image").change(function () {
+        if (this.files && this.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('.image-preview').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+    $(".image1").change(function () {
+        if (this.files && this.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('.image-preview1').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+    $(".image2").change(function () {
+        if (this.files && this.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('.image-preview2').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+    $(".image3").change(function () {
+        if (this.files && this.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('.image-preview3').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+    $(".image4").change(function () {
+        if (this.files && this.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('.image-preview4').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+
+    setInterval(function() {
+        // $("#notifications_count").load(window.location.href + " #notifications_count");
+        $("#unreadNotifications").load(window.location.href + " #unreadNotifications");
+        $("#Notifications").load(window.location.href + " #Notifications");
+    }, 5000);
+
+    // show the alert
+    setTimeout(function() {
+        $(".alert").alert('close');
+    }, 300000);
+</script>
+<script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
+<script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('https://nawloan.net/public/firebase-messaging-sw.js')
+            .then(function(registration) {
+                // alert('Registration successful, scope is:', registration.scope);
+                console.log('Registration successful, scope is:', registration.scope);
+            }).catch(function(err) {
+            console.log('Service worker registration failed, error:', err);
+        });
+    }
+</script>
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    //import { initializeApp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    /*const firebaseConfig = {
+    apiKey: "AIzaSyDxTycXHWx6hMnpx90fSo2Y8SOFGXomA-w",
+    authDomain: "nawloan-eff12.firebaseapp.com",
+    projectId: "nawloan-eff12",
+    storageBucket: "nawloan-eff12.appspot.com",
+    messagingSenderId: "997400731253",
+    appId: "1:997400731253:web:d0ae522e19b8fce924a23c"
+    };*/
+    const firebaseConfig = {
+        apiKey: "AIzaSyDxTycXHWx6hMnpx90fSo2Y8SOFGXomA-w",
+        authDomain: "nawloan-eff12.firebaseapp.com",
+        databaseURL: "https://nawloan-eff12-default-rtdb.firebaseio.com",
+        projectId: "nawloan-eff12",
+        storageBucket: "nawloan-eff12.appspot.com",
+        messagingSenderId: "997400731253",
+        appId: "1:997400731253:web:d0ae522e19b8fce924a23c",
+        measurementId: "G-8GEL2Y9LVZ"
+    };
+    // Initialize Firebase
+    //  const app = initializeApp(firebaseConfig);
+    firebase.initializeApp(firebaseConfig);
+    const messaging = firebase.messaging();
+
+    function initFirebaseMessagingRegistration() {
+        messaging.requestPermission().then(function () {
+            return messaging.getToken();
+        }).then(function(token) {
+            axios.post("{{ route('admin.fcmToken') }}",{
+                _method:"PATCH",
+                token
+            }).then(({data})=>{
+                $('#fcmtoken').val(token);
+                console.log('success',data)
+            }).catch(({response:{data}})=>{
+                console.error('errors',data)
+            })
+        }).catch(function (err) {
+            console.log(`Token Error :: ${err}`);
+        });
+    }
+
+    initFirebaseMessagingRegistration();
+
+    messaging.onMessage(function({data:{body,title}}){
+        new Notification(title, {body});
+    });
+</script>
+
+@yield('scripts')
+</body>
+
+</html>
