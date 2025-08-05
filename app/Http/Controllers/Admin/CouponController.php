@@ -123,6 +123,7 @@ class CouponController extends Controller
     public function store(CouponRequest $request)
 {
     // Validation is already handled by CouponRequest
+    
 
     DB::beginTransaction();
 
@@ -131,7 +132,7 @@ class CouponController extends Controller
         $coupon['user_id'] = auth()->user()->id;
 
         // Double-check allowed values for type and apply_to using Rule in CouponRequest instead
-        Coupon::create($coupon);
+        $msg=Coupon::create($coupon);
 
         $data = [
             'title' => 'add',
@@ -149,6 +150,7 @@ class CouponController extends Controller
 
     } catch (\Exception $e) {
         DB::rollBack();
+           
         session()->flash('error_message', __('site.something_wrong'));
         return back()->withInput();
     }

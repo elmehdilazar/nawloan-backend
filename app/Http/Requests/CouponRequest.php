@@ -30,7 +30,7 @@ class CouponRequest extends FormRequest
         'type' => ['required', Rule::in(['percentage', 'fixed'])],
         'start_date' => 'required|date',
         'expiry_date' => 'required|date|after_or_equal:start_date',
-        'number_availabe' => 'required|numeric|min:1',
+        'number_availabe' => 'required|numeric|min:1|max:1000',
         'discount' => 'required|numeric|min:0',
         'apply_to' => ['required', Rule::in(['customer', 'enterprise', 'all'])],
     ];

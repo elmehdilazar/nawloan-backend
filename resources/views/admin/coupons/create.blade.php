@@ -31,7 +31,7 @@
                     </div>
                     <div class="input-group">
                         <label for="">@lang('site.number_available')</label>
-                        <input required type="text" name="number_availabe" id="number_availabe" placeholder="@lang('site.placeholder_number_available')">
+                        <input required type="number" min="0" max="1000" name="number_availabe" id="number_availabe" placeholder="@lang('site.placeholder_number_available')">
                         @error("number_availabe")
                         <small class="form-text text-danger">{{$message}}</small>
                         @enderror
@@ -76,7 +76,7 @@
                         @enderror
                     </div>
                     <div class="input-group">
-                        <input required type="number" name="discount" id="discount" placeholder="0" >
+                        <input required type="number" min="0" name="discount" id="discount" placeholder="0" >
                         @error("discount")
                         <small class="form-text text-danger">{{$message}}</small>
                         @enderror
