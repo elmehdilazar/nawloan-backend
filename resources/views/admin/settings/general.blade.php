@@ -228,6 +228,34 @@
                     @enderror
                 </div>
             </div>
+                <div class="col-lg-6 col-12">
+                <div class="input-group">
+                    <label for="">@lang('site.drivers')</label>
+                    <textarea class="textarea" id="drivers_terms_conditions_ar" placeholder="drivers terms conditions"
+                        style="width: 100%; height: 620px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"
+                        name="drivers_terms_conditions_ar">
+                    {{ setting('drivers_terms_conditions_ar') != '' ? setting('drivers_terms_conditions_ar') : old('drivers_terms_conditions_ar') }}
+                </textarea>
+                    @error('drivers_terms_conditions_ar')
+                        <span class="text-danger"> {{ $message }}</span>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-lg-6 col-12">
+                <div class="input-group">
+                    <label for="">@lang('site.shipping_company_ar')</label>
+
+                    <textarea class="textarea" id="shipping_company_terms_conditions_ar" placeholder="shipping_company_terms_conditions_ar"
+                        style="width: 100%; height: 620px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"
+                        name="shipping_company_terms_conditions_ar">
+                    {{ setting('shipping_company_terms_conditions_ar') != '' ? setting('shipping_company_terms_conditions_ar') : old('shipping_company_terms_conditions_ar') }}
+                </textarea>
+                    @error('shipping_company_terms_conditions_ar')
+                        <span class="text-danger"> {{ $message }}</span>
+                    @enderror
+                </div>
+            </div>
+
             <div class="col-12">
                 <div class="input-group">
                     <label for="">@lang('policy')</label>
