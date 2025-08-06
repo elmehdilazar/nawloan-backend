@@ -178,7 +178,7 @@
             <div class="col-lg-6 col-12">
                 <div class="input-group">
                     <label for="">@lang('site.customers')</label>
-                    <textarea class="textarea" id="customers_terms_conditions" placeholder="customers terms conditions"
+                    <textarea class="textarea" id="customers_terms_conditions_ar" placeholder="customers terms conditions"
                         style="width: 100%; height: 620px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"
                         name="customers_terms_conditions_ar">
                     {{ setting('customers_terms_conditions_ar') != '' ? setting('customers_terms_conditions_ar') : old('customers_terms_conditions_ar') }}
@@ -295,7 +295,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/8.4.7/js/intlTelInput.js"></script>
     <script src="https://cdn.ckeditor.com/4.17.2/standard/ckeditor.js"></script>
-    <script>
+   <!-- <script>
         if (document.getElementById('policy'))
             CKEDITOR.replace('policy', {
                 filebrowserUploadMethod: 'form'
@@ -333,6 +333,24 @@
             CKEDITOR.replace('factories_terms_conditions', {
                 filebrowserUploadMethod: 'form'
             });
+    </script>-->
+        <script>
+        const ckIds = [
+            'policy',
+            'customers_terms_conditions',
+            'factories_terms_conditions',
+            'drivers_terms_conditions',
+            'shipping_company_terms_conditions',
+            'customers_terms_conditions_ar',
+            'factories_terms_conditions_ar',
+            'shipping_company_terms_conditions_ar'
+        ];
+
+        ckIds.forEach(id => {
+            if (document.getElementById(id)) {
+                CKEDITOR.replace(id, { filebrowserUploadMethod: 'form' });
+            }
+        });
     </script>
 
     <script>
