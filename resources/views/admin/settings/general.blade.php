@@ -177,6 +177,28 @@
                 @enderror
             </div>
         </div>
+           <div class="col-lg-6 col-12">
+            <div class="input-group">
+                <label for="">@lang('site.customers')</label>
+                <textarea class="textarea" id="customers_terms_conditions" placeholder="customers terms conditions" style="width: 100%; height: 620px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;" name="customers_terms_conditions_ar">
+                    {{setting('customers_terms_conditions_ar') !='' ? setting('customers_terms_conditions_ar') : old('customers_terms_conditions_ar') }}
+                </textarea>
+                @error('customers_terms_conditions_ar')
+                <span class="text-danger"> {{ $message }}</span>
+                @enderror
+            </div>
+        </div>
+        <div class="col-lg-6 col-12">
+            <div class="input-group">
+                <label for="">@lang('site.factories')</label>
+                <textarea class="textarea" id="factories_terms_conditions_ar" placeholder="factories terms conditions" style="width: 100%; height: 620px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;" name="factories_terms_conditions_ar">
+                    {{setting('factories_terms_conditions_ar') !='' ? setting('factories_terms_conditions_ar') : old('factories_terms_conditions_ar') }}
+                </textarea>
+                @error('factories_terms_conditions_ar')
+                <span class="text-danger"> {{ $message }}</span>
+                @enderror
+            </div>
+        </div>
         <div class="col-lg-6 col-12">
             <div class="input-group">
                 <label for="">@lang('site.drivers')</label>
@@ -191,7 +213,7 @@
         <div class="col-lg-6 col-12">
             <div class="input-group">
                 <label for="">@lang('site.shipping_company')</label>
-                
+
                 <textarea class="textarea" id="shipping_company_terms_conditions" placeholder="shipping_company_terms_conditions" style="width: 100%; height: 620px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;" name="shipping_company_terms_conditions">
                     {{setting('shipping_company_terms_conditions') !='' ? setting('shipping_company_terms_conditions') : old('shipping_company_terms_conditions') }}
                 </textarea>
@@ -294,12 +316,12 @@
                 filebrowserUploadMethod: 'form'
             });
 
-            
+
         if(document.getElementById('factories_terms_conditions'))
             CKEDITOR.replace('factories_terms_conditions', {
                 filebrowserUploadMethod: 'form'
             });
-            
+
     </script>
 
     <script>
