@@ -18,7 +18,7 @@ class SettingController extends Controller
         }
         return view('admin.settings.general');
     }
-    public function generalStore(Request $request)
+   /* public function generalStore(Request $request)
     {
         $request->validate(
             [
@@ -86,7 +86,93 @@ class SettingController extends Controller
         Setting($requestData)->save();
         session()->flash('success', __('site.saved_success'));
         return redirect()->back();
+    }*/
+
+public function generalStore(Request $request)
+{
+    /* -----------------------------------------------------------------
+     | 1. Validate input
+     |----------------------------------------------------------------- */
+    $request->validate([
+        // basics
+        'app_name_ar'  => 'required|string',
+        'app_name_en'  => 'required|string',
+        'site_link'    => 'required|url',
+        'email'        => 'sometimes|nullable|email',
+        'phone'        => 'sometimes|nullable|string',
+        'currency'     => 'required|string',
+        'currency_atr' => 'required|string',
+
+        // terms / policy (EN & AR)
+        'customers_terms_conditions'            => 'required|string',
+        'customers_terms_conditions_ar'         => 'required|string',
+        'factories_terms_conditions'            => 'required|string',
+        'factories_terms_conditions_ar'         => 'required|string',
+        'drivers_terms_conditions'              => 'required|string',
+        'shipping_company_terms_conditions'     => 'required|string',
+        'shipping_company_terms_conditions_ar'  => 'required|string',
+        'policy'                                => 'required|string',
+
+        // optional images
+        'logo'     => 'sometimes|file|image|mimes:png,jpg,jpeg,svg|max:2048',
+        'favoico'  => 'sometimes|file|image|mimes:png,jpg,jpeg,svg,ico|max:1024',
+    ]);
+
+    /* -----------------------------------------------------------------
+     | 2. Collect scalar settings (strip empty values)
+     |----------------------------------------------------------------- */
+    $requestData = array_filter(
+        $request->only([
+            'app_name_ar', 'app_name_en', 'currency', 'currency_atr', 'site_link',
+            'email', 'phone', 'address_ar', 'address_en',
+            'customers_terms_conditions', 'customers_terms_conditions_ar',
+            'factories_terms_conditions', 'factories_terms_conditions_ar',
+            'drivers_terms_conditions',
+            'shipping_company_terms_conditions', 'shipping_company_terms_conditions_ar',
+            'policy',
+        ]),
+        fn ($value) => !is_null($value) && $value !== ''
+    );
+
+    /* -----------------------------------------------------------------
+     | 3. Handle logo upload
+     |----------------------------------------------------------------- */
+    $requestData['logo'] = Setting('logo');          // keep existing path by default
+    if ($request->hasFile('logo')) {
+        // delete previous custom logo
+        if (Setting('logo') &&
+            !in_array(Setting('logo'), ['uploads/img/logo.jpg', 'uploads/img/logo.png']) &&
+            file_exists(public_path(Setting('logo')))) {
+            unlink(public_path(Setting('logo')));
+        }
+
+        $path = $request->file('logo')
+                        ->store('', ['disk' => 'public_uploads']); // e.g. uploads/xxxx.png
+        $requestData['logo'] = 'uploads/' . basename($path);
     }
+
+    /* -----------------------------------------------------------------
+     | 4. Handle favicon upload
+     |----------------------------------------------------------------- */
+    $requestData['favoico'] = Setting('favoico');
+    if ($request->hasFile('favoico')) {
+        if (Setting('favoico') &&
+            !in_array(Setting('favoico'), ['uploads/img/logo.jpg', 'uploads/img/logo.png']) &&
+            file_exists(public_path(Setting('favoico')))) {
+            unlink(public_path(Setting('favoico')));
+        }
+
+        $path = $request->file('favoico')
+                        ->store('', ['disk' => 'public_uploads']);
+        $requestData['favoico'] = 'uploads/' . basename($path);
+    }
+
+    /* -----------------------------------------------------------------
+     | 5. Persist & redirect
+     |----------------------------------------------------------------- */
+    Setting($requestData)->save();  // spatie/laravel-settings helper
+    return redirect()->back()->with('success', __('site.saved_success'));
+}
     public function seo()
     {
         if (session('success')) {
