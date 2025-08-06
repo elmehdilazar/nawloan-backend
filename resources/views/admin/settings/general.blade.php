@@ -243,7 +243,7 @@
             </div>
             <div class="col-lg-6 col-12">
                 <div class="input-group">
-                    <label for="">@lang('site.shipping_company_ar')</label>
+                    <label for="">@lang('site.shipping_company')</label>
 
                     <textarea class="textarea" id="shipping_company_terms_conditions_ar" placeholder="shipping_company_terms_conditions_ar"
                         style="width: 100%; height: 620px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"
@@ -371,6 +371,7 @@
             'shipping_company_terms_conditions',
             'customers_terms_conditions_ar',
             'factories_terms_conditions_ar',
+             'drivers_terms_conditions_ar',
             'shipping_company_terms_conditions_ar'
         ];
 
