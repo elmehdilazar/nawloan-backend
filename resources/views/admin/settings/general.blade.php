@@ -266,6 +266,16 @@
                 </textarea>
                 </div>
             </div>
+            <div class="col-12">
+                <div class="input-group">
+                    <label for="">@lang('policy')</label>
+                    <textarea class="textarea" id="policy_ar" placeholder="policy_ar"
+                        style="width: 100%; height: 620px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"
+                        name="policy_ar">
+                    {{ setting('policy_ar') != '' ? setting('policy_ar') : old('policy_ar') }}
+                </textarea>
+                </div>
+            </div>
         </div>
         <button type="submit" class="btn btn-navy min-width-170 mt-4"
             title="@lang('site.save')">@lang('site.save')</button>
@@ -365,6 +375,7 @@
         <script>
         const ckIds = [
             'policy',
+            'policy_ar',
             'customers_terms_conditions',
             'factories_terms_conditions',
             'drivers_terms_conditions',
