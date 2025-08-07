@@ -171,7 +171,7 @@
                                 @lang('site.phone')
                             </div>
                             <div class="col-md-12">
-                                <p>{{$message->phone}}</p>
+                                <p>{{$message->phone_number+"&nbsp"+$message->phone_number}}</p>
                             </div>
                         </div>
                         <div class="row mt-2">
