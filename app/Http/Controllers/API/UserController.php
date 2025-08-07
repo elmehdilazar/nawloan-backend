@@ -27,7 +27,7 @@ use Exception;
 
 class UserController extends BaseController
 {
-    
+
 
     /**
      * Display a listing of the resource.
@@ -95,7 +95,7 @@ class UserController extends BaseController
                          $noti->data['target_id']. ' ',
                  'by'=>  $noti->data['user'] . ' ',
                  'link'=>$noti->data['link'],
-                 
+
                  'target_id'=> $noti->data['target_id'],
                   'target'=> $noti->data['target']
             ];
@@ -106,7 +106,7 @@ class UserController extends BaseController
         return $this->sendResponse($success, 'User Notification.');
     }
      public function terms(Request $request){
-         
+
          $success = [];
          if($request->type=='user'){
              if($request->lang=='en'){
@@ -114,18 +114,18 @@ class UserController extends BaseController
              }else{
                  $success['terms'] = Setting('customers_terms_conditions_ar');
              }
-          
+
          }elseif($request->type=='driver'){
                     if($request->lang=='en'){
             $success['terms'] = Setting('drivers_terms_conditions');
-                        
+
                     }
             else{
                  $success['terms'] = Setting('drivers_terms_conditions_ar');
-                
+
             }
             }
-         
+
          elseif($request->type=='driverCompany'){
                     if($request->lang=='en'){
             $success['terms'] = Setting('shipping_company_terms_conditions');}else{
@@ -134,7 +134,7 @@ class UserController extends BaseController
          }elseif($request->type=='factory'){
                     if($request->lang=='en'){
             $success['terms'] = Setting('factories_terms_conditions');
-                        
+
                     }
             else{
                    $success['terms'] = Setting('factories_terms_conditions_ar');
@@ -154,13 +154,13 @@ class UserController extends BaseController
 if($request->lang=='en'){
       $success['policy'] = Setting('policy');
 
-    
+
 }else{
       $success['policy'] = Setting('policy_ar');
 
-    
+
 }
-      
+
         return $this->sendResponse($success, 'users policy.');
      }
     public function showUsers()
@@ -401,7 +401,7 @@ public function showFactory($id)
       ->whereYear('created_at', '=', $request->year)
       ->get();
       }
-      
+
         $distance=0;
         $income_money=0;
         foreach($orders as $order){
@@ -472,7 +472,7 @@ foreach ($orders as $order) {
             'available_balance' =>  number_format($user->userData->balance,2),
             'pending_balance' =>  number_format($user->userData->pending_balance,2),
             'total_balance' =>  number_format($user->userData->balance + $user->userData->pending_balance,2),
-            
+
             'status' => $user->userData->status,
             'phone_verified_at'=>$user->phone_verified_at,
             'active'=>$user->active,
@@ -963,7 +963,7 @@ public function updateFactory(Request $request, $id)
          $userData->update([
                 'track_license_image_f' => 'uploads/truck_licenses/' . $request->track_license_image_f->hashName()
             ]);
-            
+
         }
 
         if ($request->file('track_license_image_b')) {
@@ -980,7 +980,7 @@ public function updateFactory(Request $request, $id)
             Image::make($request->track_image_f)
                 ->save(public_path('uploads/trucks/' . $request->track_image_f->hashName()));
 
-     
+
       $userData->update([
                 'track_image_f' => 'uploads/trucks/' . $request->track_image_f->hashName()
             ]);
@@ -1014,7 +1014,7 @@ public function updateFactory(Request $request, $id)
             'phone' =>  $input['phone'],
             'password' => bcrypt($input['password'])
             // 'password' => bcrypt($input['password']), // add by mohammed
-            //update That to Isset Abdo 
+            //update That to Isset Abdo
         ]);
         }else{
         $user->update([
@@ -1022,9 +1022,9 @@ public function updateFactory(Request $request, $id)
             'email'=>$input['email'],
             'phone' =>  $input['phone'],
             // 'password' => bcrypt($input['password']), // add by mohammed
-            //update That to Isset Abdo 
+            //update That to Isset Abdo
         ]);
-            
+
         }
 
             $userData->update([
@@ -1039,7 +1039,7 @@ public function updateFactory(Request $request, $id)
             'latitude'                      =>isset( $input['latitude'])?  $input['latitude']:$userData->latitude,
             'type' =>  'driver',
         ]);
-     
+
 
         $data = [
             'title' => 'edit',
@@ -1201,7 +1201,7 @@ public function updateFactory(Request $request, $id)
             'phone' =>  $input['phone'],
             'password' => bcrypt($input['password'])
             // 'password' => bcrypt($input['password']), // add by mohammed
-            //update That to Isset Abdo 
+            //update That to Isset Abdo
         ]);
         }else{
         $user->update([
@@ -1209,9 +1209,9 @@ public function updateFactory(Request $request, $id)
             'email'=>$input['email'],
             'phone' =>  $input['phone'],
             // 'password' => bcrypt($input['password']), // add by mohammed
-            //update That to Isset Abdo 
+            //update That to Isset Abdo
         ]);
-            
+
         }
 
         $userData->update([
@@ -1221,7 +1221,7 @@ public function updateFactory(Request $request, $id)
         ]);
       if($request->has('longitude')){
            $userData->update([
-         
+
             'longitude'                =>  $input['longitude'],
             'latitude'                =>  $input['latitude'],
         ]);}
@@ -1357,10 +1357,10 @@ public function updateFactory(Request $request, $id)
     public function getLocation($id)
     {
         $user = User::find($id);
-       
+
         $longitude= UserData::where('user_id', $id)->value('longitude');
          $latitude= UserData::where('user_id', $id)->value('latitude');
-   
+
         if (!$user) {
 			$msgs=['User not exists'];
             return $this->sendError('Data not found.',$msgs);
@@ -1510,14 +1510,14 @@ public function updateFactory(Request $request, $id)
     }
     public function arrived(Request $request)
     {
-      
+
         $validator = Validator::make($request->all(), [
             'order_id'=>'required|exists:orders,id',
               'arrived_to_dropoff'=>'required|bool',
               'arrived_to_pickup'=>'required|bool',
               'driver_id'=>'required|exists:users,id'
             ]);
-    
+
   if ($validator->fails()) {
             $errors = $validator->errors();
             $msgs = [];
@@ -1532,9 +1532,9 @@ public function updateFactory(Request $request, $id)
         }
         else if($request->arrived_to_pickup)
         {
-           $text='the driver arrived_to_pickup'; 
+           $text='the driver arrived_to_pickup';
         }
-        
+
     $order = Order::find($request->order_id);
      $user=User::find($order->user_id);
 $data=
@@ -1549,7 +1549,7 @@ $data=
     try
     {
       $response =Notification::send($user, new LocalNotification($data));
-      
+
      dd($response);
        foreach ($response as $notifiableResponse) {
            if (!$notifiableResponse->isSent()) {

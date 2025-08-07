@@ -168,6 +168,14 @@
                         </div>
                         <div class="row mt-2">
                             <div class="col-md-12">
+                                @lang('site.phone')
+                            </div>
+                            <div class="col-md-12">
+                                <p>{{$message->phone}}</p>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-12">
                                 @lang('site.message')
                             </div>
                             <div class="col-md-12">
