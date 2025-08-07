@@ -53,7 +53,7 @@
             @foreach ($messages as $index=>$message)
                 <tr>
                     <td>{{$index + 1}}</td>
-                    <td>{{$message->phone_code." ".$message->phone_number}}</td>
+                    <td>{{$message->user->phone}}</td>
                     <td>{{$message->title}}</td>
                     <td>
                         <p class="lines-cap-2">{{$message->message}}</p>
