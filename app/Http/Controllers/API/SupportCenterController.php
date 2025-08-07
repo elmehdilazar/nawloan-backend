@@ -54,7 +54,7 @@ class SupportCenterController extends BaseController
         'name' => 'required|string|max:255',
         'email' => 'required|email|max:255',
         'phone' => 'required|string|max:20',
-        'phone_number' => 'required|string|max:10',
+        'phone_number' => 'required|string|max:20',
         'phone_code' => 'required|string|max:4',
         'title' => 'required|string',
         'message' => 'required|string',
