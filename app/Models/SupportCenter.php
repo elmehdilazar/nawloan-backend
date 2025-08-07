@@ -13,6 +13,8 @@ class SupportCenter extends Model
         'name',
         'email',
         'phone',
+        'phone_code',
+        'phone_number',
         'title',
         'desc',
         'notes',

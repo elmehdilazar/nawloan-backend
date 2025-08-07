@@ -54,6 +54,7 @@ class SupportCenterController extends BaseController
         'name' => 'required|string|max:255',
         'email' => 'required|email|max:255',
         'phone' => 'required|string|max:20',
+        'phone_number' => 'required|string|max:10',
         'phone_code' => 'required|string|max:4',
         'title' => 'required|string',
         'message' => 'required|string',
@@ -74,7 +75,7 @@ class SupportCenterController extends BaseController
     $supportCenter = SupportCenter::create([
         'name' => $request->name,
         'email' => $request->email,
-        'phone_number' => $request->phone,
+        'phone_number' => $request->phone_number,
         'phone_code' => $request->phone_code,
         'user_id' => $request->user_id,
         'title' => $request->title,
