@@ -227,7 +227,7 @@
     appId: "1:997400731253:web:d0ae522e19b8fce924a23c",
     measurementId: "G-8GEL2Y9LVZ"
   };
-  const VAPID_KEY = "BCRJsjGk2nqEMYNn2TDESbxL8dGOts8jXApwxnCky9gZR2XUtl8ASK6SKq4T42mwCO_Ty6_TK_gNh";
+  const VAPID_KEY = "BKcLwEjrAedWHYKxK8yaxKIvOqGysObPboROGhiWEO8Kae1cBYooFWY7_Ghf_-wnO8tpmNkYc5_MaApffWQLmAw";
 
   const app = initializeApp(firebaseConfig);
   const audio = document.getElementById('notif-audio');
