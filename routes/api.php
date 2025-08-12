@@ -20,7 +20,7 @@ use App\Http\Controllers\API\SettingController;
 use App\Http\Controllers\API\ChatController;
 use App\Http\Controllers\API\PolicyController;
 use App\Http\Controllers\API\CodeScretController;
-
+use App\Services\FCMService;
 
 /*
 |--------------------------------------------------------------------------
@@ -338,7 +338,7 @@ Route::get('/processQRCode', [App\Http\Controllers\Clients\QRController::class,'
         Route::get('/show/{id}', [\App\Http\Controllers\API\CareerController::class, 'show'])->name('show');});
 
 
-use App\Services\FCMService;
+
 
 Route::get('/test-fcm', function () {
     $testToken = 'ewMDcNfaZBUKfl5p8hVQ8V:APA91bF4Aw9oDssFTCunkNSimSilVZwKMVSTUa9GfklxHN0HwHFhQsfuyazY2Bzy6YRV1K1BMsnsSrGp8UHOob4msc8hIoQPyS9bkavlsxfxmfI-K7Ww5mo';
