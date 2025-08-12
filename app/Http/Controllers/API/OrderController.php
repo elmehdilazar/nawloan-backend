@@ -90,10 +90,10 @@ class OrderController extends BaseController
     ]);
 }
 
-    
+
 public function getByDriverInvite(Request $request, $driver_id)
 {
-   
+
     $orders = Order::with([
             'user',
             'car',
@@ -133,7 +133,7 @@ public function getByDriverInvite(Request $request, $driver_id)
             'user' => function ($query) {
                 $query->with(['userData']);
             },
-            
+
         ])
         ->get();
 
@@ -191,7 +191,7 @@ public function sendWebNotification(Request $request)
     }
 
     // Get first user (for testing) or target a specific user
-    $user = User::first(); 
+    $user = User::first();
     $fcmToken = $user->fcm_token;
 
     if (!$fcmToken) {
@@ -239,7 +239,7 @@ public function sendWebNotification(Request $request)
             dd($errors);
             return $this->sendError('Validation Error.', $msgs);
         }
-       
+
         $company = User::where('type', 'driverCompany')->find($id);
         $driversdata = UserData::where('company_id', $company->id)->get();
         $drivers_ids = [];
@@ -343,12 +343,12 @@ public function sendWebNotification(Request $request)
        Notification::send($driver, new LocalNotification($notificationData));
             $notifiedDrivers++;
         }
-             
-  
+
+
                  $message2 = $title  . ' ' . $company->name. ' ' . $message ;
            //    $title = Lang::get('site.not_new_order');
                 Notification::send($driver, new FcmPushNotification($title, $message2, [$driver->fcm_token]));
-           
+
     }
 
     if ($notifiedDrivers > 0) {
@@ -396,7 +396,7 @@ public function sendWebNotification(Request $request)
         })->latest()->get();
         $success['count'] = $orders->count();
         $success['orders'] = $orders;
-     
+
         return $this->sendResponse($success, 'orders information.');
     }
 
@@ -854,9 +854,9 @@ if ($driverData) {
             $driverData->update(['status' => 'in_Shipment']);
             break;
 
-        case 'completed':  
+        case 'completed':
             case 'complete':  // job finished
-        case 'cancel':    
+        case 'cancel':
             case 'cancelled': // cancelled by driver / seeker
             $driverData->update(['status' => 'available']);
             break;

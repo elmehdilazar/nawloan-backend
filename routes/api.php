@@ -48,7 +48,7 @@ Route::get('/test-notification', [OrderController::class, 'testNotification']);
 Route::post('/save-fcm-token', [OrderController::class, 'saveFcmToken']);
 Route::post('/send-web-notification', [OrderController::class, 'sendWebNotification']);
 
-           Route::post('driver/arrived', [UserController::class, 'arrived']); 
+           Route::post('driver/arrived', [UserController::class, 'arrived']);
         Route::get('/policies', [PolicyController::class, 'index']);
         Route::post('/users/drivercompany/image/{id}', [RegisterController::class, 'registerDriverCompanyImage']);
         Route::get('/users/terms', [UserController::class, 'terms']);
@@ -78,7 +78,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/sendMessage', [ChatController::class, 'store']);
    });
    Route::prefix('users/')->group(function () {
-       
+
         Route::get('/driver/company-relation/{driver_id}', [UserController::class, 'driverCompanyRelation']);
         Route::get('/getNotifications/{id}', [UserController::class, 'getNotifications']);
         Route::put('/setLocation/{id}', [UserController::class, 'setLocation']);
@@ -100,7 +100,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('driverinfo/{id}', [RegisterController::class, 'registerDriverInfo']);
         Route::post('addDriverByCompany/{id}', [RegisterController::class, 'registerDriverFromCompany']);
         Route::post('driver/image/{id}',[RegisterController::class, 'registerDriverImage']);
-        
+
 //Some Platforms Faceing Issues WIth Patch * PUT So Here Same Methods With POST
 
         Route::post('driver-edit/{id}', [UserController::class, 'updateDriver']);
@@ -112,7 +112,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('drivercompany-edit/{id}', [UserController::class, 'updateDriverCompany']);
         Route::post('drivercompanyinfo/{id}', [RegisterController::class, 'registerDriverCompanyInfo']);
         Route::get('/checkUserStatus', [UserController::class, 'checkUserStatus']); // /*add by mohammed*/
-       Route::post('driver/arrived', [UserController::class, 'arrived']); 
+       Route::post('driver/arrived', [UserController::class, 'arrived']);
 
     });
 
@@ -165,11 +165,11 @@ Route::prefix('coupons')->name('coupons.')->group(
         Route::post('/sendNotificatonToDrivers/{id}',[OrderController::class,'sendNotificatonToDrivers']);
         Route::get('/getByUserId/{id}', [OrderController::class, 'getByUserId']);
         Route::get('/getByDriverId/{id}', [OrderController::class, 'getByDriverId']);
-        
+
         Route::get('/getByStatus', [OrderController::class, 'getByStatus']);
         Route::get('/getPickUpAndDropDown', [OrderController::class, 'getPickUpAndDropDown']);
          Route::get('/getOrderDetails/{id}', [OfferController::class, 'getOrderDetails']);
-        Route::post('/arrived', [OrderController::class, 'arrived']); 
+        Route::post('/arrived', [OrderController::class, 'arrived']);
         Route::get('/orders-invites/driver/{driver_id}', [OrderController::class, 'getByDriverInvite']);
 
 Route::get('/orders-invites/order/{order_id}', [OrderController::class, 'getByOrder']);
@@ -183,7 +183,7 @@ Route::get('/orders-invites/orderD/{order_id}', [OrderController::class, 'getOrd
         Route::get('/{id}', [OrderController::class, 'show']);
         Route::put('/changeStatus/{id}', [OrderController::class, 'changeStatus']);
         Route::get('/tracking/{order}', [OrderController::class, 'Tracking_order']);
-        
+
         /**
          *
          * @Add By   mdMandoinfo (Mohammed Hussein)
@@ -192,7 +192,7 @@ Route::get('/orders-invites/orderD/{order_id}', [OrderController::class, 'getOrd
          * @website  https://mdmando.info
         */
         Route::post('/generate-code', [CodeScretController::class, 'store']);
-        
+
         /**
          *
          * @Add By   mdMandoinfo (Mohammed Hussein)
@@ -211,23 +211,23 @@ Route::get('/orders-invites/orderD/{order_id}', [OrderController::class, 'getOrd
         Route::get('/getByDriverId/{id}', [OfferController::class, 'getByDriverId']);
        // Route::get('/getByDriverIdAssigned/{id}', [OfferController::class, 'getByDriverIdAssigned']);
         Route::get('/getByAgencyId/{id}', [OfferController::class, 'getByAgencyId']);
-        
+
         Route::get('/getByStatus', [OfferController::class, 'getByStatus']);
         Route::post('/', [OfferController::class, 'store']);
-     
+
         Route::put('/{id}', [OfferController::class, 'update']);
         Route::get('/{id}', [OfferController::class, 'show']);
         Route::put('/changeStatus/{id}', [OfferController::class, 'changeStatus']);
-        
-        
-        //Company Assign Driver 
-        
-        
+
+
+        //Company Assign Driver
+
+
       //  Route::post('/assignDriver', [OfferController::class, 'addAssignDriver']);
         Route::post('/assignDriver/{id}', [OrderController::class, 'sendNotificatonToDrivers']);
-        
+
         Route::get('/assignDriver/{id}', [OfferController::class, 'getAssignedDrivers']);
-        
+
     });
     Route::prefix('supportCenter')->group(function () {
         Route::get('/getByUserId/{id}', [SupportCenterController::class, 'getByUserId']);
@@ -331,9 +331,23 @@ Route::get('/processQRCode', [App\Http\Controllers\Clients\QRController::class,'
     function () {
         Route::get('/index', [\App\Http\Controllers\API\ArticleController::class, 'index'])->name('index');
         Route::get('/show/{id}', [\App\Http\Controllers\API\ArticleController::class, 'show'])->name('show');});
-        
+
     Route::prefix('careers')->name('careers.')->group(
     function () {
         Route::get('/index', [\App\Http\Controllers\API\CareerController::class, 'index'])->name('index');
         Route::get('/show/{id}', [\App\Http\Controllers\API\CareerController::class, 'show'])->name('show');});
-        
+
+
+Route::get('/test-fcm', function () {
+    $testToken = 'ewMDcNfaZBUKfl5p8hVQ8V:APA91bF4Aw9oDssFTCunkNSimSilVZwKMVSTUa9GfklxHN0HwHFhQsfuyazY2Bzy6YRV1K1BMsnsSrGp8UHOob4msc8hIoQPyS9bkavlsxfxmfI-K7Ww5mo';
+
+    $notification = [
+        'title' => 'Test Notification',
+        'body'  => 'This is a test from Laravel',
+        'sound' => 'default'
+    ];
+
+    FCMService::send($testToken, $notification);
+
+    return 'Notification sent!';
+});
