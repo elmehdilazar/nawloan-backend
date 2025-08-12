@@ -5,7 +5,7 @@
     <form class="form-inline mr-auto searchform" action="{{route('admin.search')}}">
         <input class="form-control mr-sm-2 bg-transparent border-0 pl-4" type="search" name="search"
             placeholder="@lang('site.search_ufdc')" aria-label="Search" value="{{request()->search !='' ? request()->search : ''}}">
-    </form> 
+    </form>
     <ul class="nav">
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#"
@@ -115,7 +115,7 @@
                           transform="translate(1377 -67)" fill="#bcbccb">
                 </svg>
                 @if (auth()->user()->unreadNotifications->count()>0)
-                <span class="dot dot-md bg-warning"></span>
+                <span id="notificationCount" class="dot dot-md bg-warning">0</span>
                 @endif
             </a>
             <div class="dropdown-menu dropdown-menu-right notification-menu {{app()->getLocale() =='ar' ? 'dropdown-menu-left' : 'dropdown-menu-right' }}"
@@ -125,9 +125,9 @@
                     <ul>
                         @foreach (auth()->user()->unreadNotifications()->take(5)->get() as $notification)
                         <li>
-                          
+
                             <a href="{{route('admin.showAndRead',['id'=>$notification->id])}}" class="flex-column">
-                             
+
                                 <small class="flex-space">
                                     <span>
                                         @lang('site.'. $notification->data['title'] )
@@ -211,3 +211,100 @@
         </li>
     </ul>
 </nav>
+<audio id="notif-audio" src="/sounds/notify.mp3" preload="auto"></audio>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+  import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-messaging.js";
+
+  // 1) Your Firebase config (from console)
+  const firebaseConfig = {
+       apiKey: "AIzaSyDxTycXHWx6hMnpx90fSo2Y8SOFGXomA-w",
+    authDomain: "nawloan-eff12.firebaseapp.com",
+    databaseURL: "https://nawloan-eff12-default-rtdb.firebaseio.com",
+    projectId: "nawloan-eff12",
+    storageBucket: "nawloan-eff12.appspot.com",
+    messagingSenderId: "997400731253",
+    appId: "1:997400731253:web:d0ae522e19b8fce924a23c",
+    measurementId: "G-8GEL2Y9LVZ"
+  };
+  const VAPID_KEY = "BCRJsjGk2nqEMYNn2TDESbxL8dGOts8jXApwxnCky9gZR2XUtl8ASK6SKq4T42mwCO_Ty6_TK_gNh";
+
+  const app = initializeApp(firebaseConfig);
+  const audio = document.getElementById('notif-audio');
+
+  // Prime audio once (satisfy autoplay policies)
+  window.addEventListener('click', () => {
+    if (!audio) return;
+    audio.muted = false;
+    audio.play().then(() => audio.pause()).catch(()=>{});
+  }, { once: true });
+
+  // Simple toast
+  function toast(text) {
+    const node = document.createElement('div');
+    node.textContent = text;
+    node.style.cssText = "position:fixed;right:16px;top:16px;z-index:9999;background:#111;color:#fff;padding:10px 14px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.25);font-family:sans-serif";
+    document.body.appendChild(node);
+    setTimeout(() => node.remove(), 4000);
+  }
+
+  async function registerServiceWorker() {
+    if (!('serviceWorker' in navigator) || !(await isSupported())) return null;
+    return await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+  }
+
+  async function saveTokenToBackend(token) {
+    // Replace with your route to store admin token
+    await fetch('/admin/fcm-token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({ token, platform: 'web' })
+    });
+  }
+
+  async function initFCM() {
+    const reg = await registerServiceWorker();
+    if (!reg) {
+      console.warn('FCM not supported in this browser.');
+      return;
+    }
+
+    const messaging = getMessaging(app);
+
+    // Request permission + get token
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') return;
+
+    const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: reg });
+    if (token) {
+      await saveTokenToBackend(token);
+    }
+
+    // Foreground messages
+    onMessage(messaging, (payload) => {
+      const title = payload?.notification?.title || 'New notification';
+      const body  = payload?.notification?.body  || '';
+      toast(`${title}: ${body}`);
+      audio?.play().catch(()=>{});
+      const badge = document.getElementById('notificationCount');
+      if (badge) badge.textContent = ((+badge.textContent || 0) + 1).toString();
+    });
+
+    // Messages forwarded by the service worker (background → page)
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      if (!event.data?.__fcm) return;
+      const payload = event.data.payload;
+      const title = payload?.notification?.title || 'New notification';
+      const body  = payload?.notification?.body  || '';
+      toast(`${title}: ${body}`);
+      audio?.play().catch(()=>{});
+      const badge = document.getElementById('notificationCount');
+      if (badge) badge.textContent = ((+badge.textContent || 0) + 1).toString();
+    });
+  }
+
+  initFCM();
+</script>
