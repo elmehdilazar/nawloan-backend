@@ -216,6 +216,7 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
   import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-messaging.js";
 
+  // Firebase config (yours)
   const firebaseConfig = {
     apiKey: "AIzaSyDxTycXHWx6hMnpx90fSo2Y8SOFGXomA-w",
     authDomain: "nawloan-eff12.firebaseapp.com",
@@ -226,16 +227,16 @@
     appId: "1:997400731253:web:d0ae522e19b8fce924a23c",
     measurementId: "G-8GEL2Y9LVZ"
   };
+
+  // Public VAPID key (from Firebase Console → Cloud Messaging → Web Push certificates)
   const VAPID_KEY = "BKcLwEjrAedWHYKxK8yaxKIvOqGysObPboROGhiWEO8Kae1cBYooFWY7_Ghf_-wnO8tpmNkYc5_MaApffWQLmAw";
 
   const app = initializeApp(firebaseConfig);
   const audio = document.getElementById('notif-audio');
 
-  // Prime audio once (autoplay)
+  // Prime audio once to satisfy autoplay
   window.addEventListener('click', () => {
-    if (!audio) return;
-    audio.muted = false;
-    audio.play().then(() => audio.pause()).catch(()=>{});
+    try { audio.muted = false; audio.play().then(()=>audio.pause()); } catch {}
   }, { once: true });
 
   function toast(text) {
@@ -251,14 +252,14 @@
     console.log('[FCM] isSupported:', supported);
     if (!('serviceWorker' in navigator) || !supported) return null;
     const reg = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-    console.log('[FCM] SW registered at', reg.scope);
+    console.log('[FCM] SW registered:', reg.scope);
     return reg;
   }
 
   async function saveTokenToBackend(token) {
     console.log('[FCM] Saving token…', token.slice(0,16)+'…');
     const res = await fetch('/admin/fcm-token', {
-      method: 'POST',
+      method: 'POST',                  // we’ll accept POST in step 3
       headers: {
         'Content-Type': 'application/json',
         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
@@ -267,75 +268,61 @@
       body: JSON.stringify({ token, platform: 'web' })
     });
     if (!res.ok) {
-      const text = await res.text();
-      console.error('[FCM] saveToken failed', res.status, text);
+      console.error('[FCM] saveToken failed', res.status, await res.text());
     } else {
       console.log('[FCM] Token saved OK');
     }
   }
 
   async function initFCM() {
-    try {
-      const reg = await registerServiceWorker();
-      if (!reg) {
-        console.warn('[FCM] Not supported or SW failed to register');
-        return;
-      }
+    const reg = await registerServiceWorker();
+    if (!reg) return console.warn('[FCM] Not supported or SW failed');
 
-      const messaging = getMessaging(app);
+    const messaging = getMessaging(app);
 
-      const permission = await Notification.requestPermission();
-      console.log('[FCM] Permission:', permission);
-      if (permission !== 'granted') {
-        toast('Please allow notifications in your browser');
-        return;
-      }
-
-      let token;
-      try {
-        token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: reg });
-        console.log('[FCM] getToken returned:', token ? token.slice(0,16)+'…' : token);
-      } catch (e) {
-        console.error('[FCM] getToken error:', e);
-        toast('Failed to get push token. Check console.');
-        return;
-      }
-
-      if (token) await saveTokenToBackend(token);
-      else {
-        console.warn('[FCM] No token (maybe permission blocked?)');
-        toast('No push token. Allow notifications.');
-      }
-
-      // Foreground messages
-      onMessage(messaging, (payload) => {
-        console.log('[FCM] onMessage payload:', payload);
-        const title = payload?.notification?.title || 'New notification';
-        const body  = payload?.notification?.body  || '';
-        toast(`${title}: ${body}`);
-        audio?.play().catch(()=>{});
-        const badge = document.getElementById('notificationCount');
-        if (badge) badge.textContent = ((+badge.textContent || 0) + 1).toString();
-      });
-
-      // From SW (background → page)
-      navigator.serviceWorker.addEventListener('message', (event) => {
-        if (!event.data?.__fcm) return;
-        const payload = event.data.payload;
-        console.log('[FCM] SW->page payload:', payload);
-        const title = payload?.notification?.title || 'New notification';
-        const body  = payload?.notification?.body  || '';
-        toast(`${title}: ${body}`);
-        audio?.play().catch(()=>{});
-        const badge = document.getElementById('notificationCount');
-        if (badge) badge.textContent = ((+badge.textContent || 0) + 1).toString();
-      });
-    } catch (e) {
-      console.error('[FCM] initFCM fatal:', e);
-      toast('FCM init failed. Check console.');
+    const permission = await Notification.requestPermission();
+    console.log('[FCM] permission:', permission);
+    if (permission !== 'granted') {
+      toast('Please allow notifications in your browser');
+      return;
     }
+
+    try {
+      const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: reg });
+      console.log('[FCM] getToken:', token ? token.slice(0,16)+'…' : token);
+      if (token) await saveTokenToBackend(token);
+      else toast('No push token (permission blocked?)');
+    } catch (e) {
+      console.error('[FCM] getToken error:', e);
+      toast('Failed to get push token. Check console.');
+    }
+
+    // Foreground messages
+    onMessage(messaging, (payload) => {
+      console.log('[FCM] onMessage', payload);
+      const title = payload?.notification?.title || 'New notification';
+      const body  = payload?.notification?.body  || '';
+      toast(`${title}: ${body}`);
+      audio?.play().catch(()=>{});
+      const badge = document.getElementById('notificationCount');
+      if (badge) badge.textContent = ((+badge.textContent || 0) + 1).toString();
+    });
+
+    // Background→page (forwarded by SW)
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      if (!event.data?.__fcm) return;
+      const payload = event.data.payload;
+      console.log('[FCM] SW->page', payload);
+      const title = payload?.notification?.title || 'New notification';
+      const body  = payload?.notification?.body  || '';
+      toast(`${title}: ${body}`);
+      audio?.play().catch(()=>{});
+      const badge = document.getElementById('notificationCount');
+      if (badge) badge.textContent = ((+badge.textContent || 0) + 1).toString();
+    });
   }
 
   initFCM();
 </script>
+
 
