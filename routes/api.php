@@ -349,6 +349,6 @@ Route::get('/test-fcm', function () {
         'sound' => 'default'
     ];
 
- Notification::send($driver, new FcmPushNotification('Test Notification', 'This is a test from Laravel', [ $testToken]));
+ Notification::send($testToken, new FcmPushNotification('Test Notification', 'This is a test from Laravel', [ $testToken]));
     return 'Notification sent!';
 });
