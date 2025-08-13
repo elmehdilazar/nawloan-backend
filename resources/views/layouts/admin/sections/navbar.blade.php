@@ -212,6 +212,7 @@
     </ul>
 </nav>
 <audio id="notif-audio" src="/sounds/notify.mp3" preload="auto"></audio>
+<span id="notificationCount" class="badge badge-danger">0</span>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
   import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-messaging.js";
@@ -324,5 +325,6 @@
 
   initFCM();
 </script>
+
 
 
