@@ -1,4 +1,4 @@
-/* FCM SW (v10 compat) */
+/* FCM SW (Firebase v10 compat) */
 importScripts('https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.3/firebase-messaging-compat.js');
 
@@ -13,14 +13,13 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-  // This fires when the tab is not focused or closed
   const { title, body } = payload.notification || {};
   self.registration.showNotification(title || 'New notification', {
     body: body || '',
     data: payload.data || {}
   });
 
-  // forward to any open tabs (for sound + toast)
+  // Forward to open admin tabs so page can play sound
   self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
     clients.forEach(c => c.postMessage({ __fcm: true, payload }));
   });
