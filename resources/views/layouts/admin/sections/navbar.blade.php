@@ -258,7 +258,7 @@
   // === concept like Angular: get token + "subscribe" ===
   async function subscribeTokenToAdmins(token) {
     // no DB store; we just subscribe this token to /topics/admins
-    const res = await fetch('/admin/fcm-subscribe', {
+    const res = await fetch('/api/admin/fcm-subscribe', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
