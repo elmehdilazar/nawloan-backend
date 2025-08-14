@@ -11,7 +11,7 @@ class FcmTopicController extends Controller
     public function subscribe(Request $r)
     {
         $data = $r->validate(['token' => 'required|string']);
-        $serverKey = config('services.fcm.server_key') ?? env('FCM_SERVER_KEY');
+        $serverKey = 'AAAA6Dm3XnU:APA91bHpRq8D38H3n0qq5UEf2UYS2l_aGTL6IoE8QUrS-V_kx1puWHPy_n3yq9xjf6uQ6l1il8raHnclkDE11JdevvaqZOYopRuTW9HRuLY6eOBGyZ4VUxassGxwdUbqIAiFvOAreWiF';
 
         // subscribe token to /topics/admins (no DB store)
         $resp = Http::withHeaders([
