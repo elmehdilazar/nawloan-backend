@@ -19,7 +19,7 @@ messaging.onBackgroundMessage((payload) => {
     data: payload.data || {}
   });
 
-  // Forward to open admin tabs so page can play sound
+  // forward to any open admin tabs (so page can play sound)
   self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
     clients.forEach(c => c.postMessage({ __fcm: true, payload }));
   });
