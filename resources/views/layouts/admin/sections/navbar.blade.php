@@ -213,11 +213,12 @@
 </nav>
 <audio id="notif-audio" src="/sounds/notify.mp3" preload="auto"></audio>
 <span id="notificationCount" class="badge badge-danger">0</span>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
   import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-messaging.js";
 
-  // Firebase config (yours)
+  // your Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyDxTycXHWx6hMnpx90fSo2Y8SOFGXomA-w",
     authDomain: "nawloan-eff12.firebaseapp.com",
@@ -229,13 +230,13 @@
     measurementId: "G-8GEL2Y9LVZ"
   };
 
-  // Public VAPID key (from Firebase Console → Cloud Messaging → Web Push certificates)
+  // Public VAPID key (Firebase Console → Cloud Messaging → Web Push certificates)
   const VAPID_KEY = "BKcLwEjrAedWHYKxK8yaxKIvOqGysObPboROGhiWEO8Kae1cBYooFWY7_Ghf_-wnO8tpmNkYc5_MaApffWQLmAw";
 
   const app = initializeApp(firebaseConfig);
   const audio = document.getElementById('notif-audio');
 
-  // Prime audio once to satisfy autoplay
+  // prime audio (autoplay policies)
   window.addEventListener('click', () => {
     try { audio.muted = false; audio.play().then(()=>audio.pause()); } catch {}
   }, { once: true });
@@ -250,55 +251,65 @@
 
   async function registerServiceWorker() {
     const supported = await isSupported().catch(() => false);
-    console.log('[FCM] isSupported:', supported);
     if (!('serviceWorker' in navigator) || !supported) return null;
-    const reg = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-    console.log('[FCM] SW registered:', reg.scope);
-    return reg;
+    return await navigator.serviceWorker.register('/firebase-messaging-sw.js');
   }
 
-  async function saveTokenToBackend(token) {
-    console.log('[FCM] Saving token…', token.slice(0,16)+'…');
-    const res = await fetch('/admin/fcm-token', {
-      method: 'POST',                  // we’ll accept POST in step 3
+  // === concept like Angular: get token + "subscribe" ===
+  async function subscribeTokenToAdmins(token) {
+    // no DB store; we just subscribe this token to /topics/admins
+    const res = await fetch('/admin/fcm-subscribe', {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
       },
       credentials: 'same-origin',
-      body: JSON.stringify({ token, platform: 'web' })
+      body: JSON.stringify({ token })
     });
-    if (!res.ok) {
-      console.error('[FCM] saveToken failed', res.status, await res.text());
-    } else {
-      console.log('[FCM] Token saved OK');
+    if (!res.ok) console.error('[FCM] topic subscribe failed', await res.text());
+  }
+
+  async function getAndSubscribe(reg, messaging) {
+    try {
+      const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: reg });
+      if (token) {
+        console.log('[FCM] token:', token.slice(0,16)+'…');
+        await subscribeTokenToAdmins(token);
+      } else {
+        console.warn('[FCM] no token; permission likely blocked');
+        toast('Please allow notifications in your browser');
+      }
+    } catch (e) {
+      console.error('[FCM] getToken error:', e);
+      toast('Failed to get push token');
     }
   }
 
   async function initFCM() {
     const reg = await registerServiceWorker();
-    if (!reg) return console.warn('[FCM] Not supported or SW failed');
+    if (!reg) return;
 
     const messaging = getMessaging(app);
 
     const permission = await Notification.requestPermission();
-    console.log('[FCM] permission:', permission);
     if (permission !== 'granted') {
-      toast('Please allow notifications in your browser');
+      toast('Please allow notifications');
       return;
     }
 
-    try {
-      const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: reg });
-      console.log('[FCM] getToken:', token ? token.slice(0,16)+'…' : token);
-      if (token) await saveTokenToBackend(token);
-      else toast('No push token (permission blocked?)');
-    } catch (e) {
-      console.error('[FCM] getToken error:', e);
-      toast('Failed to get push token. Check console.');
-    }
+    // initial token + subscribe (like requestPermission1() in Angular)
+    await getAndSubscribe(reg, messaging);
 
-    // Foreground messages
+    // token "refresh" equivalent:
+    // FCM v9+ has no onTokenRefresh; re-get periodically or on visibility
+    document.addEventListener('visibilitychange', async () => {
+      if (document.visibilityState === 'visible') {
+        await getAndSubscribe(reg, messaging);
+      }
+    });
+
+    // foreground messages (like angularFireMessaging.messages)
     onMessage(messaging, (payload) => {
       console.log('[FCM] onMessage', payload);
       const title = payload?.notification?.title || 'New notification';
@@ -309,11 +320,10 @@
       if (badge) badge.textContent = ((+badge.textContent || 0) + 1).toString();
     });
 
-    // Background→page (forwarded by SW)
+    // background → page (via SW)
     navigator.serviceWorker.addEventListener('message', (event) => {
       if (!event.data?.__fcm) return;
       const payload = event.data.payload;
-      console.log('[FCM] SW->page', payload);
       const title = payload?.notification?.title || 'New notification';
       const body  = payload?.notification?.body  || '';
       toast(`${title}: ${body}`);

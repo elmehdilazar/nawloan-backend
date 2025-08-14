@@ -21,6 +21,10 @@ use App\Http\Controllers\API\ChatController;
 use App\Http\Controllers\API\PolicyController;
 use App\Http\Controllers\API\CodeScretController;
 use App\Services\FCMService;
+use App\Http\Controllers\Admin\FcmTopicController;
+
+Route::post('/admin/fcm-subscribe', [FcmTopicController::class, 'subscribe'])
+    ->middleware(['web','auth']);
 
 /*
 |--------------------------------------------------------------------------
