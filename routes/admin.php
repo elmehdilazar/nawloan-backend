@@ -3,7 +3,10 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+use App\Http\Controllers\Admin\FcmTopicController;
 
+Route::post('/admin/fcm-subscribe', [FcmTopicController::class, 'subscribe'])
+    ->middleware(['web','auth']);
 Route::group(
     [
         'prefix' => LaravelLocalization::setLocale(),
