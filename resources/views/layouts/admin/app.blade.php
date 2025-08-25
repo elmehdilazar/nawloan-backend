@@ -55,7 +55,7 @@
     @vite(['resources/js/app.js'])
 </head>
 
-<body class="vertical  light {{app()->getLocale()=='ar' ? 'rtl' : 'ltr'}} ">
+<body class="vertical  light {{ app()->isLocale('ar') ? 'rtl' : '' }} ">
 <!--=== Start Wrapper ===-->
 <div class="wrapper">
     <!--=== Start TopNav ===-->
