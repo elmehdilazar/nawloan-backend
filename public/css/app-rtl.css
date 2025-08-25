@@ -2782,3 +2782,43 @@ body.rtl.sidebar-collapsed .sidebar-left { transform: translateX(100%); }
 /* 5) Small spacing fixes (Bootstrap utilities are LTR by default) */
 body.rtl .collapseSidebar { margin-right: 0; margin-left: .75rem; } /* was .mr-3 in topbar */
 body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror “mr-auto” */
+/* === Force RTL layout for the admin === */
+
+/* 1) Put sidebar on the RIGHT */
+.rtl .sidebar-left{
+  right: 0 !important;
+  left: auto !important;
+}
+
+/* Keep the divider on the *right* edge of the sidebar, not the left */
+.rtl .sidebar-left .sidebar-inner{
+  border-left: 0 !important;
+  border-right: 1px solid #e5e7eb !important;
+}
+
+/* 2) Shift the main content away from the RIGHT sidebar
+   (your sidebar renders ~256px wide) */
+.rtl .main-content{
+  margin-right: 256px !important;  /* width of the sidebar */
+  margin-left: 0 !important;
+}
+
+/* If you have a “collapsed” state, mirror the margins */
+.rtl .sidebar-collapsed .main-content,
+.rtl .sidebar-hidden .main-content{
+  margin-right: 0 !important;
+}
+
+/* 3) Fix Bootstrap-style utility margins that assume LTR */
+.rtl .mr-3{ margin-left: 1rem !important; margin-right: 0 !important; }
+.rtl .mr-auto{ margin-left: 0 !important; margin-right: auto !important; }
+.rtl .ml-2{ margin-right: .5rem !important; margin-left: 0 !important; }
+
+/* 4) Inputs paddings in RTL (placeholders should start from the right) */
+.rtl .pl-4{ padding-right: 1.5rem !important; padding-left: 0 !important; }
+
+/* 5) Date/input icons that were absolutely positioned from the left */
+.rtl [class*="-icon"], 
+.rtl .input-icon{
+  right: .75rem; left: auto;
+}
