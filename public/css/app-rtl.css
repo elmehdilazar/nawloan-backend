@@ -2822,3 +2822,15 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
 .rtl .input-icon{
   right: .75rem; left: auto;
 }
+.rtl .sidebar-left {
+    right: 0;
+    left: unset;
+}
+.rtl nav.topnav.navbar.navbar-light {
+    margin-left: unset;
+}
+
+.vertical.collapsed.rtl .main-content, .vertical.collapsed.rtl .topnav, .vertical.narrow .main-content, .vertical.narrow .topnav {
+    margin-left: 5rem;
+    width: 95%;
+}
