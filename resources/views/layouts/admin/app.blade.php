@@ -16,6 +16,7 @@
     <title>
         @if(app()->getLocale()=='ar')
             {{setting('app_name_ar')!='' ? setting('app_name_ar') : __('site.app_name')}}
+              <link rel="stylesheet" href="{{asset('assets/css/app-rtl.css')}}">
         @else
             {{setting('app_name_en')!='' ? setting('app_name_en') : __('site.app_name')}}@endif @yield('title')
     </title>
