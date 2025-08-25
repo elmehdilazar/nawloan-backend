@@ -1,6 +1,6 @@
 <!doctype html>
-{{--<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"--}}
-{{--      dir="{{ LaravelLocalization::getCurrentLocaleDirection() }}">--}}
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
+      dir="{{ LaravelLocalization::getCurrentLocaleDirection() }}">
 
 <head>
     <meta charset="utf-8">
