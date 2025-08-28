@@ -88,7 +88,7 @@ Route::group(
     foreach (['/home', '/register/service-seeker'] as $route) {
         Route::get($route, function () {
 //            return redirect()->to('index.html');
-        });
+        })->name('home');
     }
 
 
