@@ -16,14 +16,17 @@
     <title>
         @if(app()->getLocale()=='ar')
             {{setting('app_name_ar')!='' ? setting('app_name_ar') : __('site.app_name')}}
-              <link rel="stylesheet" href="{{asset('assets/css/app-rtl.css')}}">
+            
         @else
             {{setting('app_name_en')!='' ? setting('app_name_en') : __('site.app_name')}}@endif @yield('title')
     </title>
     <!-- Favicon icon -->
     <meta name="theme-color" content="#768dea">
     <link rel="shortcut icon" href="{{setting('favoico') !='' ? asset(setting('favoico')) : asset('assets/images/favicon.png')}}">
-
+  @if(app()->getLocale()=='ar')
+           
+              <link rel="stylesheet" href="{{asset('assets/css/app-rtl.css')}}">
+       @endif
     <!-- Simple bar CSS -->
     <link rel="stylesheet" href="{{asset('assets/tiny/css/simplebar.css')}}">
     <!-- FontAwesome CSS -->
