@@ -14,14 +14,14 @@ Route::group(
     ],
     function () {
         Auth::routes();
-        Route::get('/admin/policies/index', [\App\Http\Controllers\Admin\PolicyController::class, 'index'])->name('index');
+        Route::get('/admin/policies/index', [\App\Http\Controllers\Admin\PolicyController::class, 'index']);
         Route::prefix('admin')->name('admin.')
             ->middleware(['auth', 'is_admin'])->group(
                 function () {
                     /*add by mohammed*/
                     Route::post('/logout', [\App\Http\Controllers\Admin\AdminController::class, 'logout'])->name('logout');
 
-                    Route::get('/', [\App\Http\Controllers\Admin\AdminController::class, 'index']);
+                    Route::get('/', [\App\Http\Controllers\Admin\AdminController::class, 'index'])->name('index');
                     Route::get('/search', [\App\Http\Controllers\Admin\AdminController::class, 'search'])->name('search');
                     Route::get('/clear_views', [\App\Http\Controllers\Admin\AdminController::class, 'clear_views'])->name('clear.views');
                     Route::get('/clear_cache', [\App\Http\Controllers\Admin\AdminController::class, 'clear_cache'])->name('clear.cache');
