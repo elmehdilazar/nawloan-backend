@@ -1,6 +1,6 @@
 <!doctype html>
-{{--<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"--}}
-{{--      dir="{{ LaravelLocalization::getCurrentLocaleDirection() }}">--}}
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
+      dir="{{ LaravelLocalization::getCurrentLocaleDirection() }}">
 
 <head>
     <meta charset="utf-8">
@@ -16,6 +16,7 @@
     <title>
         @if(app()->getLocale()=='ar')
             {{setting('app_name_ar')!='' ? setting('app_name_ar') : __('site.app_name')}}
+              <link rel="stylesheet" href="{{asset('assets/css/app-rtl.css')}}">
         @else
             {{setting('app_name_en')!='' ? setting('app_name_en') : __('site.app_name')}}@endif @yield('title')
     </title>
@@ -55,7 +56,7 @@
     @vite(['resources/js/app.js'])
 </head>
 
-<body class="vertical  light {{app()->getLocale()=='ar' ? 'rtl' : 'ltr'}} ">
+<body class="vertical  light {{ app()->isLocale('ar') ? 'rtl' : '' }} ">
 <!--=== Start Wrapper ===-->
 <div class="wrapper">
     <!--=== Start TopNav ===-->

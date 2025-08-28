@@ -23,4 +23,16 @@ class FCMService
 
 
     }
+    public static function subscribeToTopic($token, $topic)
+{
+    $serverKey = 'AAAA6Dm3XnU:APA91bHpRq8D38H3n0qq5UEf2UYS2l_aGTL6IoE8QUrS-V_kx1puWHPy_n3yq9xjf6uQ6l1il8raHnclkDE11JdevvaqZOYopRuTW9HRuLY6eOBGyZ4VUxassGxwdUbqIAiFvOAreWiF'; // put your server key in config/services.php
+
+    $response = Http::withHeaders([
+        'Authorization' => 'key=' . $serverKey,
+        'Content-Type' => 'application/json',
+    ])->post("https://iid.googleapis.com/iid/v1/{$token}/rel/topics/{$topic}");
+
+    return $response->json();
+}
+
 }
