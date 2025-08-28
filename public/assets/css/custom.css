@@ -5401,8 +5401,12 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
     margin-left: 5rem;
     width: 95%;
 }
-a.navbar-brand.flex-fill.text-center {
-    background: #ccc;
+.vertical.rtl .topnav {
+
+    top: 0;
+    left: 0;
+    right: unset;
+
 }
 /*
 -----------------------------------------------------------------------
