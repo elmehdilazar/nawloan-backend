@@ -5431,6 +5431,12 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
     text-align: right;
     padding: 20px;
 }
+.rtl .intl-tel-input {
+    display: flex
+;
+    flex-direction: row-reverse;
+    width: 100%;
+}
 /*
 -----------------------------------------------------------------------
     !End Modals CSS
