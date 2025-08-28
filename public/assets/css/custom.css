@@ -5408,6 +5408,25 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
     right: unset;
 
 }
+.rtl li.nav-item.w-100 {
+    text-align: right !important;
+}
+.rtl .sidebar-left .navbar .sidebar-inner {
+
+    text-align: right !important;
+
+}
+.rtl .sidebar-left .navbar .sidebar-inner p {
+    text-align: right !important;
+    margin-bottom: 15px;
+    padding-left: unset;
+    padding-right: 30px;
+    text-transform: uppercase;
+}
+.rtl .topnav .nav .nav-link#langMenuLink i {
+    margin-left: 10px;
+    margin-right: unset;
+}
 /*
 -----------------------------------------------------------------------
     !End Modals CSS
