@@ -5427,6 +5427,10 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
     margin-left: 10px;
     margin-right: unset;
 }
+.rtl .status-box .card-body {
+    text-align: right;
+    padding: 20px;
+}
 /*
 -----------------------------------------------------------------------
     !End Modals CSS
