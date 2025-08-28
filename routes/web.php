@@ -85,11 +85,11 @@ Route::group(
     Route::get('/l', [App\Http\Controllers\HomeController::class, 'index']);
 
 
-    foreach (['/home', '/register/service-seeker'] as $route) {
+    /*foreach (['/home', '/register/service-seeker'] as $route) {
         Route::get($route, function () {
 //            return redirect()->to('index.html');
         })->name('home');
-    }
+    }*/
 
 
     Route::get('/l', [App\Http\Controllers\HomeController::class, 'index']);
