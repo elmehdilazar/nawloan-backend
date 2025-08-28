@@ -8,13 +8,13 @@ use App\Http\Controllers\Admin\FcmTopicController;
 Route::post('/admin/fcm-subscribe', [FcmTopicController::class, 'subscribe'])
     ->middleware(['web','auth']);
 Route::group(
-    [
+    [ 
         'prefix' => LaravelLocalization::setLocale(),
         'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath']
     ],
     function () {
         Auth::routes();
-        Route::get('/admin/policies/index', [\App\Http\Controllers\Admin\PolicyController::class, 'index'])->name('index');
+        Route::get('/admin/policies/index', [\App\Http\Controllers\Admin\PolicyController::class, 'index']);
         Route::prefix('admin')->name('admin.')
             ->middleware(['auth', 'is_admin'])->group(
                 function () {
