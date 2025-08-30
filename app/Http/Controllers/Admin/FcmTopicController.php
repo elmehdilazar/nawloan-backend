@@ -5,31 +5,17 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
-
+use Kreait\Firebase\Contract\Messaging; 
 class FcmTopicController extends Controller
 {
+   
+    public function __construct(private Messaging $messaging) {}
+
     public function subscribe(Request $r)
     {
         $data = $r->validate(['token' => 'required|string']);
-        $serverKey = 'AAAA6Dm3XnU:APA91bHpRq8D38H3n0qq5UEf2UYS2l_aGTL6IoE8QUrS-V_kx1puWHPy_n3yq9xjf6uQ6l1il8raHnclkDE11JdevvaqZOYopRuTW9HRuLY6eOBGyZ4VUxassGxwdUbqIAiFvOAreWiF';
-
-        // subscribe token to /topics/admins (no DB store)
-        $resp = Http::withHeaders([
-            'Authorization' => 'key='.$serverKey,
-            'Content-Type'  => 'application/json',
-        ])->post('https://iid.googleapis.com/iid/v1:batchAdd', [
-            'to' => '/topics/admins',
-            'registration_tokens' => [$data['token']],
-        ]);
-
-        if (!$resp->ok()) {
-            return response()->json([
-                'ok' => false,
-                'status' => $resp->status(),
-                'body' => $resp->body(),
-            ], 500);
-        }
-
+        // HTTP v1 under the hood, using your service account:
+        $this->messaging->subscribeToTopic('admins', $data['token']); 
         return response()->json(['ok' => true]);
     }
 }

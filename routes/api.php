@@ -23,8 +23,10 @@ use App\Http\Controllers\API\CodeScretController;
 use App\Services\FCMService;
 use App\Http\Controllers\Admin\FcmTopicController;
 
+// routes/api.php (or web.php if you prefer)
 Route::post('/admin/fcm-subscribe', [FcmTopicController::class, 'subscribe'])
-    ->middleware(['web','auth']);
+    ->middleware('auth:sanctum'); // or your admin guard
+
 
 /*
 |--------------------------------------------------------------------------
