@@ -5151,7 +5151,22 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
     margin-left: 5rem;
     width: 95%;
 }
-
+.rtl tbody tr td .user-col {
+    display: flex
+;
+    align-items: center;
+    justify-content: space-evenly;
+}
+.rtl .daterangepicker .ranges li {
+    font-size: 12px;
+    padding: 8px 12px;
+    cursor: pointer;
+    text-align: right;
+}
+.rtl .topnav .nav .dropdown-toggle.user-menu+.dropdown-menu .dropdown-item:not(:last-child) {
+    border-bottom: 0.6px solid #CACED5;
+    text-align: right;
+}
 /*
 -----------------------------------------------------------------------
     !End Modals CSS
