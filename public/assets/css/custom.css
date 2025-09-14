@@ -5485,6 +5485,35 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
     align-items: center;
 
 }
+.rtl .select2-container--bootstrap4 .select2-selection--single .select2-selection__arrow {
+    transform: translateY(-50%);
+    display: flex
+;
+    align-items: center;
+    justify-content: end;
+    left: 18px;
+    width: auto;
+}
+.rtl .input-group .input-group input {
+    border-radius: 0px 16px 16px 0px !important;
+    border-left: 0;
+}
+.rtl .input-group .input-group-prepend .input-group-text {
+    background-color: transparent;
+    border: 1px solid #D8DAD9;
+    border-right: 0;
+    border-radius: 16px 0px 0px 16px;
+    display: inline-flex
+;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #777575;
+    transition: all .5s;
+    font-size: 14px;
+    font-family: 'poppins-500';
+    padding-right: 18px;
+}
 /*
 -----------------------------------------------------------------------
     !End Modals CSS
