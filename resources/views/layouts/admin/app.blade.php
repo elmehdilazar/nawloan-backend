@@ -24,7 +24,7 @@
     <meta name="theme-color" content="#768dea">
     <link rel="shortcut icon" href="{{setting('favoico') !='' ? asset(setting('favoico')) : asset('assets/images/favicon.png')}}">
   @if(app()->getLocale()=='ar')
-           
+            <link rel="stylesheet" href="{{asset('assets/css/app-rtl.css')}}">
               <link rel="stylesheet" href="{{asset('assets/css/app-rtl.css')}}">
        @endif
     <!-- Simple bar CSS -->
