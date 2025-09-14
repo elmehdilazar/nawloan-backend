@@ -5463,6 +5463,28 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
     pointer-events: none;
     z-index: 3;
 }
+.rtl .intl-tel-input .country-list {
+    position: absolute;
+    z-index: 2;
+    list-style: none;
+    left: 0px;
+    text-align: right;
+    padding: 0;
+    margin: 0 0 0 0px;
+    box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+    background-color: white;
+    border: 1px solid #CCC;
+    white-space: nowrap;
+    max-height: 90px;
+    overflow-y: scroll;
+}
+.rtl li.country.preferred.active.highlight {
+    display: flex
+;
+   
+    align-items: center;
+
+}
 /*
 -----------------------------------------------------------------------
     !End Modals CSS
