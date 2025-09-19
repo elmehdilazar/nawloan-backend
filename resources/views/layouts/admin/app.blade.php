@@ -204,8 +204,9 @@
         $(".alert").alert('close');
     }, 300000);
 </script>
-<script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
+
 <script>
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('https://nawloan.net/public/firebase-messaging-sw.js')
