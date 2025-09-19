@@ -224,6 +224,7 @@
  messagingSenderId: "997400731253",
   appId: "1:997400731253:web:d0ae522e19b8fce924a23c",
     });
+          await navigator.serviceWorker.register('/firebase-messaging-sw.js');
     const messaging = firebase.messaging();
      messaging.onMessage((payload) => {  
       console.log('Foreground message:', payload);
