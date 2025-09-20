@@ -1,28 +1,30 @@
-// Firebase v8 scripts
-importScripts("https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js");
-importScripts("https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js");
+/* global importScripts, firebase */
+importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js');
 
-// Initialize Firebase
-firebase.initializeApp({
-  apiKey: "AIzaSyDxTycXHWx6hMnpx90fSo2Y8SOFGXomA-w",
-  authDomain: "nawloan-eff12.firebaseapp.com",
-  projectId: "nawloan-eff12",
-  storageBucket: "nawloan-eff12.appspot.com",
-  messagingSenderId: "997400731253",
-  appId: "1:997400731253:web:d0ae522e19b8fce924a23c",
-  measurementId: "G-8GEL2Y9LVZ"
-});
+// IMPORTANT: these must match your web config:
+const firebaseConfig = {
+apiKey: "AIzaSyBKqTK4HMT4oH-LzuOSjCtRaAGqAPa61EI",
+  authDomain: "fcm-project-99b61.firebaseapp.com",
+  projectId: "fcm-project-99b61",
+ appId: "1:816565644651:web:141613f5d9e6d9dacf302e",
+    messagingSenderId: "816565644651",
+};
 
-// Get Firebase Messaging instance
+firebase.initializeApp(firebaseConfig);
+
 const messaging = firebase.messaging();
 
-// 🔔 Background handler → show notifications
-messaging.setBackgroundMessageHandler(function(payload) {
-  console.log("[FCM SW] Background message:", payload);
-
-  const { title, body, icon } = payload.notification || {};
-  return self.registration.showNotification(title || "New Notification", {
-    body: body || "",
-    icon: icon || "/favicon.ico"
-  });
+// Background messages (when page is closed or hidden)
+messaging.onBackgroundMessage((payload) => {
+  // Customize notification
+  const title = (payload.notification && payload.notification.title) || 'New message';
+  const body  = (payload.notification && payload.notification.body)  || '';
+  const options = {
+    body,
+    data: payload.data || {},
+  };
+  var audio = new Audio('audio_file.wav');
+audio.play();
+  self.registration.showNotification(title, options);
 });
