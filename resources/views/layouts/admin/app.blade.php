@@ -246,6 +246,8 @@
     console.log('Foreground message:', payload);
     const audio = new Audio('/sounds/notify.mp3'); // ensure file exists
     audio.play().catch(()=>{/* usually blocked without user gesture */});
+  }).catch(()=>{
+    console.log('onMessage failed');
   });
 </script>
 
