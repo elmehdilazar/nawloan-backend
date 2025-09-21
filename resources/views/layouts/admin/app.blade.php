@@ -235,7 +235,7 @@
     if (perm !== 'granted') return;
 
     // 4) Token
-    const vapid = 'PUT_YOUR_PUBLIC_VAPID_HERE';
+    const vapid = 'BKcLwEjrAedWHYKxK8yaxKIvOqGysObPboROGhiWEO8Kae1cBYooFWY7_Ghf_-wnO8tpmNkYc5_MaApffWQLmAw';
     const token = await messaging.getToken({ vapidKey: vapid, serviceWorkerRegistration: reg });
     console.log('[FCM] token:', token);
 
