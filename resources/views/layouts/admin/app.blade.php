@@ -212,7 +212,7 @@
     if (!('serviceWorker' in navigator)) throw new Error('No SW support');
 
     // 1) Register SW
-    const reg = await navigator.serviceWorker.register('public/firebase-messaging-sw.js');
+    const reg = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
     console.log('[SW] registered:', reg.scope);
 
     // 2) Init Firebase
