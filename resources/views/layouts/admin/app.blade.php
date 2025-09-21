@@ -228,7 +228,8 @@
     });
          
     const messaging = firebase.messaging();
-
+  var audio = new Audio('audio_file.wav');
+audio.play();
      messaging.onMessage((payload) => {  
       console.log('Foreground message:', payload);
 
