@@ -242,7 +242,7 @@
     // 5) Foreground listener
     messaging.onMessage((payload) => {
       console.log('[FCM] Foreground message:', payload);
-      new Audio('/sounds/notify.mp3').play().catch(()=>{});
+   
     });
   } catch (e) {
     console.error('[FCM] setup error:', e);
