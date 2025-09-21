@@ -204,37 +204,49 @@
         $(".alert").alert('close');
     }, 300000);
 </script>
-  {{-- <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging-compat.js"></script> --}}
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
+ <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
 <script>
-    if ('serviceWorker' in navigator) {
-   
-        navigator.serviceWorker.register('https://nawloan.net/public/firebase-messaging-sw.js')
-            .then(function(registration) {
-                // alert('Registration successful, scope is:', registration.scope);
-                console.log('Registration successful, scope is:', registration.scope);
-            }).catch(function(err) {
-            console.log('Service worker registration failed, error:', err);
-        });
-    }
-    firebase.initializeApp({
+  // 1) Register SW (same-origin, root scope)
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/firebase-messaging-sw.js')
+      .then(reg => console.log('SW registered:', reg.scope))
+      .catch(err => console.error('SW register failed:', err));
+  }
+
+  // 2) Init Firebase
+  firebase.initializeApp({
     apiKey: "AIzaSyDxTycXHWx6hMnpx90fSo2Y8SOFGXomA-w",
-  authDomain: "nawloan-eff12.firebaseapp.com",
-     projectId: "nawloan-eff12",
-  messagingSenderId: "997400731253",
- appId: "1:997400731253:web:d0ae522e19b8fce924a23c",
-    });
-         
-    const messaging = firebase.messaging();
- 
-     messaging.onMessage((payload) => {  
-      console.log('Foreground message:', payload);
- var audio = new Audio('audio_file.wav');
-audio.play();
-    
-    });
+    authDomain: "nawloan-eff12.firebaseapp.com",
+    projectId: "nawloan-eff12",
+    messagingSenderId: "997400731253",
+    appId: "1:997400731253:web:d0ae522e19b8fce924a23c",
+  });
+
+  const messaging = firebase.messaging();
+
+  // 3) Ask permission + get token (required!)
+  async function getFcmToken() {
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const token = await messaging.getToken({
+        vapidKey:"BKcLwEjrAedWHYKxK8yaxKIvOqGysObPboROGhiWEO8Kae1cBYooFWY7_Ghf_-wnO8tpmNkYc5_MaApffWQLmAw",
+        serviceWorkerRegistration: reg,
+      });
+      console.log('FCM token:', token);
+      // TODO: POST token to your backend /api/device-tokens
+    } catch (e) {
+      console.error('FCM getToken failed:', e);
+    }
+  }
+  getFcmToken();
+
+  // 4) Foreground messages + sound (will only play if audio is unlocked)
+  messaging.onMessage((payload) => {
+    console.log('Foreground message:', payload);
+    const audio = new Audio('/sounds/notify.mp3'); // ensure file exists
+    audio.play().catch(()=>{/* usually blocked without user gesture */});
+  });
 </script>
 
 
