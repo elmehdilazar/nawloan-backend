@@ -204,59 +204,51 @@
         $(".alert").alert('close');
     }, 300000);
 </script>
- <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
 <script>
-  // 1) Register SW (same-origin, root scope)
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/firebase-messaging-sw.js')
-      .then(reg => console.log('SW registered:', reg.scope))
-      .catch(err => console.error('SW register failed:', err));
-  }
+(async () => {
+  try {
+    if (!('serviceWorker' in navigator)) throw new Error('No SW support');
 
-  // 2) Init Firebase
-  firebase.initializeApp({
-    apiKey: "AIzaSyDxTycXHWx6hMnpx90fSo2Y8SOFGXomA-w",
-    authDomain: "nawloan-eff12.firebaseapp.com",
-    projectId: "nawloan-eff12",
-    messagingSenderId: "997400731253",
-    appId: "1:997400731253:web:d0ae522e19b8fce924a23c",
-  });
+    // 1) Register SW
+    const reg = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+    console.log('[SW] registered:', reg.scope);
 
-     const messaging = firebase.messaging();
+    // 2) Init Firebase
+    firebase.initializeApp({
+      apiKey: "AIzaSyDxTycXHWx6hMnpx90fSo2Y8SOFGXomA-w",
+      authDomain: "nawloan-eff12.firebaseapp.com",
+      projectId: "nawloan-eff12",
+      messagingSenderId: "997400731253",
+      appId: "1:997400731253:web:d0ae522e19b8fce924a23c",
+    });
+
+    const messaging = firebase.messaging();
     if (!firebase.messaging.isSupported()) {
       console.warn('Messaging not supported in this browser'); return;
     }
- // 3) Permission
+
+    // 3) Permission
     const perm = await Notification.requestPermission();
     console.log('[FCM] permission:', perm);
     if (perm !== 'granted') return;
-  // 3) Ask permission + get token (required!)
-  async function getFcmToken() {
-    try {
-      const reg = await navigator.serviceWorker.ready;
-      const token = await messaging.getToken({
-        vapidKey:"BKcLwEjrAedWHYKxK8yaxKIvOqGysObPboROGhiWEO8Kae1cBYooFWY7_Ghf_-wnO8tpmNkYc5_MaApffWQLmAw",
-        serviceWorkerRegistration: reg,
-      });
-      console.log('FCM token:', token);
-      // TODO: POST token to your backend /api/device-tokens
-    } catch (e) {
-      console.error('FCM getToken failed:', e);
-    }
-  }
-  getFcmToken();
 
- try { // 4) Foreground messages + sound (will only play if audio is unlocked)
- messaging.onMessage((payload) => {
+    // 4) Token
+    const vapid = 'PUT_YOUR_PUBLIC_VAPID_HERE';
+    const token = await messaging.getToken({ vapidKey: vapid, serviceWorkerRegistration: reg });
+    console.log('[FCM] token:', token);
+
+    // 5) Foreground listener
+    messaging.onMessage((payload) => {
       console.log('[FCM] Foreground message:', payload);
       new Audio('/sounds/notify.mp3').play().catch(()=>{});
     });
   } catch (e) {
     console.error('[FCM] setup error:', e);
   }
+})();
 </script>
-
 
 @yield('scripts')
 </body>
