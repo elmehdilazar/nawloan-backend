@@ -231,7 +231,7 @@
 
      messaging.onMessage((payload) => {  
       console.log('Foreground message:', payload);
-      alert(payload.notification.body);
+
     
     });
 </script>
