@@ -4,11 +4,12 @@ importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-comp
 
 // IMPORTANT: these must match your web config:
 const firebaseConfig = {
- apiKey: "AIzaSyDxTycXHWx6hMnpx90fSo2Y8SOFGXomA-w",
-  authDomain: "nawloan-eff12.firebaseapp.com",
- projectId: "nawloan-eff12",
-appId: "1:997400731253:web:d0ae522e19b8fce924a23c",
-     messagingSenderId: "997400731253",
+    apiKey: "AIzaSyDxTycXHWx6hMnpx90fSo2Y8SOFGXomA-w",
+    authDomain: "nawloan-eff12.firebaseapp.com",
+    projectId: "nawloan-eff12",
+    storageBucket: "nawloan-eff12.appspot.com",
+    messagingSenderId: "997400731253",
+    appId: "1:997400731253:web:d0ae522e19b8fce924a23c"
 };
 
 firebase.initializeApp(firebaseConfig);
