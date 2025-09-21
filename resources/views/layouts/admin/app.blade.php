@@ -223,8 +223,14 @@
     appId: "1:997400731253:web:d0ae522e19b8fce924a23c",
   });
 
-  const messaging = firebase.messaging();
-
+     const messaging = firebase.messaging();
+    if (!firebase.messaging.isSupported()) {
+      console.warn('Messaging not supported in this browser'); return;
+    }
+ // 3) Permission
+    const perm = await Notification.requestPermission();
+    console.log('[FCM] permission:', perm);
+    if (perm !== 'granted') return;
   // 3) Ask permission + get token (required!)
   async function getFcmToken() {
     try {
@@ -241,14 +247,14 @@
   }
   getFcmToken();
 
-  // 4) Foreground messages + sound (will only play if audio is unlocked)
-  messaging.onMessage((payload) => {
-    console.log('Foreground message:', payload);
-    const audio = new Audio('/sounds/notify.mp3'); // ensure file exists
-    audio.play().catch(()=>{/* usually blocked without user gesture */});
-  }).catch(()=>{
-    console.log('onMessage failed');
-  });
+ try { // 4) Foreground messages + sound (will only play if audio is unlocked)
+ messaging.onMessage((payload) => {
+      console.log('[FCM] Foreground message:', payload);
+      new Audio('/sounds/notify.mp3').play().catch(()=>{});
+    });
+  } catch (e) {
+    console.error('[FCM] setup error:', e);
+  }
 </script>
 
 
