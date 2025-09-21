@@ -347,7 +347,7 @@ Route::get('/processQRCode', [App\Http\Controllers\Clients\QRController::class,'
 use App\Notifications\FcmPushNotification;
 use Illuminate\Support\Facades\Notification;
 Route::get('/test-fcm', function () {
-    $testToken = 'fr-niwgNM1K8_xu3-BxBhC:APA91bEICDj2hMv5qGVKGQd6jVHnGJK7VTMPRkHzFRB9i6uENs58K0PtOG_I2EvvMWvU0k2BPydrRL-9uIRitDBr6ohJgZLMzPc1_bIGl8ocvRYuE026SKk';
+    $testToken = ' d36nXc5LFWmgDY9JzDEG0r:APA91bF7ksXBlNaoOIKkvCniqm4o7e8r0vZkVIuH-Z79otD1vIaBhtkcyey__zULrSxUCob9tmkBmvqu1fHOiH6OOt2KTla8uS5vENzKycaIAvMgX3EgGa0';
 
     $notification = [
         'title' => 'Test Notification',
