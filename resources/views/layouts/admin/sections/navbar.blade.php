@@ -211,7 +211,7 @@
         </li>
     </ul>
 </nav>
-<audio id="notif-audio" src="/sounds/notify.mp3" preload="auto"></audio>
+
 <span id="notificationCount" class="badge badge-danger">0</span>
 
 
