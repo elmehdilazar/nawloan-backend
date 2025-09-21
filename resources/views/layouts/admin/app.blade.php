@@ -210,7 +210,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
 <script>
     if ('serviceWorker' in navigator) {
-        alert('good');
+   
         navigator.serviceWorker.register('https://nawloan.net/public/firebase-messaging-sw.js')
             .then(function(registration) {
                 // alert('Registration successful, scope is:', registration.scope);
@@ -218,9 +218,6 @@
             }).catch(function(err) {
             console.log('Service worker registration failed, error:', err);
         });
-    }else{
-               alert('not good');
- 
     }
     firebase.initializeApp({
     apiKey: "AIzaSyDxTycXHWx6hMnpx90fSo2Y8SOFGXomA-w",
@@ -231,14 +228,11 @@
     });
          
     const messaging = firebase.messaging();
-    console.log(messaging);
+
      messaging.onMessage((payload) => {  
       console.log('Foreground message:', payload);
       alert(payload.notification.body);
-      
-
-      writeStatus('Foreground push received.', true);
-      // Optionally show a toast or update UI
+    
     });
 </script>
 
