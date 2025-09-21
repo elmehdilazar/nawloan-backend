@@ -14,9 +14,10 @@
             @endif</a>
     </div>
 </div>
-  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging-compat.js"></script>
-
+  {{-- <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging-compat.js"></script> --}}
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
 <script>
     if ('serviceWorker' in navigator) {
         alert('good');
@@ -40,6 +41,7 @@
     });
           await navigator.serviceWorker.register('/firebase-messaging-sw.js');
     const messaging = firebase.messaging();
+    console.log(messaging);
      messaging.onMessage((payload) => {  
       console.log('Foreground message:', payload);
       alert(payload.notification.body);
