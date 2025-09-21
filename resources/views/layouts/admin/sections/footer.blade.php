@@ -19,6 +19,7 @@
 
 <script>
     if ('serviceWorker' in navigator) {
+        alert('good');
         navigator.serviceWorker.register('https://nawloan.net/public/firebase-messaging-sw.js')
             .then(function(registration) {
                 // alert('Registration successful, scope is:', registration.scope);
@@ -26,6 +27,9 @@
             }).catch(function(err) {
             console.log('Service worker registration failed, error:', err);
         });
+    }else{
+               alert('not good');
+ 
     }
     firebase.initializeApp({
     apiKey: "AIzaSyDxTycXHWx6hMnpx90fSo2Y8SOFGXomA-w",
