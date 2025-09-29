@@ -75,6 +75,8 @@
         </div>
     </main>
     <!--=== End Main ===-->
+    <div id="fcmPing" style="position:fixed;right:12px;bottom:12px;background:#16a34a;color:#fff;padding:8px 12px;border-radius:8px;display:none;z-index:9999"></div>
+
 </div>
 {{--@include('layouts.admin.sections.footer') --}}
 
@@ -206,7 +208,7 @@
 </script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
-<script>
+ <script>
 (async () => {
   try {
     if (!('serviceWorker' in navigator)) throw new Error('No SW support');
@@ -250,7 +252,7 @@
     console.error('[FCM] setup error:', e);
   }
 })();
-</script>
+</script> 
 
 @yield('scripts')
 </body>
