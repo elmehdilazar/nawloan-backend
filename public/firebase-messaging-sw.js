@@ -27,5 +27,6 @@ messaging.onBackgroundMessage((payload) => {
   };
   var audio = new Audio('audio_file.wav');
 audio.play();
+alert("good");
   self.registration.showNotification(title, options);
 });
