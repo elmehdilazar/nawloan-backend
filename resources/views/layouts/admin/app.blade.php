@@ -239,9 +239,9 @@
     if (perm !== 'granted') return;
 
     // 4) Token
-    const vapid = 'BKcLwEjrAedWHYKxK8yaxKIvOqGysObPboROGhiWEO8Kae1cBYooFWY7_Ghf_-wnO8tpmNkYc5_MaApffWQLmAw';
-    const token = await messaging.getToken({ vapidKey: vapid, serviceWorkerRegistration: reg });
-    console.log('[FCM] token:', token);
+    // const vapid = 'BKcLwEjrAedWHYKxK8yaxKIvOqGysObPboROGhiWEO8Kae1cBYooFWY7_Ghf_-wnO8tpmNkYc5_MaApffWQLmAw';
+    // const token = await messaging.getToken({ vapidKey: vapid, serviceWorkerRegistration: reg });
+    // console.log('[FCM] token:', token);
 
     // 5) Foreground listener
     messaging.onMessage((payload) => {
