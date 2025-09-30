@@ -227,6 +227,7 @@
     });
 
     const messaging = firebase.messaging();
+    console.log(messaging);
     if (!firebase.messaging.isSupported()) {
       console.warn('Messaging not supported in this browser'); 
     }else{
@@ -248,6 +249,7 @@
       console.log('[FCM] Foreground message:', payload);
    
     });
+     console.log(messaging);
   } catch (e) {
     console.error('[FCM] setup error:', e);
   }
