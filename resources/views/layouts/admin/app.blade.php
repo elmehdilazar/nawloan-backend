@@ -206,8 +206,8 @@
         $(".alert").alert('close');
     }, 300000);
 </script>
-<script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
  <script>
 (async () => {
   try {
@@ -220,13 +220,10 @@
     // 2) Init Firebase
     firebase.initializeApp({
       apiKey: "AIzaSyDxTycXHWx6hMnpx90fSo2Y8SOFGXomA-w",
-  authDomain: "nawloan-eff12.firebaseapp.com",
-  databaseURL: "https://nawloan-eff12-default-rtdb.firebaseio.com",
-  projectId: "nawloan-eff12",
-  storageBucket: "nawloan-eff12.firebasestorage.app",
-  messagingSenderId: "997400731253",
-  appId: "1:997400731253:web:d0ae522e19b8fce924a23c",
-  measurementId: "G-8GEL2Y9LVZ"
+      authDomain: "nawloan-eff12.firebaseapp.com",
+      projectId: "nawloan-eff12",
+      messagingSenderId: "997400731253",
+      appId: "1:997400731253:web:d0ae522e19b8fce924a23c",
     });
 
     const messaging = firebase.messaging();
