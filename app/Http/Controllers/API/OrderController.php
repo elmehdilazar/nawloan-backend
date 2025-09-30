@@ -957,6 +957,7 @@ if ($driverData) {
          Notification::send($user_sekker, new LocalNotification($data));
     }
     foreach ($users as $user) {
+          Notification::send($user, new FcmPushNotification($title, $message, [$user->fcm_token]));
         Notification::send($user, new LocalNotification($data));
     }
 
