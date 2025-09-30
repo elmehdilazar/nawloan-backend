@@ -15,7 +15,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const messaging = firebase.messaging();
-
+console.log('messaging .js', messaging);
 // Background messages (when page is closed or hidden)
 messaging.onBackgroundMessage((payload) => {
   // Customize notification
@@ -27,6 +27,6 @@ messaging.onBackgroundMessage((payload) => {
   };
   var audio = new Audio('audio_file.wav');
 audio.play();
-alert("good");
+
   self.registration.showNotification(title, options);
 });
