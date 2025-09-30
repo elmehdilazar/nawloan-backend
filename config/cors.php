@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => ['*',"https://nawloan.net:6001"],
 
     'allowed_origins_patterns' => [],
 
