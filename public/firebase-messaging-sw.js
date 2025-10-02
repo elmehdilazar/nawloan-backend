@@ -16,7 +16,7 @@ const swMessaging = firebase.messaging();
 // Background messages only:
 swMessaging.onBackgroundMessage((payload) => {
   // Try notification first, then data
-  alert('Background message received. ' + JSON.stringify(payload));
+  console.log('Background message received. ' + JSON.stringify(payload));
   const title = (payload.notification && payload.notification.title)
              || (payload.data && payload.data.title)
              || 'New message';
