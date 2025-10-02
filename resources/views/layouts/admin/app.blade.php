@@ -260,7 +260,7 @@
         window.__fcmBound = true;
         messaging.onMessage((payload) => {
           console.log('[FCM] Foreground message:', payload);
-          toast('Foreground push received ✅');
+          toast(payload.notification?.title || 'Message (no title)'+payload.notification?.body ? ' - '+payload.notification?.body : '');
         });
       }
 
