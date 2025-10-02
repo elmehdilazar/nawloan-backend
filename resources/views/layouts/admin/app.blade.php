@@ -55,7 +55,7 @@
             integrity="sha512-odNmoc1XJy5x1TMVMdC7EMs3IVdItLPlCeL5vSUPN2llYKMJ2eByTTAIiiuqLg+GdNr9hF6z81p27DArRFKT7A=="
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- SweetAlert Script -->
-    <script href="{{asset('/firebase-messaging-sw.js')}}"></script>
+  
     @vite(['resources/js/app.js'])
 </head>
 
@@ -206,56 +206,74 @@
         $(".alert").alert('close');
     }, 300000);
 </script>
+<!-- Keep only ONE pair of Firebase compat scripts -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
- <script>
-(async () => {
-  try {
-    if (!('serviceWorker' in navigator)) throw new Error('No SW support');
 
-    // 1) Register SW
-    const reg = await navigator.serviceWorker.register('/public/firebase-messaging-sw.js');
-    console.log('[SW] registered:', reg.scope);
+<script>
+(function () {
+  const firebaseConfig = {
+    apiKey: "AIzaSyDxTycXHWx6hMnpx90fSo2Y8SOFGXomA-w",
+    authDomain: "nawloan-eff12.firebaseapp.com",
+    projectId: "nawloan-eff12",
+    messagingSenderId: "997400731253",
+    appId: "1:997400731253:web:d0ae522e19b8fce924a23c",
+  };
+  const VAPID = "BKcLwEjrAedWHYKxK8yaxKIvOqGysObPboROGhiWEO8Kae1cBYooFWY7_Ghf_-wnO8tpmNkYc5_MaApffWQLmAw";
 
-    // 2) Init Firebase
-    firebase.initializeApp({
-      apiKey: "AIzaSyDxTycXHWx6hMnpx90fSo2Y8SOFGXomA-w",
-      authDomain: "nawloan-eff12.firebaseapp.com",
-      projectId: "nawloan-eff12",
-      messagingSenderId: "997400731253",
-      appId: "1:997400731253:web:d0ae522e19b8fce924a23c",
-    });
+  const toast = (msg) => {
+    const el = document.getElementById('fcmPing');
+    if (!el) return;
+    el.textContent = msg; el.style.display = 'block';
+    setTimeout(()=> el.style.display='none', 3500);
+  };
 
-    const messaging = firebase.messaging();
- 
-  
-    if (!firebase.messaging.isSupported()) {
-      console.warn('Messaging not supported in this browser'); 
-    }else{
-    console.warn('Messaging  supported in this browser');
+  (async () => {
+    try {
+      if (!('serviceWorker' in navigator)) throw new Error('No ServiceWorker support');
+      if (!('Notification' in window)) throw new Error('No Notification API');
+
+      // 1) Init Firebase once
+      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+      const messaging = firebase.messaging();
+
+      if (typeof firebase.messaging.isSupported === 'function' && !firebase.messaging.isSupported()) {
+        console.warn('[FCM] Messaging not supported in this browser');
+        return;
+      }
+
+      // 2) Bind foreground listener ASAP (before awaiting anything else)
+      if (!window.__fcmBound) {
+        window.__fcmBound = true;
+        messaging.onMessage((payload) => {
+          console.log('[FCM] Foreground message:', payload);
+          toast('Foreground push received ✅');
+        });
+      }
+
+      // 3) Register SW at the ROOT scope (no "/public" in the URL)
+      const reg = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+      console.log('[SW] registered:', reg.scope);
+
+      // 4) Ask permission
+      const perm = await Notification.requestPermission();
+      console.log('[FCM] permission:', perm);
+      if (perm !== 'granted') return;
+
+      // 5) Get token (use the SAME reg + your VAPID)
+      const token = await messaging.getToken({ vapidKey: VAPID, serviceWorkerRegistration: reg });
+      console.log('[FCM] token:', token);
+      window._fcm_token = token; // handy for Postman tests
+      if (!token) toast('No token (check VAPID/HTTPS/SW)'); else toast('Token ready ✅');
+
+    } catch (e) {
+      console.error('[FCM] setup error:', e);
+      toast('FCM setup error (see console)');
     }
-
-    // 3) Permission
-    const perm = await Notification.requestPermission();
-    console.log('[FCM] permission:', perm);
-    if (perm !== 'granted') return;
-
-    // 4) Token
-     const vapid = 'BKcLwEjrAedWHYKxK8yaxKIvOqGysObPboROGhiWEO8Kae1cBYooFWY7_Ghf_-wnO8tpmNkYc5_MaApffWQLmAw';
-     const token = await messaging.getToken({ vapidKey: vapid, serviceWorkerRegistration: reg });
-     console.log('[FCM] token:', token);
-
-    // 5) Foreground listener
-    messaging.onMessage((payload) => {
-      console.log('[FCM] Foreground message:', payload);
-   
-    });
-    
-  } catch (e) {
-    console.error('[FCM] setup error:', e);
-  }
+  })();
 })();
-</script> 
+</script>
+
 
 @yield('scripts')
 </body>
