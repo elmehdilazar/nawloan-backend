@@ -214,7 +214,7 @@
     if (!('serviceWorker' in navigator)) throw new Error('No SW support');
 
     // 1) Register SW
-    const reg = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+    const reg = await navigator.serviceWorker.register('/public/firebase-messaging-sw.js');
     console.log('[SW] registered:', reg.scope);
 
     // 2) Init Firebase
@@ -242,9 +242,9 @@
     if (perm !== 'granted') return;
 
     // 4) Token
-    // const vapid = 'BKcLwEjrAedWHYKxK8yaxKIvOqGysObPboROGhiWEO8Kae1cBYooFWY7_Ghf_-wnO8tpmNkYc5_MaApffWQLmAw';
-    // const token = await messaging.getToken({ vapidKey: vapid, serviceWorkerRegistration: reg });
-    // console.log('[FCM] token:', token);
+     const vapid = 'BKcLwEjrAedWHYKxK8yaxKIvOqGysObPboROGhiWEO8Kae1cBYooFWY7_Ghf_-wnO8tpmNkYc5_MaApffWQLmAw';
+     const token = await messaging.getToken({ vapidKey: vapid, serviceWorkerRegistration: reg });
+     console.log('[FCM] token:', token);
 
     // 5) Foreground listener
     messaging.onMessage((payload) => {

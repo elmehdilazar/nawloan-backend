@@ -1,32 +1,30 @@
-/* global importScripts, firebase */
+/* firebase-messaging-sw.js */
 importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js');
 
-// IMPORTANT: these must match your web config:
-const firebaseConfig = {
-    apiKey: "AIzaSyDxTycXHWx6hMnpx90fSo2Y8SOFGXomA-w",
-    authDomain: "nawloan-eff12.firebaseapp.com",
-    projectId: "nawloan-eff12",
-    storageBucket: "nawloan-eff12.appspot.com",
-    messagingSenderId: "997400731253",
-    appId: "1:997400731253:web:d0ae522e19b8fce924a23c"
-};
+// Same config as index.html
+firebase.initializeApp({
+  apiKey: "AIzaSyDxTycXHWx6hMnpx90fSo2Y8SOFGXomA-w",
+  authDomain: "nawloan-eff12.firebaseapp.com",
+  projectId: "nawloan-eff12",
+  messagingSenderId: "997400731253",
+  appId: "1:997400731253:web:d0ae522e19b8fce924a23c",
+});
 
-firebase.initializeApp(firebaseConfig);
+const swMessaging = firebase.messaging();
 
-const messaging = firebase.messaging();
-console.log('messaging .js', messaging);
-// Background messages (when page is closed or hidden)
-messaging.onBackgroundMessage((payload) => {
-  // Customize notification
-  const title = (payload.notification && payload.notification.title) || 'New message';
-  const body  = (payload.notification && payload.notification.body)  || '';
-  const options = {
+// Background messages only:
+swMessaging.onBackgroundMessage((payload) => {
+  // Try notification first, then data
+  const title = (payload.notification && payload.notification.title)
+             || (payload.data && payload.data.title)
+             || 'New message';
+  const body  = (payload.notification && payload.notification.body)
+             || (payload.data && payload.data.body)
+             || '';
+
+  self.registration.showNotification(title, {
     body,
-    data: payload.data || {},
-  };
-  var audio = new Audio('audio_file.wav');
-audio.play();
-
-  self.registration.showNotification(title, options);
+    data: payload.data || {}
+  });
 });
