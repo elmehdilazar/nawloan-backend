@@ -241,7 +241,20 @@
         console.warn('[FCM] Messaging not supported in this browser');
         return;
       }
-
+  const token = await messaging.getToken({ vapidKey: VAPID, serviceWorkerRegistration: reg });
+      console.log('[FCM] token:', token);
+      window._fcm_token = token; // handy for Postman tests
+      if (!token) toast('No token (check VAPID/HTTPS/SW)'); else toast('Token ready ✅');
+          async function updateUserFcmToken(userId, token) {
+  await fetch(`/api/users/setFcmToken/1`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      
+    },
+    body: { fcm_token: token },
+  });
+}
       // 2) Bind foreground listener ASAP (before awaiting anything else)
       if (!window.__fcmBound) {
         window.__fcmBound = true;
@@ -261,11 +274,7 @@
       if (perm !== 'granted') return;
 
       // 5) Get token (use the SAME reg + your VAPID)
-      const token = await messaging.getToken({ vapidKey: VAPID, serviceWorkerRegistration: reg });
-      console.log('[FCM] token:', token);
-      window._fcm_token = token; // handy for Postman tests
-      if (!token) toast('No token (check VAPID/HTTPS/SW)'); else toast('Token ready ✅');
-
+    
     } catch (e) {
       console.error('[FCM] setup error:', e);
       toast('FCM setup error (see console)');
