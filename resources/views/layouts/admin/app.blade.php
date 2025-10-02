@@ -227,8 +227,7 @@
     });
 
     const messaging = firebase.messaging();
- console.log('messaging', messaging);
- console.log('firebase', firebase);
+ 
   
     if (!firebase.messaging.isSupported()) {
       console.warn('Messaging not supported in this browser'); 

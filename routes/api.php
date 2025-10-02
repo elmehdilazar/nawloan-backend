@@ -346,15 +346,22 @@ Route::get('/processQRCode', [App\Http\Controllers\Clients\QRController::class,'
 
 use App\Notifications\FcmPushNotification;
 use Illuminate\Support\Facades\Notification;
-Route::get('/test-fcm', function () {
-    $testToken = 'dPikuFEA5v76obFBAIYOGg:APA91bGWjfavoMqX_4HDQW7ZQQq2w2inz_QBqdaaB7co5MUxEJBAP5SYkfjxzqokq6dp7GrWLdKCud70zxQIX-ye-zXITRJ_LusSIE76lopOjD5kMPMbYD8';
+use Illuminate\Http\Request;
 
-    $notification = [
-        'title' => 'Test Notification',
-        'body'  => 'This is a test from Laravel',
-        'sound' => 'default'
-    ];
+Route::post('/test-fcm', function (Request $request) {
+    $data = $request->validate([
+        'token' => 'required|string',
+        'title' => 'sometimes|string|max:120',
+        'body'  => 'sometimes|string|max:500',
+        'data'  => 'sometimes|array',
+    ]);
 
- Notification::send($testToken, new FcmPushNotification('Test Notification', 'This is a test from Laravel', [ $testToken]));
-    return 'Notification sent!';
+    $title = $data['title'] ?? 'Test Notification';
+    $body  = $data['body']  ?? 'This is a test from Laravel';
+
+    // If your custom channel is named "fcm"
+    Notification::route('fcm', $data['token'])
+        ->notify(new FcmPushNotification($title, $body, $data['data'] ?? []));
+
+    return response()->json(['ok' => true, 'sent' => true]);
 });
