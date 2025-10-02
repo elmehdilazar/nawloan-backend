@@ -346,7 +346,7 @@ Route::get('/processQRCode', [App\Http\Controllers\Clients\QRController::class,'
 
 use App\Notifications\FcmPushNotification;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Http\Request;
+
 
 Route::post('/test-fcm', function (Request $request) {
     $data = $request->validate([
