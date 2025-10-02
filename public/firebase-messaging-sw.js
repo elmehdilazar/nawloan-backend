@@ -1,8 +1,7 @@
-/* firebase-messaging-sw.js */
+/* public/firebase-messaging-sw.js */
 importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js');
 
-// Same config as index.html
 firebase.initializeApp({
   apiKey: "AIzaSyDxTycXHWx6hMnpx90fSo2Y8SOFGXomA-w",
   authDomain: "nawloan-eff12.firebaseapp.com",
@@ -13,10 +12,8 @@ firebase.initializeApp({
 
 const swMessaging = firebase.messaging();
 
-// Background messages only:
+// Only handle background messages
 swMessaging.onBackgroundMessage((payload) => {
-  // Try notification first, then data
-  console.log('Background message received. ' + JSON.stringify(payload));
   const title = (payload.notification && payload.notification.title)
              || (payload.data && payload.data.title)
              || 'New message';
@@ -28,4 +25,17 @@ swMessaging.onBackgroundMessage((payload) => {
     body,
     data: payload.data || {}
   });
+});
+
+// Optional: focus/open the app when clicking the notification
+self.addEventListener('notificationclick', function (event) {
+  event.notification.close();
+  event.waitUntil((async () => {
+    const url = '/';
+    const clientsArr = await clients.matchAll({ type: 'window', includeUncontrolled: true });
+    for (const client of clientsArr) {
+      if (client.url.includes(location.origin)) { client.focus(); return; }
+    }
+    await clients.openWindow(url);
+  })());
 });
