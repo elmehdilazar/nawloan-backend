@@ -41,7 +41,7 @@
     <link rel="stylesheet" href="{{asset('assets/tiny/css/app-dark.css')}}" id="darkTheme" disabled>
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{asset('assets/css/custom.css')}}">
-
+  <script src="https://nawloan.net/public/vendor/sweetalert/sweetalert.all.js"></script>
     {{--<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css">--}}
     {{--<link rel="stylesheet" href="{{asset('assets/css/flag-icon-css/flag-icon.min.css')}}">--}}
     {{--<link href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/8.4.6/css/intlTelInput.css" rel="stylesheet">--}}
