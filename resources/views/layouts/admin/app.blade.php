@@ -289,7 +289,7 @@ audio.play();
     }
   })();
 })();
-  var audio = new Audio('{{url("audio_file.wav")}}');
+  var audio = new Audio('{{url("public/audio_file.wav")}}');
 audio.play();
 </script>
 
