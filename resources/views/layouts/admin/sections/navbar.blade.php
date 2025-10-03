@@ -212,7 +212,7 @@
     </ul>
 </nav>
 
-<span id="notificationCount" class="badge badge-danger">0</span>
+
 
 
 

@@ -1244,10 +1244,13 @@ nav .pagination .page-item:first-child span::after, nav .pagination .page-item:f
 }
 
 .topnav .nav .nav-item .nav-link .dot-md {
-    width: 8px;
-    height: 8px;
+    width: 15px;
+    height: 15px;
+    color: white;
     top: 14px;
-    right: 14px;
+    right: 10px;
+    font-size: 8px;
+    text-align: center;
 }
 
 .topnav .nav .nav-item .nav-link:hover svg path {
