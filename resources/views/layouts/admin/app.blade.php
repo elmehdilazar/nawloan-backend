@@ -262,9 +262,9 @@ audio.play();
 
       // 4) Ask permission
       const perm = await Notification.requestPermission();
-  const soundOK = await requestSoundPermission();
+
       console.log('[FCM] permission:', perm);
-      if (perm !== 'granted'  ) return;
+      if (perm !== 'granted') return;
 
       // 5) Get token (use the SAME reg + your VAPID)
     const token = await messaging.getToken({ vapidKey: VAPID, serviceWorkerRegistration: reg });
