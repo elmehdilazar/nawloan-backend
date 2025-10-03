@@ -266,7 +266,7 @@
       window._fcm_token = token; // handy for Postman tests
       if (!token) toast('No token (check VAPID/HTTPS/SW)'); else toast('Token ready ✅');
           async function updateUserFcmToken(userId, token) {
-  await fetch(`/api/users/setFcmToken/1`, {
+  await fetch(`/admin/fcm-token`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
