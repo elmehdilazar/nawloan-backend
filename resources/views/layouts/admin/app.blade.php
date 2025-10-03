@@ -55,7 +55,7 @@
             integrity="sha512-odNmoc1XJy5x1TMVMdC7EMs3IVdItLPlCeL5vSUPN2llYKMJ2eByTTAIiiuqLg+GdNr9hF6z81p27DArRFKT7A=="
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- SweetAlert Script -->
-  
+  @include('sweetalert::alert')
     @vite(['resources/js/app.js'])
 </head>
 
@@ -81,7 +81,7 @@
 </div>
 {{--@include('layouts.admin.sections.footer') --}}
 
-@include('sweetalert::alert')
+
 <script src="{{asset('assets/tiny/js/jquery.min.js')}}"></script>
 <script src="{{asset('assets/tiny/js/popper.min.js')}}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
