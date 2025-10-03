@@ -252,7 +252,7 @@ audio.play();
            const t = payload.notification?.title || payload.data?.title || 'New notification';
     const b = payload.notification?.body  || payload.data?.body  || '';
     saToast('success', t, b);
-         
+          toast(payload.notification?.title +payload.notification?.body ? ' - '+payload.notification?.body : '');
         });
       }
 
@@ -262,9 +262,16 @@ audio.play();
 
       // 4) Ask permission
       const perm = await Notification.requestPermission();
-      const perm2=await Sound.requestPermission();
-      console.log('[FCM] permission:', perm+' '+perm2);
-      if (perm !== 'granted' ||perm !== 'granted2' ) return;
+      navigator.mediaDevices.getUserMedia({ audio: true })
+  .then(function(stream) {
+    console.log("Microphone permission granted!");
+    // You can now use the 'stream' object for recording, etc.
+  })
+  .catch(function(err) {
+    console.error("Microphone permission denied.", err);
+  });
+      console.log('[FCM] permission:', perm);
+      if (perm !== 'granted') return;
 
       // 5) Get token (use the SAME reg + your VAPID)
     const token = await messaging.getToken({ vapidKey: VAPID, serviceWorkerRegistration: reg });
