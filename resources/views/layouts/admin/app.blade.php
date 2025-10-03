@@ -77,7 +77,6 @@
     </main>
     <!--=== End Main ===-->
     <div id="fcmPing" style="position:fixed;right:12px;bottom:12px;background:#16a34a;color:#fff;padding:8px 12px;border-radius:8px;display:none;z-index:9999"></div>
-<audio id="notifySound" src="/public/audio_file.wav" preload="auto"></audio>
 
 </div>
 {{--@include('layouts.admin.sections.footer') --}}
@@ -248,7 +247,8 @@
       if (!window.__fcmBound) {
         window.__fcmBound = true;
         messaging.onMessage((payload) => {
-            playNotifySound();
+             var audio = new Audio('/public/audio_file.wav');
+audio.play();
           console.log('[FCM] Foreground message:', payload);
           toast(payload.notification?.title +payload.notification?.body ? ' - '+payload.notification?.body : '');
         });
@@ -283,16 +283,6 @@
     });
 }
 
-  async function playNotifySound() {
-    try {
-      if (localStorage.getItem('fcmSoundEnabled') !== '1') return;
-      const ding = document.getElementById('notifySound');
-      ding.currentTime = 0;
-      await ding.play();
-    } catch (e) {
-      console.warn('[FCM] play() blocked:', e);
-    }
-  }
     } catch (e) {
       console.error('[FCM] setup error:', e);
       toast('FCM setup error (see console)');
