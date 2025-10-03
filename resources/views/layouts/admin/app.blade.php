@@ -266,8 +266,12 @@
       console.log('[FCM] token:', token);
       window._fcm_token = token; // handy for Postman tests
       if (!token) toast('No token (check VAPID/HTTPS/SW)'); else toast('Token ready ✅');
-          async function updateUserFcmToken(userId, token) {
-   await fetch('/admin/fcm-token', {
+   if (token) {
+    // 1) save to cookie so it persists across refreshes
+    document.cookie = `fcm_token=${token}; path=/; max-age=${60*60*24*365}`;
+
+    // 2) post it to the server to update the user record
+    await fetch('/admin/fcm-token', {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
@@ -276,6 +280,7 @@
         body: JSON.stringify({ token: token })
     });
 }
+
     } catch (e) {
       console.error('[FCM] setup error:', e);
       toast('FCM setup error (see console)');
