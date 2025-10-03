@@ -115,7 +115,7 @@
                           transform="translate(1377 -67)" fill="#bcbccb">
                 </svg>
                 @if (auth()->user()->unreadNotifications->count()>0)
-                <span id="notificationCount" class="dot dot-md bg-warning">0</span>
+                <span id="notificationCount" class="dot dot-md bg-warning">{{auth()->user()->unreadNotifications->count()}}</span>
                 @endif
             </a>
             <div class="dropdown-menu dropdown-menu-right notification-menu {{app()->getLocale() =='ar' ? 'dropdown-menu-left' : 'dropdown-menu-right' }}"
