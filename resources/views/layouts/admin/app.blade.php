@@ -247,7 +247,7 @@
       if (!window.__fcmBound) {
         window.__fcmBound = true;
         messaging.onMessage((payload) => {
-             var audio = new Audio('/public/audio_file.wav');
+        var audio = new Audio('{{url("public/audio_file.wav")}}');
 audio.play();
           console.log('[FCM] Foreground message:', payload);
           toast(payload.notification?.title +payload.notification?.body ? ' - '+payload.notification?.body : '');
@@ -289,8 +289,7 @@ audio.play();
     }
   })();
 })();
-  var audio = new Audio('{{url("public/audio_file.wav")}}');
-audio.play();
+
 </script>
 
 
