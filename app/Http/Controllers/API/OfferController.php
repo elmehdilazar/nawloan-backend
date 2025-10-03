@@ -674,7 +674,7 @@ public function getByAgencyId($id)
         $offer = Offer::with('statuses')->find($id);
         $user = User::find($offer->user_id);
         $data = [
-            'title' => $request->status,
+            'title' => $offer->status,
             'body' => 'add_body',
             'target' => 'offer',
             'link'  => route('admin.orders.index', ['number' => $offer->order_id]),
