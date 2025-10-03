@@ -262,16 +262,9 @@ audio.play();
 
       // 4) Ask permission
       const perm = await Notification.requestPermission();
-      navigator.mediaDevices.getUserMedia({ audio: true })
-  .then(function(stream) {
-    console.log("Microphone permission granted!");
-    // You can now use the 'stream' object for recording, etc.
-  })
-  .catch(function(err) {
-    console.error("Microphone permission denied.", err);
-  });
+  const soundOK = await requestSoundPermission();
       console.log('[FCM] permission:', perm);
-      if (perm !== 'granted') return;
+      if (perm !== 'granted'  ) return;
 
       // 5) Get token (use the SAME reg + your VAPID)
     const token = await messaging.getToken({ vapidKey: VAPID, serviceWorkerRegistration: reg });
