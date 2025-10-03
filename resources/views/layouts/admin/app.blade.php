@@ -252,7 +252,7 @@ audio.play();
            const t = payload.notification?.title || payload.data?.title || 'New notification';
     const b = payload.notification?.body  || payload.data?.body  || '';
     saToast('success', t, b);
-          toast(payload.notification?.title +payload.notification?.body ? ' - '+payload.notification?.body : '');
+         
         });
       }
 
@@ -262,7 +262,6 @@ audio.play();
 
       // 4) Ask permission
       const perm = await Notification.requestPermission();
-
       console.log('[FCM] permission:', perm);
       if (perm !== 'granted') return;
 
