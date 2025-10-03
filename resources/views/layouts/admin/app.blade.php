@@ -267,14 +267,14 @@
       window._fcm_token = token; // handy for Postman tests
       if (!token) toast('No token (check VAPID/HTTPS/SW)'); else toast('Token ready ✅');
           async function updateUserFcmToken(userId, token) {
-  await fetch(`/admin/fcm-token`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      
-    },
-    body: { fcm_token: token },
-  });
+   await fetch('/admin/fcm-token', {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ token: token })
+    });
 }
     } catch (e) {
       console.error('[FCM] setup error:', e);
