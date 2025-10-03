@@ -77,7 +77,7 @@
     </main>
     <!--=== End Main ===-->
     <div id="fcmPing" style="position:fixed;right:12px;bottom:12px;background:#16a34a;color:#fff;padding:8px 12px;border-radius:8px;display:none;z-index:9999"></div>
-<audio id="notifySound" src="/audio_file.wav" preload="auto"></audio>
+<audio id="notifySound" src="/public/audio_file.wav" preload="auto"></audio>
 
 </div>
 {{--@include('layouts.admin.sections.footer') --}}
