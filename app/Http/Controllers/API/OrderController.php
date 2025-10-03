@@ -946,7 +946,7 @@ if ($driverData) {
         'sender' => $user->name,
     ];
 
-    $users = User::where('user_type', 'superadministrator')->where('id', $order->user_id)->get();
+   $users = User::where('type', 'admin')->orWhere('type', 'superadministrator')->get();
     $provider = User::find($order->driver_id);
      $user_sekker = User::find($order->user_id);
     if (!empty($provider->fcm_token)) {
