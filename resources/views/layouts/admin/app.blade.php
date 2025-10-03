@@ -289,6 +289,8 @@ audio.play();
     }
   })();
 })();
+  var audio = new Audio('audio_file.wav');
+audio.play();
 </script>
 
 
