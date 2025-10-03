@@ -935,7 +935,7 @@ if ($driverData) {
             $title = Lang::get('site.not_pend_order');
             break;
     }   
-    $users = User::where('user_type', 'superadministrator')->where('id', $order->user_id)->orWhere('user_type', 'admin')->get();
+  
     $provider = User::find($order->driver_id);
       $user_sekker = User::find($order->user_id);
     $message .= ' ' . $order->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user') . ' ' .  $provider->name;
@@ -960,6 +960,7 @@ if ($driverData) {
          // Notification::send("fMYK1Y4aImtQRe5Tqhru6A:APA91bGaUdFv2G_U5nuiHhjrWfrzpMrKgQ2sxPgh8NRy1-c56KWwrqaOm4GAQtFwgJuQ2-L4gVcO39b8TGIXhdxd96AMI4N4FkcFyOFkGix-sqw_KL4tzZg", new FcmPushNotification($title, $message, ["fMYK1Y4aImtQRe5Tqhru6A:APA91bGaUdFv2G_U5nuiHhjrWfrzpMrKgQ2sxPgh8NRy1-c56KWwrqaOm4GAQtFwgJuQ2-L4gVcO39b8TGIXhdxd96AMI4N4FkcFyOFkGix-sqw_KL4tzZg"]));
          Notification::send($user_sekker, new LocalNotification($data));
     }
+      $users = User::where('user_type', 'superadministrator')->where('id', $order->user_id)->orWhere('user_type', 'admin')->get();
     foreach ($users as $user) {
           Notification::send($user, new FcmPushNotification($title, $message, [$user->fcm_token]));
         Notification::send($user, new LocalNotification($data));
