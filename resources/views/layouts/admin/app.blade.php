@@ -71,7 +71,7 @@
     <!--=== Start Main ===-->
     <main role="main" class="main-content {{request()->routeIs('admin.orders.show') ? 'yellow-background' : '' }}">
         <div class="container-fluid {{request()->routeIs('admin.orders.show') ? 'order-card' : '' }}">
-            {{$data}}
+        
             @yield('content')
         </div>
     </main>
