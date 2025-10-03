@@ -108,24 +108,7 @@
 <script src="{{asset('assets/tiny/js/jquery.timepicker.js')}}"></script>
 <script src="{{asset('assets/tiny/js/apps.js')}}"></script>
 
-<script>
-  // Reusable SweetAlert2 toast
-  window.saToast = (icon = 'success', title = '', text = '') => {
-    if (typeof Swal === 'undefined') return; // safety
-    const Toast = Swal.mixin({
-      toast: true,
-      position: 'top-end',
-      showConfirmButton: false,
-      timer: 2800,
-      timerProgressBar: true,
-      didOpen: (t) => {
-        t.addEventListener('mouseenter', Swal.stopTimer);
-        t.addEventListener('mouseleave', Swal.resumeTimer);
-      }
-    });
-    Toast.fire({ icon, title, text });
-  };
-</script>
+
 <script>
     $(document).ready(function () {
         StickyHeader();
@@ -310,7 +293,24 @@ audio.play();
 })();
 
 </script>
-
+<script>
+  // Reusable SweetAlert2 toast
+  window.saToast = (icon = 'success', title = '', text = '') => {
+    if (typeof Swal === 'undefined') return; // safety
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 2800,
+      timerProgressBar: true,
+      didOpen: (t) => {
+        t.addEventListener('mouseenter', Swal.stopTimer);
+        t.addEventListener('mouseleave', Swal.resumeTimer);
+      }
+    });
+    Toast.fire({ icon, title, text });
+  };
+</script>
 
 @yield('scripts')
 </body>
