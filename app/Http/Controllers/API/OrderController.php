@@ -938,7 +938,7 @@ if ($driverData) {
   
     $provider = User::find($order->driver_id);
       $user_sekker = User::find($order->user_id);
-    $message .= ' ' . $order->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user') . ' ' .  $provider->name;
+    $message .= ' ' . $order->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user') . ' ' . auth()->user()->name;
 
     $data = [
         'title' => $order->status,
