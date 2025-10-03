@@ -108,7 +108,24 @@
 <script src="{{asset('assets/tiny/js/jquery.timepicker.js')}}"></script>
 <script src="{{asset('assets/tiny/js/apps.js')}}"></script>
 
-
+<script>
+  // Reusable SweetAlert2 toast
+  window.saToast = (icon = 'success', title = '', text = '') => {
+    if (typeof Swal === 'undefined') return; // safety
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 2800,
+      timerProgressBar: true,
+      didOpen: (t) => {
+        t.addEventListener('mouseenter', Swal.stopTimer);
+        t.addEventListener('mouseleave', Swal.resumeTimer);
+      }
+    });
+    Toast.fire({ icon, title, text });
+  };
+</script>
 <script>
     $(document).ready(function () {
         StickyHeader();
@@ -249,7 +266,9 @@
         messaging.onMessage((payload) => {
         var audio = new Audio('{{url("public/audio_file.wav")}}');
 audio.play();
-          console.log('[FCM] Foreground message:', payload);
+           const t = payload.notification?.title || payload.data?.title || 'New notification';
+    const b = payload.notification?.body  || payload.data?.body  || '';
+    saToast('success', t, b);
           toast(payload.notification?.title +payload.notification?.body ? ' - '+payload.notification?.body : '');
         });
       }
