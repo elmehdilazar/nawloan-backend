@@ -83,6 +83,7 @@ return [
     'the_register'          =>      'Register',
     'new_user'              =>      'New User',
     'new_payment'           =>      'New Payment In',
+    'new_payment_received'  =>      'New Payment Received In',
     'logout'                =>      'Logout',
     'name'                  =>      'Name',
     'email'                 =>      'Email',

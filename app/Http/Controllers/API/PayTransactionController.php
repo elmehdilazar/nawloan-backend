@@ -203,7 +203,7 @@ public function store(Request $request)
         }
 
         $notificationData = [
-            'title' => 'New Payment Received',
+            'title' => 'site.new_payment_received',
             'body' => 'A new payment of ' . $request->amount . ' ' . $request->currency . ' has been made.',
             'target' => 'order',
             'link'  => route('admin.transactions.index', ['transaction_id' => $payTran->transaction_id]),
