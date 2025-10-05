@@ -214,7 +214,7 @@ public function store(Request $request)
         Notification::send($user, new LocalNotification($notificationData));
 
         $admins = User::whereIn('type', ['admin', 'superadministrator'])->get();
-        foreach ($admins as $admin) {
+        foreach ($admins as $admin) { 
             Notification::send($admin, new LocalNotification($notificationData));
         }
 
