@@ -287,7 +287,7 @@ audio.play();
 
     } catch (e) {
       console.error('[FCM] setup error:', e);
-      toast('FCM setup error (see console)');
+     // toast('FCM setup error (see console)');
     }
   })();
 })();
