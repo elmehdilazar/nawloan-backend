@@ -555,7 +555,8 @@ public function sendWebNotification(Request $request)
             'target_id' => $order->id,
             'sender' => $user->name,
         ];
-        $users = User::where('type', 'superadmin')->orWhere('type', 'admin')->orWhere('user_type', 'service_provider')->get();
+     
+        $users = User::where('type', 'superadministrator')->orWhere('type', 'admin')->orWhere('user_type', 'service_provider')->get();
         foreach ($users as $user) {
             Notification::send($user, new LocalNotification($data));
              if (!empty($user->fcm_token) && $user->id != auth()->user()->id) {
