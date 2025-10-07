@@ -471,8 +471,9 @@ public function sendWebNotification(Request $request)
 
         $users = User::where('type', 'superadmin')->orWhere('type', 'admin')->orWhere('user_type', 'service_provider')->distinct()->get();
         foreach ($users as $user) {
-            Notification::send($user, new LocalNotification($data));
+          
              if (!empty($user->fcm_token) && $user->id != auth()->user()->id) {
+                  Notification::send($user, new LocalNotification($data));
                  $message = Lang::get('site.not_new_order_msg')  . ' ' . $order->id. ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user')  . ' ' . auth()->user()->name;
                $title = Lang::get('site.not_new_order');
                 Notification::send($user, new FcmPushNotification($title, $message, [$user->fcm_token]));
