@@ -58,7 +58,46 @@ class OrderQRController extends Controller
         $order = Order::findOrFail($payload['order_id']);
         $order->status = $payload['type'] === 'pick_up' ? 'pick_up' : 'delivered';
         $order->save();
+        $user = User::find($order->user_id);
+        $title = $message = '';
+        switch ($order->status) {
 
+            case 'pick_up':
+                $message = Lang::get('site.not_pick_up_order_msg');
+                $title = Lang::get('site.not_pick_up_order');
+                break;
+            case 'delivered':
+                $message = Lang::get('site.not_delivered_order_msg');
+                $title = Lang::get('site.not_delivered_order');
+                break;
+        }
+        $message .= ' ' . $order->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user') . ' ' . auth()->user()->name;
+
+        $data = [
+            'title' => $order->status,
+            'body' => 'add_body',
+            'target' => 'order',
+            'link' => route('admin.orders.index', ['number' => $order->id]),
+            'target_id' => $order->id,
+            'sender' => $user->name,
+        ];
+
+        $users = User::where('type', 'admin')->orWhere('type', 'superadministrator')->get();
+        $provider = User::find($order->driver_id);
+        $user_sekker = User::find($order->user_id);
+        if (!empty($provider->fcm_token)) {
+            Notification::send($provider, new FcmPushNotification($title, $message, [$provider->fcm_token]));
+            // Notification::send("fMYK1Y4aImtQRe5Tqhru6A:APA91bGaUdFv2G_U5nuiHhjrWfrzpMrKgQ2sxPgh8NRy1-c56KWwrqaOm4GAQtFwgJuQ2-L4gVcO39b8TGIXhdxd96AMI4N4FkcFyOFkGix-sqw_KL4tzZg", new FcmPushNotification($title, $message, ["fMYK1Y4aImtQRe5Tqhru6A:APA91bGaUdFv2G_U5nuiHhjrWfrzpMrKgQ2sxPgh8NRy1-c56KWwrqaOm4GAQtFwgJuQ2-L4gVcO39b8TGIXhdxd96AMI4N4FkcFyOFkGix-sqw_KL4tzZg"]));
+        }
+        if (!empty($user_sekker->fcm_token)) {
+            Notification::send($user_sekker, new FcmPushNotification($title, $message, [$user_sekker->fcm_token]));
+            // Notification::send("fMYK1Y4aImtQRe5Tqhru6A:APA91bGaUdFv2G_U5nuiHhjrWfrzpMrKgQ2sxPgh8NRy1-c56KWwrqaOm4GAQtFwgJuQ2-L4gVcO39b8TGIXhdxd96AMI4N4FkcFyOFkGix-sqw_KL4tzZg", new FcmPushNotification($title, $message, ["fMYK1Y4aImtQRe5Tqhru6A:APA91bGaUdFv2G_U5nuiHhjrWfrzpMrKgQ2sxPgh8NRy1-c56KWwrqaOm4GAQtFwgJuQ2-L4gVcO39b8TGIXhdxd96AMI4N4FkcFyOFkGix-sqw_KL4tzZg"]));
+            Notification::send($user_sekker, new LocalNotification($data));
+        }
+        foreach ($users as $user) {
+            Notification::send($user, new FcmPushNotification($title, $message, [$user->fcm_token]));
+            Notification::send($user, new LocalNotification($data));
+        }
         OrderStatusQR::where('order_id', $order->id)
             ->where('type', $payload['type'])
             ->where('signature', $signature)
@@ -67,4 +106,3 @@ class OrderQRController extends Controller
         return response()->json(['success' => true, 'status' => $order->status]);
     }
 }
-
