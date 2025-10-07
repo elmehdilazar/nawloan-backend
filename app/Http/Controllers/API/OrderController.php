@@ -556,7 +556,10 @@ public function sendWebNotification(Request $request)
             'sender' => $user->name,
         ];
      
-        $users = User::where('type', 'superadministrator')->orWhere('type', 'admin')->orWhere('user_type', 'service_provider')->get();
+        
+        DB::commit();
+        $order1 = Order::with(['user', 'car', 'serviceProvider', 'shipmentType', 'statuses', 'evaluate', 'paymentType', 'transaction', 'accountant'])->find($order->id);
+$users = User::where('type', 'superadministrator')->orWhere('type', 'admin')->orWhere('user_type', 'service_provider')->get();
         foreach ($users as $user) {
             Notification::send($user, new LocalNotification($data));
              if (!empty($user->fcm_token)) {
@@ -565,9 +568,6 @@ public function sendWebNotification(Request $request)
                 Notification::send($user, new FcmPushNotification($title, $message, [$user->fcm_token]));
             }
         }
-        DB::commit();
-        $order1 = Order::with(['user', 'car', 'serviceProvider', 'shipmentType', 'statuses', 'evaluate', 'paymentType', 'transaction', 'accountant'])->find($order->id);
-
         $success['order'] = $order1;
         return $this->sendResponse($success, 'Order created successfully.');
     }

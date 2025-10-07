@@ -537,7 +537,7 @@ public function getByAgencyId($id)
         Notification::send($offer->order->user, new LocalNotification($data));
         $users = User::where('type', 'admin')->orWhere('type', 'superadministrator')->get();
         foreach ($users as $user) {
-            //  Notification::send($user, new FcmPushNotification($title, $message, [$user->fcm_token]));
+              Notification::send($user, new FcmPushNotification($title, $message, [$user->fcm_token]));
             Notification::send($user, new LocalNotification($data));
         }
         DB::commit();
