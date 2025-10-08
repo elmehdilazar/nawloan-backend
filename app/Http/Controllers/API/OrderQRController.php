@@ -9,6 +9,10 @@ use App\Services\QrService;
 use Illuminate\Http\Request;
 use App\Models\OrderStatusQR;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Lang;
+use App\Notifications\LocalNotification;
+use App\Notifications\FcmPushNotification;
+use Illuminate\Support\Facades\Notification;
 
 class OrderQRController extends Controller
 {
