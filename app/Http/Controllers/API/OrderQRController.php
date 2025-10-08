@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Order;
-use App\Models\OrderStatusQR;
-use App\Services\QrService;
 use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Order;
+use App\Services\QrService;
+use Illuminate\Http\Request;
+use App\Models\OrderStatusQR;
+use App\Http\Controllers\Controller;
 
 class OrderQRController extends Controller
 {
