@@ -76,7 +76,7 @@ class OrderQRController extends Controller
                 $title = Lang::get('site.not_delivered_order');
                 break;
         }
-        $message .= ' ' . $order->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user') . ' ' . auth()->user()->name;
+        $message .= ' ' . $order->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user') . ' ' . $user->name;
 
         $data = [
             'title' => $order->status,
