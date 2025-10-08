@@ -64,6 +64,8 @@ class OrderQRController extends Controller
         $order->status = $payload['type'] === 'pick_up' ? 'pick_up' : 'delivered';
         $order->save();
         $user = User::find($order->user_id);
+        $driver = User::find($order->driver_id);
+        
         $title = $message = '';
         switch ($order->status) {
 
