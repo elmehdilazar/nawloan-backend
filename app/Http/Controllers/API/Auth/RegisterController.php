@@ -1502,26 +1502,37 @@ public function registerDriverFromCompany(Request $request, $id)
 
     DB::commit();
 
-        $data = [
-            'title' => 'site.new_driver_from_company',
-            'body' => 'site.new_driver_from_company',
-            'target' => 'company driver',
-            'link' => route('admin.drivers.edit', $driver),
-            'target_id' => $driver->id,
-            'sender' => $driver->name,
-        ];
-        //        $users = User::where('user_type','manage')->get();
+       $data = [
+    'title'     => Lang::get('site.new_driver_from_company'),
+    'body'      => Lang::get('site.new_driver_from_company'),
+    'target'    => Lang::get('site.company_driver'), // or keep the raw string if that's intended
+    'link'      => route('admin.drivers.edit', $driver), // implicit binding; or ['driver' => $driver->id]
+    'target_id' => $driver->id,
+    'sender'    => $driver->name,
+];
 
-        $users = User::where('type', 'superadministrator')->orWhere('type', 'admin')->get();
-        foreach ($users as $user) {
-           Notification::send($user, new LocalNotification($data));
-             if (!empty($user->fcm_token)) {
-                 
-                 $message = 'site.new_driver_from_company'  . ' ' . $driver->id. ' ' .'site.by' . ' ' . 'site.user'  . ' ' . auth()->user()->name;
-               $title = "site.new_driver_from_company";
-                Notification::send($user, new FcmPushNotification($title, $message, [$user->fcm_token]));
-            }
-        }
+$users = User::whereIn('type', ['superadministrator', 'admin'])->get();
+
+foreach ($users as $user) {
+    // Send your local/in-app notification payload
+    Notification::send($user, new \App\Notifications\LocalNotification($data));
+
+    // If user has FCM token, build translated title/message and send push
+    if (!empty($user->fcm_token)) {
+        $title = Lang::get('site.new_driver_from_company');
+
+        // Example: "New driver from company 123 by user John Doe"
+        $message = Lang::get('site.new_driver_from_company')
+            . ' ' . $driver->id . ' '
+            . Lang::get('site.by') . ' '
+            . Lang::get('site.user') . ' ' . (auth()->user()->name ?? '');
+
+        Notification::send(
+            $user,
+            new \App\Notifications\FcmPushNotification($title, $message, [$user->fcm_token])
+        );
+    }
+}
     $success['user'] = [
         'id' => $driver->id,
         'name' => $driver->name,

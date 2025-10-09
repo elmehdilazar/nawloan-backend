@@ -714,6 +714,7 @@ return [
         'The Category Inactive' => 'The section for this function has been disabled. Please choose another section or activate the section',
 
          'pick_up'=>'pick up',
-        'delivered'=>'delivered '
+        'delivered'=>'delivered ',
+        'company_driver' => 'Company Driver',
 
 ];
