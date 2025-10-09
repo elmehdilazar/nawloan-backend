@@ -306,8 +306,8 @@ public function sendWebNotification(Request $request)
 
     // Get the drivers assigned to this company or where type is superadministrator or admin
     
-    $drivers = User::whereIn('id', $request->drivers_id)->whereIn('type', ['superadministrator', 'admin'])->get();
-
+    $drivers = User::whereIn('id', $request->drivers_id)->get();
+$admins = User::whereIn('type', ['superadministrator', 'admin'])->get();
     $title = Lang::get('site.new_invited_by_company');
     $message = Lang::get('site.order_number') . ' ' . $request->order_id;
     $link = route('admin.orders.index', ['number' => $request->order_id]);
@@ -351,7 +351,32 @@ public function sendWebNotification(Request $request)
                 Notification::send($driver, new FcmPushNotification($title, $message2, [$driver->fcm_token]));
 
     }
+ foreach ($admins as $admin) {
+   
+   
 
+
+            // Prepare notification data
+            $notificationData = [
+                'title' => $title,
+                'body' => $message,
+                'target' => 'order',
+                'link' => $link,
+                'target_id' => $request->order_id,
+                'sender' => $company->name, // Company sending the invite
+            ];
+
+            // Send the local database notification
+       Notification::send($driver, new LocalNotification($notificationData));
+            $notifiedDrivers++;
+       
+
+
+                 $message2 = $title  . ' ' . $company->name. ' ' . $message ;
+           //    $title = Lang::get('site.not_new_order');
+                Notification::send($driver, new FcmPushNotification($title, $message2, [$driver->fcm_token]));
+
+    }
     if ($notifiedDrivers > 0) {
         return response()->json([
             'message' => 'Notifications sent successfully. '.$driver->fcm_token,
