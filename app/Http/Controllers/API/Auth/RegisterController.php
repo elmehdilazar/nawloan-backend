@@ -17,6 +17,7 @@ use Illuminate\Validation\Rule;
 use App\Models\ResetCodePassword;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
 use App\Notifications\LocalNotification;
