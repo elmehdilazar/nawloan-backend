@@ -83,6 +83,7 @@ class CountryController extends Controller
         $request->validate([
             'name' => 'required|string|unique:countries,name',
             'phone_code' => 'required',
+            'country_code'=>'required|unique:countries,country_code',
             'image' => 'nullable|image|mimes:image/jpeg,jpeg,image/jpg,jpg,image/png,png,image/gif,gif|
             mimetypes:image/jpeg,jpeg,image/jpg,jpg,image/png,png,image/gif,gif|max:10240',
         ]);
@@ -96,6 +97,7 @@ class CountryController extends Controller
         $country = Country::create([
             'name'          =>  $request_data['name'],
             'phone_code'    =>  $request_data['phone_code'],
+            'country_code'    =>  $request_data['country_code'],
             'image'         =>  $request_data['image'],
         ]);
         $data = [
