@@ -304,8 +304,9 @@ public function sendWebNotification(Request $request)
         return response()->json(['error' => 'Company not found'], 404);
     }
 
-    // Get the drivers assigned to this company
-    $drivers = User::whereIn('id', $request->drivers_id)->get();
+    // Get the drivers assigned to this company or where type is superadministrator or admin
+    
+    $drivers = User::whereIn('id', $request->drivers_id)->whereIn('type', ['superadministrator', 'admin'])->get();
 
     $title = Lang::get('site.new_invited_by_company');
     $message = Lang::get('site.order_number') . ' ' . $request->order_id;
