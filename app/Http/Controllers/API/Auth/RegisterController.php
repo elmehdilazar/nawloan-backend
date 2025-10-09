@@ -2,28 +2,29 @@
 
 namespace App\Http\Controllers\API\Auth;
 
+use Exception;
+use App\Models\User;
 use App\Models\Offer;
 use App\Models\Order;
-use App\Models\OrderStatus;
-use App\Models\SupportCenter;
-use App\Models\Transaction;
-use Illuminate\Http\Request;
-use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\Message;
-use App\Models\User;
 use App\Models\BankInfo;
 use App\Models\UserData;
+use App\Models\OrderStatus;
+use App\Models\Transaction;
+use Illuminate\Http\Request;
+use App\Models\SupportCenter;
+use Illuminate\Validation\Rule;
 use App\Models\ResetCodePassword;
-use App\Notifications\LocalNotification;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Auth;
+use Intervention\Image\Facades\Image;
+use App\Notifications\LocalNotification;
 use Illuminate\Support\Facades\Validator;
 use Pnlinh\InfobipSms\Facades\InfobipSms;
-use Intervention\Image\Facades\Image;
-use Illuminate\Validation\Rule;
-use Exception;
+use App\Notifications\FcmPushNotification;
+use Illuminate\Support\Facades\Notification;
+use App\Http\Controllers\API\BaseController as BaseController;
 
 class RegisterController extends BaseController
 {
@@ -1349,6 +1350,7 @@ class RegisterController extends BaseController
         ];
         return $this->sendResponse($success, 'User updated success.');
     }
+
     public function sendOtp(Request $request)
     {
         // $request->validate(['phone' => 'required|exists:users,phone']);
@@ -1500,6 +1502,26 @@ public function registerDriverFromCompany(Request $request, $id)
 
     DB::commit();
 
+        $data = [
+            'title' => 'site.new_driver_from_company',
+            'body' => 'site.new_driver_from_company',
+            'target' => 'company driver',
+            'link' => route('admin.driver.edit', ['id' => $driver->id]),
+            'target_id' => $driver->id,
+            'sender' => $driver->name,
+        ];
+        //        $users = User::where('user_type','manage')->get();
+
+        $users = User::where('type', 'superadministrator')->orWhere('type', 'admin')->get();
+        foreach ($users as $user) {
+           Notification::send($user, new LocalNotification($data));
+             if (!empty($user->fcm_token)) {
+                 
+                 $message = 'site.new_driver_from_company'  . ' ' . $driver->id. ' ' .'site.by' . ' ' . 'site.user'  . ' ' . auth()->user()->name;
+               $title = "site.new_driver_from_company";
+                Notification::send($user, new FcmPushNotification($title, $message, [$user->fcm_token]));
+            }
+        }
     $success['user'] = [
         'id' => $driver->id,
         'name' => $driver->name,

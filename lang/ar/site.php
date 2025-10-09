@@ -80,6 +80,7 @@
         'register'              =>      'التسجيل',
         'the_register'          =>      'تسجيل',
         'new_user'              =>      'مستخدم جديد',
+        'new_driver_from_company' =>   'سائق جديد من شركة',
         'new_payment'           =>      'عملية دفع جديدة في',
         'new_payment_received'=> 'تم إستلام عملية دفع جديدة في',
         'logout'                =>      'الخروج',

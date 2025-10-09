@@ -82,6 +82,7 @@ return [
     'register'              =>      'Register',
     'the_register'          =>      'Register',
     'new_user'              =>      'New User',
+    'new_driver_from_company'              =>      'New Driver from Company ',
     'new_payment'           =>      'New Payment In',
     'new_payment_received'  =>      'New Payment Received In',
     'logout'                =>      'Logout',
