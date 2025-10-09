@@ -351,10 +351,7 @@ $admins = User::whereIn('type', ['superadministrator', 'admin'])->get();
                 Notification::send($driver, new FcmPushNotification($title, $message2, [$driver->fcm_token]));
 
     }
- foreach ($admins as $admin) {
-   
-   
-
+ foreach ($admins as $admin) {     
 
             // Prepare notification data
             $notificationData = [
@@ -365,16 +362,11 @@ $admins = User::whereIn('type', ['superadministrator', 'admin'])->get();
                 'target_id' => $request->order_id,
                 'sender' => $company->name, // Company sending the invite
             ];
-
             // Send the local database notification
-       Notification::send($driver, new LocalNotification($notificationData));
-            $notifiedDrivers++;
-       
-
-
+       Notification::send($admin, new LocalNotification($notificationData));
                  $message2 = $title  . ' ' . $company->name. ' ' . $message ;
            //    $title = Lang::get('site.not_new_order');
-                Notification::send($driver, new FcmPushNotification($title, $message2, [$driver->fcm_token]));
+                Notification::send($admin, new FcmPushNotification($title, $message2, [$admin->fcm_token]));
 
     }
     if ($notifiedDrivers > 0) {
