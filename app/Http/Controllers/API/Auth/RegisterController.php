@@ -1506,7 +1506,7 @@ public function registerDriverFromCompany(Request $request, $id)
             'title' => 'site.new_driver_from_company',
             'body' => 'site.new_driver_from_company',
             'target' => 'company driver',
-            'link' => route('admin.drivers.edit', ['id' => $driver->id]),
+            'link' => route('admin.drivers.edit', $driver),
             'target_id' => $driver->id,
             'sender' => $driver->name,
         ];
