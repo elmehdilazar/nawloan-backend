@@ -1509,7 +1509,7 @@ public function registerDriverFromCompany(Request $request, $id)
     'target'    => Lang::get('site.company_driver'), // or keep the raw string if that's intended
     'link'      => route('admin.drivers.edit', $driver), // implicit binding; or ['driver' => $driver->id]
     'target_id' => $driver->id,
-    'sender'    => $driver->name,
+    'sender'    => $company->name,
 ];
 
 $users = User::whereIn('type', ['superadministrator', 'admin'])->get();
@@ -1526,11 +1526,11 @@ foreach ($users as $user) {
         $message = Lang::get('site.new_driver_from_company')
             . ' ' . $driver->id . ' '
             . Lang::get('site.by') . ' '
-            . Lang::get('site.user') . ' ' . (auth()->user()->name ?? '');
+            . Lang::get('site.user') . ' ' . ( $company->name ?? '');
 
         Notification::send(
             $user,
-            new \App\Notifications\FcmPushNotification($title, $message, [$user->fcm_token])
+            new FcmPushNotification($title, $message, [$user->fcm_token])
         );
     }
 }
