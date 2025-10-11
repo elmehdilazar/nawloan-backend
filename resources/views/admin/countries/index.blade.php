@@ -232,7 +232,7 @@
 
         const baseUrl = this.dataset.url;
         const qp = new URLSearchParams();
-        checked.forEach(id => qp.append('ids[]', id));
+        checked.forEach(id => qp.append('id[]', id));
 
         // Redirect (GET) to keep href behavior
         window.location.href = baseUrl + (baseUrl.includes('?') ? '&' : '?') + qp.toString();
