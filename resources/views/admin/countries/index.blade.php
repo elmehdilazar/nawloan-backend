@@ -15,13 +15,8 @@
                 @lang('site.export')
             </a>
             @endif
-<a href="#"
-   id="delete-selected"
-   data-url="{{ route('admin.countries.destroy-selected') }}"
-   class="btn btn-danger"> {{-- keep your original classes --}}
-   @lang('site.delete')
-</a>
-           @if(auth()->user()->hasPermission('countries_create'))
+            <a href="" class="btn btn-danger onchange-visible">Delete</a>
+            @if(auth()->user()->hasPermission('countries_create'))
                 <a class="btn btn-navy onchange-hidden" href="{{route('admin.countries.create')}}"
                    title="@lang('site.add') @lang('site.country_code')">
                     @lang('site.add') @lang('site.country_code')
@@ -98,13 +93,7 @@
         <tbody>
         @foreach ($countries as $index=>$country)
             <tr>
-                <td class="dt-body-center">
-  <div class="dt-checkbox">
-    <input type="checkbox" class="row-check" id="checkbox-{{ $country->id }}" value="{{ $country->id }}">
-    <label for="checkbox-{{ $country->id }}" class="visual-checkbox"></label>
-  </div>
-</td>
-
+                <td></td>
                 <td>{{$index + 1}}</td>
                 <td>
                     <div class="user-col">
@@ -217,35 +206,4 @@
     <script src='{{asset('assets/tiny/js/dataTables.bootstrap4.min.js')}}'></script>
     <!-- DataTables Playground (Setups, Options, Actions) -->
     <script src='{{asset('assets/js/dataTables-init.js')}}'></script>
- 
-<script>
-(function () {
-    const link = document.getElementById('delete-selected');
-    if (!link) return;
-
-    link.addEventListener('click', function (e) {
-        e.preventDefault();
-
-        const checked = Array.from(document.querySelectorAll('.row-check:checked')).map(c => c.value);
-
-        if (checked.length === 0) {
-            alert("@lang('site.no_items_selected')");
-            return;
-        }
-
-        if (!confirm("@lang('site.confirm_delete_selected')")) {
-            return;
-        }
-
-        const baseUrl = this.dataset.url;
-        const qp = new URLSearchParams();
-        checked.forEach(id => qp.append('ids[]', id));
-
-        // Redirect via href (GET)
-        window.location.href = baseUrl + (baseUrl.includes('?') ? '&' : '?') + qp.toString();
-    });
-})();
-</script>
-
-
 @endsection
