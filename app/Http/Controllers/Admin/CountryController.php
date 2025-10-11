@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\Rule;
 use Intervention\Image\Facades\Image;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Arr;
 
 class CountryController extends Controller
 {
@@ -242,4 +243,27 @@ class CountryController extends Controller
     {
         return Excel::download(new CountriesCodesExport,  Lang::get('site.countries_codes') . '-' . Carbon::now()->format('Y-m-d_H-i-s') . '.xlsx');
     }
+    public function destroySelected(Request $request)
+{
+    // Accept ids[] or ids=1,2,3
+    $ids = $request->query('id', []);
+
+    if (is_string($ids)) {
+        $ids = array_filter(explode(',', $ids));
+    }
+
+    $ids = array_values(array_unique(array_map('intval', Arr::wrap($ids))));
+
+    if (empty($ids)) {
+        return back()->with('error', __('site.no_items_selected'));
+    }
+
+    // Optional: cleanup related files before delete
+    // $countries = Country::whereIn('id', $ids)->get();
+    // foreach ($countries as $country) { /* unlink files if needed */ }
+
+    Country::whereIn('id', $ids)->delete();
+
+    return back()->with('success', __('site.deleted_success'));
+}
 }
