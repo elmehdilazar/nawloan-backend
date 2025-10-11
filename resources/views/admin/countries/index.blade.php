@@ -18,9 +18,10 @@
 <a href="#"
    id="delete-selected"
    data-url="{{ route('admin.countries.destroy-selected') }}"
-   class="btn btn-danger"> {{-- keep your existing classes --}}
-    @lang('site.delete')
-</a>            @if(auth()->user()->hasPermission('countries_create'))
+   class="btn btn-danger"> {{-- keep your original classes --}}
+   @lang('site.delete')
+</a>
+           @if(auth()->user()->hasPermission('countries_create'))
                 <a class="btn btn-navy onchange-hidden" href="{{route('admin.countries.create')}}"
                    title="@lang('site.add') @lang('site.country_code')">
                     @lang('site.add') @lang('site.country_code')
@@ -97,7 +98,13 @@
         <tbody>
         @foreach ($countries as $index=>$country)
             <tr>
-                <td></td>
+                <td class="dt-body-center">
+  <div class="dt-checkbox">
+    <input type="checkbox" class="row-check" id="checkbox-{{ $country->id }}" value="{{ $country->id }}">
+    <label for="checkbox-{{ $country->id }}" class="visual-checkbox"></label>
+  </div>
+</td>
+
                 <td>{{$index + 1}}</td>
                 <td>
                     <div class="user-col">
@@ -232,9 +239,9 @@
 
         const baseUrl = this.dataset.url;
         const qp = new URLSearchParams();
-        checked.forEach(id => qp.append('id[]', id));
+        checked.forEach(id => qp.append('ids[]', id));
 
-        // Redirect (GET) to keep href behavior
+        // Redirect via href (GET)
         window.location.href = baseUrl + (baseUrl.includes('?') ? '&' : '?') + qp.toString();
     });
 })();
