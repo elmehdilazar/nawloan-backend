@@ -956,12 +956,17 @@ if ($driverData) {
             break;
     }
     $message .= ' ' . $order->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user') . ' ' . auth()->user()->name;
-
+$object='{
+  "order_id": ' . $order->id . ',
+  "user_id": ' . $order->user_id . ',
+  "offer_id": ' . $order->offer_id . ',
+  "status": "' . $order->status . '
+  "}';
     $data = [
         'title' => $order->status,
         'body' => 'add_body',
         'target' => 'order',
-        'object' => $order,
+        'object' => $object ?? null,
         'link' => route('admin.orders.index', ['number' => $order->id]),
         'target_id' => $order->id,
         'sender' => $user->name,
