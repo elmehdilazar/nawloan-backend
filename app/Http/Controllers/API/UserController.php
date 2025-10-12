@@ -95,7 +95,7 @@ class UserController extends BaseController
                          $noti->data['target_id']. ' ',
                  'by'=>  $noti->data['user'] . ' ',
                  'link'=>$noti->data['link'],
-                 'object'=>$noti->data['object'],
+                 'object'=>$noti->data['object'] ??'',
 
                  'target_id'=> $noti->data['target_id'],
                   'target'=> $noti->data['target']
