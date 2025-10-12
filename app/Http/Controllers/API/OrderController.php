@@ -962,6 +962,7 @@ $object='{
   "offer_id": ' . $order->offer_id . ',
   "status": "' . $order->status . '
   "}';
+  $object = json_decode($object);
     $data = [
         'title' => $order->status,
         'body' => 'add_body',
