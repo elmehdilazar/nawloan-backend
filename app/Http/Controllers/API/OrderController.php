@@ -956,13 +956,13 @@ if ($driverData) {
             break;
     }
     $message .= ' ' . $order->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user') . ' ' . auth()->user()->name;
-$object='{
-  "order_id": ' . $order->id . ',
-  "user_id": ' . $order->user_id . ',
-  "offer_id": ' . $order->offer_id . ',
-  "status": "' . $order->status . '
-  "}';
-  $object = json_decode($object);
+$object = [
+    'order_id' => $order->id,
+    'user_id'  => $order->user_id,
+    'offer_id' => $order->offer_id,
+    'status'   => $order->status,
+];
+  $object = json_encode($object);
     $data = [
         'title' => $order->status,
         'body' => 'add_body',
