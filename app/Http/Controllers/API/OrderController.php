@@ -962,16 +962,16 @@ $object = [
     'offer_id' => $order->offer_id,
     'status'   => $order->status,
 ];
-  $object = json_encode($object);
-    $data = [
-        'title' => $order->status,
-        'body' => 'add_body',
-        'target' => 'order',
-        'object' => $object ?? null,
-        'link' => route('admin.orders.index', ['number' => $order->id]),
-        'target_id' => $order->id,
-        'sender' => $user->name,
-    ];
+
+$data = [
+    'title'      => $order->status,
+    'body'       => 'add_body',
+    'target'     => 'order',
+    'object'     => $object, // ← keep as array (no json_encode)
+    'link'       => route('admin.orders.index', ['number' => $order->id]),
+    'target_id'  => $order->id,
+    'sender'     => $user->name ?? null,
+];
 
    $users = User::where('type', 'admin')->orWhere('type', 'superadministrator')->get();
     $provider = User::find($order->driver_id);
