@@ -961,6 +961,7 @@ if ($driverData) {
         'title' => $order->status,
         'body' => 'add_body',
         'target' => 'order',
+        'object' => $order,
         'link' => route('admin.orders.index', ['number' => $order->id]),
         'target_id' => $order->id,
         'sender' => $user->name,
