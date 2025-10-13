@@ -436,10 +436,17 @@ public function getByAgencyId($id)
         ]);
         $offer['drivers']=$drivers;
         $user = User::find($offer->user_id);
+        $object = [
+    'order_id' => $order->id,
+    'user_id'  => $order->user_id,
+    'offer_id' => $order->offer_id,
+    'status'   => $order->status,
+];
         $data = [
             'title' => 'add_offer',
             'body' => 'add_body',
             'target' => 'order',
+            'object' => $object,
             'link'  => route('admin.orders.index', ['number' => $offer->order_id]),
             'target_id' => $offer->order_id,
             'sender' => $user->name,
@@ -673,10 +680,17 @@ public function getByAgencyId($id)
         }
         $offer = Offer::with('statuses')->find($id);
         $user = User::find($offer->user_id);
+        $object = [
+    'order_id' => $offer->order_id,
+    'user_id'  => $offer->user_id,
+    'offer_id' => $offer->id,
+    'status'   => $offer->status,
+];
         $data = [
             'title' => $offer->status,
             'body' => 'add_body',
             'target' => 'offer',
+            'object' => $object,
             'link'  => route('admin.orders.index', ['number' => $offer->order_id]),
             'target_id' => $offer->id,
             'sender' => $user->name,

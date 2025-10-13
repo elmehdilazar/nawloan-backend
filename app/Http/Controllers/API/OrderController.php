@@ -477,10 +477,17 @@ $admins = User::whereIn('type', ['superadministrator', 'admin'])->get();
             'created_at' => Carbon::now()
         ]);
         $user = User::find($order->user_id);
+        $object = [
+    'order_id' => $order->id,
+    'user_id'  => $order->user_id,
+    'offer_id' => $order->offer_id,
+    'status'   => $order->status,
+];
         $data = [
             'title' => 'add',
             'body' => 'add_body',
             'target' => 'order',
+            'object' => $object,
             'link' => route('admin.orders.index', ['number' => $order->id]),
             'target_id' => $order->id,
             'sender' => $user->name,
@@ -565,10 +572,17 @@ $admins = User::whereIn('type', ['superadministrator', 'admin'])->get();
             'notes' => $request->notes,
         ]);
         $user = User::find($order->user_id);
+        $object = [
+    'order_id' => $order->id,
+    'user_id'  => $order->user_id,
+    'offer_id' => $order->offer_id,
+    'status'   => $order->status,
+];
         $data = [
             'title' => 'edit',
             'body' => 'edit_body',
             'target' => 'order',
+            'object' => $object,
             'link' => route('admin.orders.index', ['number' => $order->id]),
             'target_id' => $order->id,
             'sender' => $user->name,
