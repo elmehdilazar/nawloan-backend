@@ -5586,6 +5586,16 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
     column-gap: 20px;
     text-align: right;
 }
+.rtl .image-input>label, .dropzone-field label, .input-group:not(.inline) label, .textarea-group:not(.inline) label, .checkbox-group:not(.inline)>label, .radio-group:not(.inline)>label {
+
+    text-align: right;
+
+}
+.rtl .section-title {
+ 
+    text-align: right;
+
+}
 /*
 -----------------------------------------------------------------------
     !End Modals CSS
