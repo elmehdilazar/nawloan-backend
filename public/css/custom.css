@@ -5189,7 +5189,7 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
     transform: translateY(-50%);
     left: 16px;
     width: 14px;
-    right: unset;
+    right: unset !important;
     height: 14px;
     object-fit: contain;
 }
