@@ -5523,7 +5523,7 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
     top: 50%;
     transform: translateY(-50%);
     left: 16px;
-    
+    right: unset;
     width: 14px;
     height: 14px;
     object-fit: contain;
