@@ -74,7 +74,7 @@ class CouponController extends BaseController
          DB::commit();
             return $this->sendResponse($coupon, 'Add new  coupons success');
         } catch (\Excaption $th) {
-            return response()->json('Error: '.$th);
+            return $this->sendResponse($coupon,'Error: '.$th);
         }
     }
 
