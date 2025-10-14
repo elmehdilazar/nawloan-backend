@@ -716,6 +716,7 @@
         'Not_Found' => 'غير موجود',
         'pick_up'=>'التقاط',
         'delivered'=>'تم التوصيل ',  
-        'company_driver' => 'سائق شركة'
-
+        'company_driver' => 'سائق شركة',
+         'search_chat_placeholder' => 'البحث عن الرسالة أو الاسم…',
+'chat_message_holder'=>'اكتب رسالة...'
     ];

@@ -716,5 +716,7 @@ return [
          'pick_up'=>'pick up',
         'delivered'=>'delivered ',
         'company_driver' => 'Company Driver',
+        'search_chat_placeholder' => 'Search Message Or Name…',
+        'chat_message_holder'=>'Write Your Message'
 
 ];
