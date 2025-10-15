@@ -5459,12 +5459,12 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
 }
 .rtl .input-group .position-relative i, .rtl .input-group .position-relative img {
     position: absolute;
-     top: unset; 
+    /* top: unset; */
     transform: translateY(-50%);
-    left: 100px;
-    
+    left: 20px;
     pointer-events: none;
     z-index: 3;
+    right: unset;
 }
 .rtl .intl-tel-input .country-list {
     position: absolute;
