@@ -718,5 +718,7 @@
         'delivered'=>'تم التوصيل ',  
         'company_driver' => 'سائق شركة',
          'search_chat_placeholder' => 'البحث عن الرسالة أو الاسم…',
-'chat_message_holder'=>'اكتب رسالة...'
+'chat_message_holder'=>'اكتب رسالة...',
+'show_password' => 'إظهار كلمة المرور',
+
     ];
