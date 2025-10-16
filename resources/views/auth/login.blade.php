@@ -29,7 +29,7 @@
                             <div class="position-relative">
                                 <input type="tel" id="intl_phone" class="form-control phone"
                                     placeholder="@lang('site.phone')" value="{{ old('phone') }}">
-                                <img src="{{ asset('assets/images/svgs/perm-phone.svg') }}" alt="" class="icon">
+                                <img  src="{{ asset('assets/images/svgs/perm-phone.svg') }}" alt="" class="icon phone-icon">
                             </div>
                         </div>
                         <input type="hidden" name="phone" id="phone">
@@ -46,7 +46,7 @@
                                 class="form-control icon-winput @error('password') is-invalid @enderror"
                                 placeholder="{{ __('site.password') }}" name="password" required
                                 autocomplete="current-password">
-                            <img src="{{ asset('assets/images/svgs/lock.svg') }}" alt="" class="icon">
+                            <img src="{{ asset('assets/images/svgs/lock.svg') }}" alt="" class="icon password-icon">
                         </div>
                     </div>
 
@@ -65,7 +65,7 @@
                             </label>
                         </div> --}}
 
-                        <a href="#">Forgot Password</a>
+                        {{-- <a href="#">Forgot Password</a> --}}
                     </div>
                     <div class="flex-col-center mt-5">
                         <button type="submit" class="btn btn-navy shadow-none">{{ __('site.login') }}</button>
