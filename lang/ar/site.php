@@ -660,6 +660,7 @@
         'please_enter_slug'         =>      'من فضلك ادخل السبيكه(Slug)',
 
         'coupons'                   =>      'كوبونات',
+        'coupon'                    =>      'كوبون',
         'create_coupons'            =>     'أضافة كوبون جديد',
         'coupon_name'               =>     'اسم الكوبون',
         'placeholder_coupon_name'   =>     'الرجاء إدخال اسم القسيمة',

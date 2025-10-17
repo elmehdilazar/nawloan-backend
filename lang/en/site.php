@@ -662,6 +662,7 @@ return [
     'Address In English'        =>      'Address In English',
 
     'coupons'                   =>      'Coupons',
+    'coupon'                    =>      'Coupon',
     'create_coupons'            =>     'Add New Coupons',
     'coupon_name'               =>     'Coupon Name',
     'placeholder_coupon_name'   =>     'Please Enter Coupon Name',
