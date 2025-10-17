@@ -26,75 +26,75 @@ use Illuminate\Support\Facades\Http;
 class OrderController extends BaseController
 {
     public function getLimtedOrders(Request $request)
-{
-    $start = $request->start ?? 0;
-    $limit = $request->limit ?? 10;
+    {
+        $start = $request->start ?? 0;
+        $limit = $request->limit ?? 10;
 
-    $orders = Order::with(['user', 'car', 'serviceProvider', 'shipmentType', 'statuses', 'evaluate', 'paymentType', 'transaction', 'accountant'])
-        ->when($request->status, function ($query) use ($request) {
-            return $query->where('status', $request->status);
-        })
-        ->offset($start)
-        ->limit($limit)
-        ->latest()
-        ->get();
+        $orders = Order::with(['user', 'car', 'serviceProvider', 'shipmentType', 'statuses', 'evaluate', 'paymentType', 'transaction', 'accountant'])
+            ->when($request->status, function ($query) use ($request) {
+                return $query->where('status', $request->status);
+            })
+            ->offset($start)
+            ->limit($limit)
+            ->latest()
+            ->get();
 
-    $success['count'] = $orders->count();
-    $success['orders'] = $orders;
+        $success['count'] = $orders->count();
+        $success['orders'] = $orders;
 
-    return $this->sendResponse($success, 'Limited orders retrieved successfully.');
-}
-
-    public function getOrdersInvitesByOrderId($order_id)
-{
-    $invites = OrdersInvites::where('order_id', $order_id)
-        ->with([
-            'order' => function ($query) {
-                $query->select('id', 'user_id', 'car_id', 'pick_up_address', 'drop_of_address', 'shipment_type_id', 'status');
-            },
-            'order.offers' // Ensure offers are related to the order
-        ])
-        ->get();
-
-    if ($invites->isEmpty()) {
-        return response()->json(['message' => 'No invites found for this order.'], 404);
+        return $this->sendResponse($success, 'Limited orders retrieved successfully.');
     }
 
-    // Get only users with type 'driver' and include their userData
-    $drivers = User::whereIn('id', $invites->pluck('driver_id')->unique())
-        ->where('type', 'driver') // ✅ Filter only drivers
-        ->with(['userData' => function ($query) {
-            $query->select('user_id', 'image', 'latitude', 'longitude', 'location', 'track_type')
-                ->with('car', function ($carQuery) {
-                    $carQuery->select('id', 'name_ar', 'name_en', 'image', 'weight');
-                });
-        }])
-        ->get();
+    public function getOrdersInvitesByOrderId($order_id)
+    {
+        $invites = OrdersInvites::where('order_id', $order_id)
+            ->with([
+                'order' => function ($query) {
+                    $query->select('id', 'user_id', 'car_id', 'pick_up_address', 'drop_of_address', 'shipment_type_id', 'status');
+                },
+                'order.offers' // Ensure offers are related to the order
+            ])
+            ->get();
 
-    // Format response
-    $invitesWithOrders = $invites->map(function ($invite) {
-        return [
-            'id' => $invite->id,
-            'user_id' => $invite->user_id,
-            'driver_id' => $invite->driver_id,
-            'order_id' => $invite->order_id,
-            'order' => $invite->order, // ✅ Includes order details
-            'offers' => $invite->order->offers ?? [] // ✅ Includes related offers
-        ];
-    });
+        if ($invites->isEmpty()) {
+            return response()->json(['message' => 'No invites found for this order.'], 404);
+        }
 
-    return response()->json([
-        'message' => 'Orders invites retrieved successfully.',
-        'drivers' => $drivers, // ✅ Includes only drivers with userData
-        'data' => $invitesWithOrders
-    ]);
-}
+        // Get only users with type 'driver' and include their userData
+        $drivers = User::whereIn('id', $invites->pluck('driver_id')->unique())
+            ->where('type', 'driver') // ✅ Filter only drivers
+            ->with(['userData' => function ($query) {
+                $query->select('user_id', 'image', 'latitude', 'longitude', 'location', 'track_type')
+                    ->with('car', function ($carQuery) {
+                        $carQuery->select('id', 'name_ar', 'name_en', 'image', 'weight');
+                    });
+            }])
+            ->get();
+
+        // Format response
+        $invitesWithOrders = $invites->map(function ($invite) {
+            return [
+                'id' => $invite->id,
+                'user_id' => $invite->user_id,
+                'driver_id' => $invite->driver_id,
+                'order_id' => $invite->order_id,
+                'order' => $invite->order, // ✅ Includes order details
+                'offers' => $invite->order->offers ?? [] // ✅ Includes related offers
+            ];
+        });
+
+        return response()->json([
+            'message' => 'Orders invites retrieved successfully.',
+            'drivers' => $drivers, // ✅ Includes only drivers with userData
+            'data' => $invitesWithOrders
+        ]);
+    }
 
 
-public function getByDriverInvite(Request $request, $driver_id)
-{
+    public function getByDriverInvite(Request $request, $driver_id)
+    {
 
-    $orders = Order::with([
+        $orders = Order::with([
             'user',
             'car',
             'serviceProvider',
@@ -106,124 +106,124 @@ public function getByDriverInvite(Request $request, $driver_id)
             'accountant',
             'offers'              // handy if you still want the offer list
         ])
-        ->whereHas('invites', function ($q) use ($driver_id) {
-            $q->where('driver_id', $driver_id);
-        })
-        ->when($request->status, function ($q) use ($request) {
-            $q->where('status', $request->status);
-        })
-        ->latest()
-        ->get();
+            ->whereHas('invites', function ($q) use ($driver_id) {
+                $q->where('driver_id', $driver_id);
+            })
+            ->when($request->status, function ($q) use ($request) {
+                $q->where('status', $request->status);
+            })
+            ->latest()
+            ->get();
 
-    $success['count']  = $orders->count();
-    $success['orders'] = $orders;
+        $success['count']  = $orders->count();
+        $success['orders'] = $orders;
 
-    return $this->sendResponse($success, 'Orders invited to driver retrieved successfully.');
-}
+        return $this->sendResponse($success, 'Orders invited to driver retrieved successfully.');
+    }
 
 
     public function getByOrder($order_id)
-{
-    $invites = OrdersInvites::where('order_id', $order_id)
-        ->with([
-            'order' => function ($query) {
-                $query->with(['user', 'car', 'shipmentType']);
-            },
-            'offers',
-            'user' => function ($query) {
-                $query->with(['userData']);
-            },
+    {
+        $invites = OrdersInvites::where('order_id', $order_id)
+            ->with([
+                'order' => function ($query) {
+                    $query->with(['user', 'car', 'shipmentType']);
+                },
+                'offers',
+                'user' => function ($query) {
+                    $query->with(['userData']);
+                },
 
-        ])
-        ->get();
+            ])
+            ->get();
 
-    if ($invites->isEmpty()) {
-        return response()->json(['message' => 'No invites found for this order.'], 404);
+        if ($invites->isEmpty()) {
+            return response()->json(['message' => 'No invites found for this order.'], 404);
+        }
+
+        return response()->json([
+            'message' => 'Orders invites retrieved successfully.',
+            'data' => $invites
+        ]);
     }
 
-    return response()->json([
-        'message' => 'Orders invites retrieved successfully.',
-        'data' => $invites
-    ]);
-}
+    public function getByUser($user_id)
+    {
+        $invites = OrdersInvites::where('user_id', $user_id)
+            ->with([
+                'order' => function ($query) {
+                    $query->with(['user', 'car', 'shipmentType']);
+                },
+                'offers'
+            ])
+            ->get();
 
-public function getByUser($user_id)
-{
-    $invites = OrdersInvites::where('user_id', $user_id)
-        ->with([
-            'order' => function ($query) {
-                $query->with(['user', 'car', 'shipmentType']);
-            },
-            'offers'
-        ])
-        ->get();
+        if ($invites->isEmpty()) {
+            return response()->json(['message' => 'No invites found for this user.'], 404);
+        }
 
-    if ($invites->isEmpty()) {
-        return response()->json(['message' => 'No invites found for this user.'], 404);
+        return response()->json([
+            'message' => 'Orders invites retrieved successfully.',
+            'data' => $invites
+        ]);
     }
 
-    return response()->json([
-        'message' => 'Orders invites retrieved successfully.',
-        'data' => $invites
-    ]);
-}
+    public function saveFcmToken(Request $request)
+    {
+        $request->validate([
+            'token' => 'required|string'
+        ]);
 
-public function saveFcmToken(Request $request)
-{
-    $request->validate([
-        'token' => 'required|string'
-    ]);
+        // Save token for logged-in user or first user (for testing)
+        $user = auth()->user() ?? User::first();
+        $user->fcm_token = $request->token;
+        $user->save();
 
-    // Save token for logged-in user or first user (for testing)
-    $user = auth()->user() ?? User::first();
-    $user->fcm_token = $request->token;
-    $user->save();
-
-    return response()->json(['message' => 'FCM Token saved successfully!']);
-}
-
-public function sendWebNotification(Request $request)
-{
-    $firebaseServerKey = "AIzaSyDxTycXHWx6hMnpx90fSo2Y8SOFGXomA-w";
-
-    if (!$firebaseServerKey) {
-        return response()->json(['error' => 'Firebase Server Key not found'], 500);
+        return response()->json(['message' => 'FCM Token saved successfully!']);
     }
 
-    // Get first user (for testing) or target a specific user
-    $user = User::first();
-    $fcmToken = $user->fcm_token;
+    public function sendWebNotification(Request $request)
+    {
+        $firebaseServerKey = "AIzaSyDxTycXHWx6hMnpx90fSo2Y8SOFGXomA-w";
 
-    if (!$fcmToken) {
-        return response()->json(['error' => 'FCM token not found'], 400);
+        if (!$firebaseServerKey) {
+            return response()->json(['error' => 'Firebase Server Key not found'], 500);
+        }
+
+        // Get first user (for testing) or target a specific user
+        $user = User::first();
+        $fcmToken = $user->fcm_token;
+
+        if (!$fcmToken) {
+            return response()->json(['error' => 'FCM token not found'], 400);
+        }
+
+        $url = "https://fcm.googleapis.com/fcm/send";
+
+        $notificationData = [
+            'to' => $fcmToken,
+            'notification' => [
+                'title' => '🚀 Web Push Test',
+                'body' => 'This is a test push notification for your web app!',
+                'icon' => '/firebase-logo.png'
+            ],
+            'priority' => 'high'
+        ];
+
+        $response = Http::withHeaders([
+            'Authorization' => 'key=' . $firebaseServerKey,
+            'Content-Type'  => 'application/json',
+        ])->post($url, $notificationData);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Web push notification sent!',
+            'response' => $response->json(),
+        ]);
     }
 
-    $url = "https://fcm.googleapis.com/fcm/send";
 
-    $notificationData = [
-        'to' => $fcmToken,
-        'notification' => [
-            'title' => '🚀 Web Push Test',
-            'body' => 'This is a test push notification for your web app!',
-            'icon' => '/firebase-logo.png'
-        ],
-        'priority' => 'high'
-    ];
-
-    $response = Http::withHeaders([
-        'Authorization' => 'key=' . $firebaseServerKey,
-        'Content-Type'  => 'application/json',
-    ])->post($url, $notificationData);
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Web push notification sent!',
-        'response' => $response->json(),
-    ]);
-}
-
-
- /*   public function sendNotificatonToDrivers(Request $request, $id)
+    /*   public function sendNotificatonToDrivers(Request $request, $id)
     {
       $validator = Validator::make($request->all(), [
             'order_id' => 'required|exists:orders,id',
@@ -286,72 +286,71 @@ public function sendWebNotification(Request $request)
         }
     }*/
     public function sendNotificatonToDrivers(Request $request, $id)
-{
-    // Validate request
-    $validator = Validator::make($request->all(), [
-        'order_id' => 'required|exists:orders,id',
-        'drivers_id' => 'required|array',
-        'drivers_id.*' => 'exists:users,id',
-    ]);
+    {
+        // Validate request
+        $validator = Validator::make($request->all(), [
+            'order_id' => 'required|exists:orders,id',
+            'drivers_id' => 'required|array',
+            'drivers_id.*' => 'exists:users,id',
+        ]);
 
-    if ($validator->fails()) {
-        return response()->json(['error' => $validator->errors()], 400);
-    }
-
-    // Find the company
-    $company = User::where('type', 'driverCompany')->find($id);
-    if (!$company) {
-        return response()->json(['error' => 'Company not found'], 404);
-    }
-
-    // Get the drivers assigned to this company or where type is superadministrator or admin
-    
-    $drivers = User::whereIn('id', $request->drivers_id)->get();
-$admins = User::whereIn('type', ['superadministrator', 'admin'])->get();
-    $title = Lang::get('site.new_invited_by_company');
-    $message = Lang::get('site.order_number') . ' ' . $request->order_id;
-    $link = route('admin.orders.index', ['number' => $request->order_id]);
-
-    $notifiedDrivers = 0;
-
-    foreach ($drivers as $driver) {
-        // Check if driver is already invited
-        $existingInvite = OrdersInvites::where([
-            'user_id' => $company->id,
-            'driver_id' => $driver->id,
-            'order_id' => $request->order_id,
-        ])->exists();
-
-        if (!$existingInvite) {
-            // Create an invite record
-            OrdersInvites::create([
-                'user_id' => $company->id,
-                'driver_id' => $driver->id,
-                'order_id' => $request->order_id
-            ]);
-
-            // Prepare notification data
-            $notificationData = [
-                'title' => $title,
-                'body' => $message,
-                'target' => 'order',
-                'link' => $link,
-                'target_id' => $request->order_id,
-                'sender' => $company->name, // Company sending the invite
-            ];
-
-            // Send the local database notification
-       Notification::send($driver, new LocalNotification($notificationData));
-            $notifiedDrivers++;
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
         }
 
+        // Find the company
+        $company = User::where('type', 'driverCompany')->find($id);
+        if (!$company) {
+            return response()->json(['error' => 'Company not found'], 404);
+        }
 
-                 $message2 = $title  . ' ' . $company->name. ' ' . $message ;
-           //    $title = Lang::get('site.not_new_order');
-                Notification::send($driver, new FcmPushNotification($title, $message2, [$driver->fcm_token]));
+        // Get the drivers assigned to this company or where type is superadministrator or admin
 
-    }
- foreach ($admins as $admin) {     
+        $drivers = User::whereIn('id', $request->drivers_id)->get();
+        $admins = User::whereIn('type', ['superadministrator', 'admin'])->get();
+        $title = Lang::get('site.new_invited_by_company');
+        $message = Lang::get('site.order_number') . ' ' . $request->order_id;
+        $link = route('admin.orders.index', ['number' => $request->order_id]);
+
+        $notifiedDrivers = 0;
+
+        foreach ($drivers as $driver) {
+            // Check if driver is already invited
+            $existingInvite = OrdersInvites::where([
+                'user_id' => $company->id,
+                'driver_id' => $driver->id,
+                'order_id' => $request->order_id,
+            ])->exists();
+
+            if (!$existingInvite) {
+                // Create an invite record
+                OrdersInvites::create([
+                    'user_id' => $company->id,
+                    'driver_id' => $driver->id,
+                    'order_id' => $request->order_id
+                ]);
+
+                // Prepare notification data
+                $notificationData = [
+                    'title' => $title,
+                    'body' => $message,
+                    'target' => 'order',
+                    'link' => $link,
+                    'target_id' => $request->order_id,
+                    'sender' => $company->name, // Company sending the invite
+                ];
+
+                // Send the local database notification
+                Notification::send($driver, new LocalNotification($notificationData));
+                $notifiedDrivers++;
+            }
+
+
+            $message2 = $title  . ' ' . $company->name . ' ' . $message;
+            //    $title = Lang::get('site.not_new_order');
+            Notification::send($driver, new FcmPushNotification($title, $message2, [$driver->fcm_token]));
+        }
+        foreach ($admins as $admin) {
 
             // Prepare notification data
             $notificationData = [
@@ -363,28 +362,26 @@ $admins = User::whereIn('type', ['superadministrator', 'admin'])->get();
                 'sender' => $company->name, // Company sending the invite
             ];
             // Send the local database notification
-       Notification::send($admin, new LocalNotification($notificationData));
-                 $message2 = $title  . ' ' . $company->name. ' ' . $message ;
-           //    $title = Lang::get('site.not_new_order');
-                Notification::send($admin, new FcmPushNotification($title, $message2, [$admin->fcm_token]));
-
+            Notification::send($admin, new LocalNotification($notificationData));
+            $message2 = $title  . ' ' . $company->name . ' ' . $message;
+            //    $title = Lang::get('site.not_new_order');
+            Notification::send($admin, new FcmPushNotification($title, $message2, [$admin->fcm_token]));
+        }
+        if ($notifiedDrivers > 0) {
+            return response()->json([
+                'message' => 'Notifications sent successfully. ' . $driver->fcm_token,
+                'notified_count' => $notifiedDrivers
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'No new notifications sent. Drivers may already be invited.'
+            ]);
+        }
     }
-    if ($notifiedDrivers > 0) {
-        return response()->json([
-            'message' => 'Notifications sent successfully. '.$driver->fcm_token,
-            'notified_count' => $notifiedDrivers
-        ]);
-    } else {
-        return response()->json([
-            'message' => 'No new notifications sent. Drivers may already be invited.'
-        ]);
-    }
-}
 
     public function getByUserId($id)
     {
-        $orders = Order::with(['user', 'car', 'serviceProvider', 'shipmentType', 'statuses', 'evaluate', 'paymentType', 'transaction', 'accountant'])->
-        where('user_id', $id)->latest()->get();
+        $orders = Order::with(['user', 'car', 'serviceProvider', 'shipmentType', 'statuses', 'evaluate', 'paymentType', 'transaction', 'accountant'])->where('user_id', $id)->latest()->get();
         $success['count'] = $orders->count();
         $success['orders'] = $orders;
         return $this->sendResponse($success, 'Orders information.');
@@ -478,11 +475,11 @@ $admins = User::whereIn('type', ['superadministrator', 'admin'])->get();
         ]);
         $user = User::find($order->user_id);
         $object = [
-    'order_id' => $order->id,
-    'user_id'  => $order->user_id,
-    'offer_id' => $order->offer_id,
-    'status'   => $order->status,
-];
+            'order_id' => $order->id,
+            'user_id'  => $order->user_id,
+            'offer_id' => $order->offer_id,
+            'status'   => $order->status,
+        ];
         $data = [
             'title' => 'add',
             'body' => 'add_body',
@@ -496,11 +493,11 @@ $admins = User::whereIn('type', ['superadministrator', 'admin'])->get();
 
         $users = User::where('type', 'superadministrator')->orWhere('type', 'admin')->orWhere('user_type', 'service_provider')->get();
         foreach ($users as $user) {
-           Notification::send($user, new LocalNotification($data));
-             if (!empty($user->fcm_token)) {
-                 
-                 $message = Lang::get('site.not_new_order_msg')  . ' ' . $order->id. ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user')  . ' ' . auth()->user()->name;
-               $title = Lang::get('site.not_new_order');
+            Notification::send($user, new LocalNotification($data));
+            if (!empty($user->fcm_token)) {
+
+                $message = Lang::get('site.not_new_order_msg')  . ' ' . $order->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user')  . ' ' . auth()->user()->name;
+                $title = Lang::get('site.not_new_order');
                 Notification::send($user, new FcmPushNotification($title, $message, [$user->fcm_token]));
             }
         }
@@ -573,11 +570,11 @@ $admins = User::whereIn('type', ['superadministrator', 'admin'])->get();
         ]);
         $user = User::find($order->user_id);
         $object = [
-    'order_id' => $order->id,
-    'user_id'  => $order->user_id,
-    'offer_id' => $order->offer_id,
-    'status'   => $order->status,
-];
+            'order_id' => $order->id,
+            'user_id'  => $order->user_id,
+            'offer_id' => $order->offer_id,
+            'status'   => $order->status,
+        ];
         $data = [
             'title' => 'edit',
             'body' => 'edit_body',
@@ -587,15 +584,15 @@ $admins = User::whereIn('type', ['superadministrator', 'admin'])->get();
             'target_id' => $order->id,
             'sender' => $user->name,
         ];
-     
-        
+
+
         DB::commit();
         $order1 = Order::with(['user', 'car', 'serviceProvider', 'shipmentType', 'statuses', 'evaluate', 'paymentType', 'transaction', 'accountant'])->find($order->id);
-$users = User::where('type', 'superadministrator')->orWhere('type', 'admin')->orWhere('user_type', 'service_provider')->get();
+        $users = User::where('type', 'superadministrator')->orWhere('type', 'admin')->orWhere('user_type', 'service_provider')->get();
         foreach ($users as $user) {
             Notification::send($user, new LocalNotification($data));
-             if (!empty($user->fcm_token)) {
-                $message = Lang::get('site.not_edit_order_msg') . ' ' . $order->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user')  . ' '. auth()->user()->name;
+            if (!empty($user->fcm_token)) {
+                $message = Lang::get('site.not_edit_order_msg') . ' ' . $order->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user')  . ' ' . auth()->user()->name;
                 $title = Lang::get('site.not_edit_order');
                 Notification::send($user, new FcmPushNotification($title, $message, [$user->fcm_token]));
             }
@@ -841,217 +838,222 @@ $users = User::where('type', 'superadministrator')->orWhere('type', 'admin')->or
         return $this->sendResponse($success, 'Order status created successfully.');
     }*/
     public function changeStatus(Request $request, $id)
-{
-    $validator = Validator::make($request->all(), [
-        'user_id' => 'required|exists:users,id',
-        'order_id' => 'required|exists:orders,id',
-        'status' => 'required',
-        'distance' => 'nullable|string',
-        'change_by' => 'nullable|string',
-        'notes' => 'nullable|string',
-    ]);
-
-    if ($validator->fails()) {
-        $msgs = $validator->errors()->all();
-        return $this->sendError('Validation Error.', $msgs);
-    }
-
-    $order = Order::find($id);
-    if (!$order) {
-        return $this->sendError('Data not found.', ['Order not exists']);
-    }
-
-    DB::beginTransaction();
-    $order->update(['status' => $request->status]);
-    $order = Order::with(['accountant', 'statuses'])->find($id);
-
-    if ($order->status != 'cancel') {
-        OrderStatus::create([
-            'user_id' => $request->user_id,
-            'order_id' => $order->id,
-            'distance' => $request->distance,
-            'status' => $order->status,
-            'change_by' => $request->change_by,
+    {
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|exists:users,id',
+            'order_id' => 'required|exists:orders,id',
+            'status' => 'required',
+            'distance' => 'nullable|string',
+            'change_by' => 'nullable|string',
+            'notes' => 'nullable|string',
         ]);
 
-        $offer = Offer::find($order->offer_id);
-        /* -------- Update driver availability only if offer exists -------- */
-        if ($offer) {
-            $driverData = UserData::where('user_id', $offer->driver_id)->first();
-            if ($driverData) {
-                switch ($order->status) {
-                    case 'approve':                       // offer accepted
-                        $driverData->update(['status' => 'busy']);
-                        break;
+        if ($validator->fails()) {
+            $msgs = $validator->errors()->all();
+            return $this->sendError('Validation Error.', $msgs);
+        }
 
-                    case 'pick_up':                       // driver en-route / loading
-                    case 'delivered':                      // still handling shipment
-                        $driverData->update(['status' => 'in_Shipment']);
-                        break;
+        $order = Order::find($id);
+        if (!$order) {
+            return $this->sendError('Data not found.', ['Order not exists']);
+        }
 
-                    case 'completed':
-                    case 'complete':  // job finished
-                    case 'cancel':
-                    case 'cancelled': // cancelled by driver / seeker
-                        $driverData->update(['status' => 'available']);
-                        break;
+        DB::beginTransaction();
+        $order->update(['status' => $request->status]);
+        $order = Order::with(['accountant', 'statuses'])->find($id);
+
+        if ($order->status != 'cancel') {
+            OrderStatus::create([
+                'user_id' => $request->user_id,
+                'order_id' => $order->id,
+                'distance' => $request->distance,
+                'status' => $order->status,
+                'change_by' => $request->change_by,
+            ]);
+
+            $offer = Offer::find($order->offer_id);
+            /* -------- Update driver availability only if offer exists -------- */
+            if ($offer) {
+                $driverData = UserData::where('user_id', $offer->driver_id)->first();
+                if ($driverData) {
+                    switch ($order->status) {
+                        case 'approve':                       // offer accepted
+                            $driverData->update(['status' => 'busy']);
+                            break;
+
+                        case 'pick_up':                       // driver en-route / loading
+                        case 'delivered':                      // still handling shipment
+                            $driverData->update(['status' => 'in_Shipment']);
+                            break;
+
+                        case 'completed':
+                        case 'complete':  // job finished
+                        case 'cancel':
+                        case 'cancelled': // cancelled by driver / seeker
+                            $driverData->update(['status' => 'available']);
+                            break;
+                    }
+                }
+
+                $offer->update(['status' => $order->status]);
+                OfferStatus::create([
+                    'user_id' => $offer->driver_id,
+                    'offer_id' => $offer->id,
+                    'status' => $order->status,
+                    'change_by' => $offer->driver_id,
+                ]);
+            }
+
+            if ($order->status === 'approve') {
+                $chatRoom = \App\Models\ChatRoom::updateOrCreate(
+                    ['order_id' => $order->id],
+                    [
+                        'title' => 'Order # ' . $order->id,
+                        'description' => 'Chat Room For Order Number : ' . $order->id
+                    ]
+                );
+
+                $chatRoom->join($order->user_id);
+                if ($order->service_provider) {
+                    $chatRoom->join($order->service_provider);
                 }
             }
 
-            $offer->update(['status' => $order->status]);
-            OfferStatus::create([
-                'user_id' => $offer->driver_id,
-                'offer_id' => $offer->id,
-                'status' => $order->status,
-                'change_by' => $offer->driver_id,
-            ]);
+            if ($order->status == 'cancel') {
+                $accountant = OrderAccountant::where('order_id', $order->id)->first();
+                $des_Cost = $accountant->diesel_cost * $request->distance;
+                $accountant->update(['fine' => $accountant->fine + $des_Cost]);
+                $driver = UserData::where('user_id', $order->service_provider)->first();
+                $pending_balance = $driver->pending_balance - $accountant->service_provider_amount + $des_Cost;
+                $driver->update(['pending_balance' => $pending_balance]);
+
+                $user = UserData::where('user_id', $order->user_id)->first();
+                if ($user->type == 'factory') {
+                    $outstanding_balance = $user->outstanding_balance - $order->total_price + $accountant->fine - $des_Cost;
+                    $user->update(['outstanding_balance' => $outstanding_balance]);
+                } elseif ($user->type == 'user') {
+                    $balance = $user->balance - $order->total_price + $accountant->fine - $des_Cost;
+                    $user->update(['balance' => $user->balance + $balance, 'outstanding_balance' => $user->outstanding_balance - $balance]);
+                }
+            }
+
+            // Notification logic
+            $user = User::find($order->user_id);
+            // Build title/message keys first so we can localize for multiple locales
+            $titleKey = '';
+            $messageKey = '';
+            switch ($order->status) {
+                case 'approve':
+                    $messageKey = 'not_approve_offer_msg';
+                    $titleKey = 'not_approve_offer';
+                    break;
+                case 'pick_up':
+                    $messageKey = 'not_pick_up_order_msg';
+                    $titleKey = 'not_pick_up_order';
+                    break;
+                case 'delivered':
+                    $messageKey = 'not_delivered_order_msg';
+                    $titleKey = 'not_delivered_order';
+                    break;
+                case 'complete':
+                case 'completed':
+                    $messageKey = 'not_complete_order_msg';
+                    $titleKey = 'not_complete_order';
+                    UserData::where('user_id', $order->service_provider)->update(['status' => 'available']);
+                    break;
+                case 'cancel':
+                case 'cancelled':
+                    $messageKey = 'not_cancel_order_msg';
+                    $titleKey = 'not_cancel_order';
+                    break;
+                case 'pending':
+                    $messageKey = 'not_pend_order_msg';
+                    $titleKey = 'not_pend_order';
+                    break;
+                default:
+                    $messageKey = 'not_pend_order_msg';
+                    $titleKey = 'not_pend_order';
+                    break;
+            }
+            // Resolve current-locale strings for FCM/body composition
+            $title = Lang::get('site.' . $titleKey);
+            $message = Lang::get('site.' . $messageKey);
+            $message .= ' ' . $order->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user') . ' ' . auth()->user()->name;
+
+            // Common notification object payload
+            $object = [
+                'order_id' => $order->id,
+                'user_id'  => $order->user_id,
+                'offer_id' => $order->offer_id,
+                'status'   => $order->status,
+            ];
+
+            // Keys for admin dashboard notifications (rendered via @lang('site.{key}'))
+            $statusKey = $order->status; // e.g. approve, pick_up, delivered, complete, cancel, pending
+            $bodyKey   = $messageKey ?: 'add_body'; // Prefer specific message key when available
+
+            // Admin/superadmin/service-provider (dashboard) notification payload
+            $dataAdmin = [
+                'title'      => $titleKey, // resolved in Blade via @lang('site.' . title)
+                'body'       => $bodyKey,   // optional body key
+                'target'     => 'order',
+                'object'     => $object,
+                'link'       => route('admin.orders.index', ['number' => $order->id]),
+                'target_id'  => $order->id,
+                'sender'     => $user->name ?? null,
+            ];
+
+            // Frontend users (seeker/provider app) should get localized strings directly
+            $dataFront = [
+                'title'      => [
+                    'ar' => Lang::get('site.' . $titleKey, [], 'ar'),
+                    'en' => Lang::get('site.' . $titleKey, [], 'en'),
+                ],
+                'body'       => [
+                    'ar' => Lang::get('site.' . $messageKey, [], 'ar'),
+                    'en' => Lang::get('site.' . $messageKey, [], 'en'),
+                ],
+                'target'     => 'order',
+                'object'     => $object,
+                'link'       => route('admin.orders.index', ['number' => $order->id]),
+                'target_id'  => $order->id,
+                'sender'     => $user->name ?? null,
+            ];
+
+
+
+            $users = User::where('type', 'admin')->orWhere('type', 'superadministrator')->get();
+
+            // Determine provider id from order (service_provider) or from offer
+            $providerId = $order->service_provider ?? ($offer->driver_id ?? null);
+            $provider = $providerId ? User::find($providerId) : null;
+            $user_sekker = User::find($order->user_id);
+
+            // Notify provider if available
+            if ($provider) {
+                if (!empty($provider->fcm_token)) {
+                    Notification::send($provider, new FcmPushNotification($title, $message, [$provider->fcm_token]));
+                }
+                Notification::send($provider, new LocalNotification($dataFront));
+            }
+
+            // Notify seeker if available
+            if ($user_sekker) {
+                if (!empty($user_sekker->fcm_token)) {
+                    Notification::send($user_sekker, new FcmPushNotification($title, $message, [$user_sekker->fcm_token]));
+                }
+                Notification::send($user_sekker, new LocalNotification($dataFront));
+            }
+            foreach ($users as $user) {
+                Notification::send($user, new FcmPushNotification($title, $message, [$user->fcm_token]));
+                // Admin/superadmin (dashboard) gets translation-key payload
+                Notification::send($user, new LocalNotification($dataAdmin));
+            }
+
+            DB::commit();
+            return $this->sendResponse(['order' => $order], 'Order status updated successfully.');
         }
-
-    if ($order->status === 'approve') {
-        $chatRoom = \App\Models\ChatRoom::updateOrCreate(
-            ['order_id' => $order->id],
-            [
-                'title' => 'Order # ' . $order->id,
-                'description' => 'Chat Room For Order Number : ' . $order->id
-            ]
-        );
-
-        $chatRoom->join($order->user_id);
-        if ($order->service_provider) {
-            $chatRoom->join($order->service_provider);
-        }
     }
-
-    if ($order->status == 'cancel') {
-        $accountant = OrderAccountant::where('order_id', $order->id)->first();
-        $des_Cost = $accountant->diesel_cost * $request->distance;
-        $accountant->update(['fine' => $accountant->fine + $des_Cost]);
-        $driver = UserData::where('user_id', $order->service_provider)->first();
-        $pending_balance = $driver->pending_balance - $accountant->service_provider_amount + $des_Cost;
-        $driver->update(['pending_balance' => $pending_balance]);
-
-        $user = UserData::where('user_id', $order->user_id)->first();
-        if ($user->type == 'factory') {
-            $outstanding_balance = $user->outstanding_balance - $order->total_price + $accountant->fine - $des_Cost;
-            $user->update(['outstanding_balance' => $outstanding_balance]);
-        } elseif ($user->type == 'user') {
-            $balance = $user->balance - $order->total_price + $accountant->fine - $des_Cost;
-            $user->update(['balance' => $user->balance + $balance, 'outstanding_balance' => $user->outstanding_balance - $balance]);
-        }
-    }
-
-    // Notification logic
-    $user = User::find($order->user_id);
-    // Build title/message keys first so we can localize for multiple locales
-    $titleKey = '';
-    $messageKey = '';
-    switch ($order->status) {
-        case 'approve':
-            $messageKey = 'not_approve_offer_msg';
-            $titleKey = 'not_approve_offer';
-            break;
-        case 'pick_up':
-            $messageKey = 'not_pick_up_order_msg';
-            $titleKey = 'not_pick_up_order';
-            break;
-        case 'delivered':
-            $messageKey = 'not_delivered_order_msg';
-            $titleKey = 'not_delivered_order';
-            break;
-        case 'complete':
-            $messageKey = 'not_complete_order_msg';
-            $titleKey = 'not_complete_order';
-            UserData::where('user_id', $order->service_provider)->update(['status' => 'available']);
-            break;
-        case 'cancel':
-            $messageKey = 'not_cancel_order_msg';
-            $titleKey = 'not_cancel_order';
-            break;
-        case 'pending':
-            $messageKey = 'not_pend_order_msg';
-            $titleKey = 'not_pend_order';
-            break;
-    }
-    // Resolve current-locale strings for FCM/body composition
-    $title = Lang::get('site.' . $titleKey);
-    $message = Lang::get('site.' . $messageKey);
-    $message .= ' ' . $order->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user') . ' ' . auth()->user()->name;
-
-// Common notification object payload
-$object = [
-    'order_id' => $order->id,
-    'user_id'  => $order->user_id,
-    'offer_id' => $order->offer_id,
-    'status'   => $order->status,
-];
-
-// Keys for admin dashboard notifications (rendered via @lang('site.{key}'))
-$statusKey = $order->status; // e.g. approve, pick_up, delivered, complete, cancel, pending
-$bodyKey   = $messageKey ?: 'add_body'; // Prefer specific message key when available
-
-// Admin/superadmin/service-provider (dashboard) notification payload
-$dataAdmin = [
-    'title'      => $statusKey, // resolved in Blade via @lang('site.' . title)
-    'body'       => $bodyKey,   // optional body key
-    'target'     => 'order',
-    'object'     => $object,
-    'link'       => route('admin.orders.index', ['number' => $order->id]),
-    'target_id'  => $order->id,
-    'sender'     => $user->name ?? null,
-];
-
-// Frontend users (seeker/provider app) should get localized strings directly
-$dataFront = [
-    'title'      => [
-        'ar' => Lang::get('site.' . $titleKey, [], 'ar'),
-        'en' => Lang::get('site.' . $titleKey, [], 'en'),
-    ],
-    'body'       => [
-        'ar' => Lang::get('site.' . $messageKey, [], 'ar'),
-        'en' => Lang::get('site.' . $messageKey, [], 'en'),
-    ],
-    'target'     => 'order',
-    'object'     => $object,
-    'link'       => route('admin.orders.index', ['number' => $order->id]),
-    'target_id'  => $order->id,
-    'sender'     => $user->name ?? null,
-];
-
-
-
-    $users = User::where('type', 'admin')->orWhere('type', 'superadministrator')->get();
-
-    // Determine provider id from order (service_provider) or from offer
-    $providerId = $order->driver_id;
-    $provider = $providerId ? User::find($providerId) : null;
-    $user_sekker = User::find($order->user_id);
-
-    // Notify provider if available
-    if ($provider) {
-        if (!empty($provider->fcm_token)) {
-            Notification::send($provider, new FcmPushNotification($title, $message, [$provider->fcm_token]));
-        }
-        Notification::send($provider, new LocalNotification($dataFront));
-    }
-
-    // Notify seeker if available
-    if ($user_sekker) {
-        if (!empty($user_sekker->fcm_token)) {
-            Notification::send($user_sekker, new FcmPushNotification($title, $message, [$user_sekker->fcm_token]));
-        }
-        Notification::send($user_sekker, new LocalNotification($dataFront));
-    }
-    foreach ($users as $user) {
-          Notification::send($user, new FcmPushNotification($title, $message, [$user->fcm_token]));
-        // Admin/superadmin (dashboard) gets translation-key payload
-        Notification::send($user, new LocalNotification($dataAdmin));
-    }
-
-    DB::commit();
-    return $this->sendResponse(['order' => $order], 'Order status updated successfully.');
-}
-
-}
     public function Tracking_order(Order $order)
     {
         // $result=$order->get('pick_up_address','pick_up_late','pick_up_long','drop_of_address','drop_of_late','drop_of_long');
@@ -1063,7 +1065,5 @@ $dataFront = [
         $result['drop_of_long'] = $order->drop_of_long;
 
         return $this->sendResponse($result, '');
-
     }
-
 }
