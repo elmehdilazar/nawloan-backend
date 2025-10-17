@@ -473,32 +473,62 @@ class OrderController extends BaseController
             'notes' => $request->notes,
             'created_at' => Carbon::now()
         ]);
-        $user = User::find($order->user_id);
+        $creator = User::find($order->user_id);
         $object = [
             'order_id' => $order->id,
             'user_id'  => $order->user_id,
             'offer_id' => $order->offer_id,
             'status'   => $order->status,
         ];
-        $data = [
-            'title' => 'add',
-            'body' => 'add_body',
-            'target' => 'order',
-            'object' => $object,
-            'link' => route('admin.orders.index', ['number' => $order->id]),
+
+        // Keys for notifications
+        $titleKey = 'not_new_order';
+        $bodyKey  = 'not_new_order_msg';
+
+        // Admin dashboard payload (translation keys)
+        $dataAdmin = [
+            'title'     => $titleKey,
+            'body'      => $bodyKey,
+            'target'    => 'order',
+            'object'    => $object,
+            'link'      => route('admin.orders.index', ['number' => $order->id]),
             'target_id' => $order->id,
-            'sender' => $user->name,
+            'sender'    => $creator->name ?? (auth()->user()->name ?? 'System'),
         ];
-        //        $users = User::where('user_type','manage')->get();
 
-        $users = User::where('type', 'superadministrator')->orWhere('type', 'admin')->orWhere('user_type', 'service_provider')->get();
-        foreach ($users as $user) {
-            Notification::send($user, new LocalNotification($data));
-            if (!empty($user->fcm_token)) {
+        // Frontend payload (localized strings)
+        $dataFront = [
+            'title' => [
+                'ar' => Lang::get('site.' . $titleKey, [], 'ar'),
+                'en' => Lang::get('site.' . $titleKey, [], 'en'),
+            ],
+            'body' => [
+                'ar' => Lang::get('site.' . $bodyKey, [], 'ar'),
+                'en' => Lang::get('site.' . $bodyKey, [], 'en'),
+            ],
+            'target'    => 'order',
+            'object'    => $object,
+            'link'      => route('admin.orders.index', ['number' => $order->id]),
+            'target_id' => $order->id,
+            'sender'    => $creator->name ?? (auth()->user()->name ?? 'System'),
+        ];
 
-                $message = Lang::get('site.not_new_order_msg')  . ' ' . $order->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user')  . ' ' . auth()->user()->name;
-                $title = Lang::get('site.not_new_order');
-                Notification::send($user, new FcmPushNotification($title, $message, [$user->fcm_token]));
+        // FCM text (current-locale)
+        $title = Lang::get('site.' . $titleKey);
+        $message = Lang::get('site.' . $bodyKey)  . ' ' . $order->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user')  . ' ' . (auth()->user()->name ?? 'System');
+
+        // Notify admins and service providers
+        $recipients = User::where('type', 'superadministrator')
+            ->orWhere('type', 'admin')
+            ->orWhere('user_type', 'service_provider')
+            ->get();
+        foreach ($recipients as $recipient) {
+            // Admins get key-based payload; service providers get localized payload
+            $isAdmin = in_array($recipient->type, ['admin', 'superadministrator'], true);
+            $payload = $isAdmin ? $dataAdmin : $dataFront;
+            Notification::send($recipient, new LocalNotification($payload));
+            if (!empty($recipient->fcm_token)) {
+                Notification::send($recipient, new FcmPushNotification($title, $message, [$recipient->fcm_token]));
             }
         }
         DB::commit();
