@@ -941,35 +941,42 @@ if ($driverData) {
 
     // Notification logic
     $user = User::find($order->user_id);
-    $title = $message = '';
+    // Build title/message keys first so we can localize for multiple locales
+    $titleKey = '';
+    $messageKey = '';
     switch ($order->status) {
         case 'approve':
-            $message = Lang::get('site.not_approve_offer_msg');
-            $title = Lang::get('site.not_approve_offer');
+            $messageKey = 'not_approve_offer_msg';
+            $titleKey = 'not_approve_offer';
             break;
         case 'pick_up':
-            $message = Lang::get('site.not_pick_up_order_msg');
-            $title = Lang::get('site.not_pick_up_order');
+            $messageKey = 'not_pick_up_order_msg';
+            $titleKey = 'not_pick_up_order';
             break;
         case 'delivered':
-            $message = Lang::get('site.not_delivered_order_msg');
-            $title = Lang::get('site.not_delivered_order');
+            $messageKey = 'not_delivered_order_msg';
+            $titleKey = 'not_delivered_order';
             break;
         case 'complete':
-            $message = Lang::get('site.not_complete_order_msg');
-            $title = Lang::get('site.not_complete_order');
+            $messageKey = 'not_complete_order_msg';
+            $titleKey = 'not_complete_order';
             UserData::where('user_id', $order->service_provider)->update(['status' => 'available']);
             break;
         case 'cancel':
-            $message = Lang::get('site.not_cancel_order_msg');
-            $title = Lang::get('site.not_cancel_order');
+            $messageKey = 'not_cancel_order_msg';
+            $titleKey = 'not_cancel_order';
             break;
         case 'pending':
-            $message = Lang::get('site.not_pend_order_msg');
-            $title = Lang::get('site.not_pend_order');
+            $messageKey = 'not_pend_order_msg';
+            $titleKey = 'not_pend_order';
             break;
     }
+    // Resolve current-locale strings for FCM/body composition
+    $title = Lang::get('site.' . $titleKey);
+    $message = Lang::get('site.' . $messageKey);
     $message .= ' ' . $order->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user') . ' ' . auth()->user()->name;
+
+// Common notification object payload
 $object = [
     'order_id' => $order->id,
     'user_id'  => $order->user_id,
@@ -977,15 +984,39 @@ $object = [
     'status'   => $order->status,
 ];
 
-$data = [
-    'title'      => $order->status,
-    'body'       => 'add_body',
+// Keys for admin dashboard notifications (rendered via @lang('site.{key}'))
+$statusKey = $order->status; // e.g. approve, pick_up, delivered, complete, cancel, pending
+$bodyKey   = $messageKey ?: 'add_body'; // Prefer specific message key when available
+
+// Admin/superadmin/service-provider (dashboard) notification payload
+$dataAdmin = [
+    'title'      => $statusKey, // resolved in Blade via @lang('site.' . title)
+    'body'       => $bodyKey,   // optional body key
     'target'     => 'order',
-    'object'     => $object, // ← keep as array (no json_encode)
+    'object'     => $object,
     'link'       => route('admin.orders.index', ['number' => $order->id]),
     'target_id'  => $order->id,
     'sender'     => $user->name ?? null,
 ];
+
+// Frontend users (seeker/provider app) should get localized strings directly
+$dataFront = [
+    'title'      => [
+        'ar' => Lang::get('site.' . $titleKey, [], 'ar'),
+        'en' => Lang::get('site.' . $titleKey, [], 'en'),
+    ],
+    'body'       => [
+        'ar' => Lang::get('site.' . $messageKey, [], 'ar'),
+        'en' => Lang::get('site.' . $messageKey, [], 'en'),
+    ],
+    'target'     => 'order',
+    'object'     => $object,
+    'link'       => route('admin.orders.index', ['number' => $order->id]),
+    'target_id'  => $order->id,
+    'sender'     => $user->name ?? null,
+];
+
+
 
    $users = User::where('type', 'admin')->orWhere('type', 'superadministrator')->get();
     $provider = User::find($order->driver_id);
@@ -994,14 +1025,18 @@ $data = [
         Notification::send($provider, new FcmPushNotification($title, $message, [$provider->fcm_token]));
         // Notification::send("fMYK1Y4aImtQRe5Tqhru6A:APA91bGaUdFv2G_U5nuiHhjrWfrzpMrKgQ2sxPgh8NRy1-c56KWwrqaOm4GAQtFwgJuQ2-L4gVcO39b8TGIXhdxd96AMI4N4FkcFyOFkGix-sqw_KL4tzZg", new FcmPushNotification($title, $message, ["fMYK1Y4aImtQRe5Tqhru6A:APA91bGaUdFv2G_U5nuiHhjrWfrzpMrKgQ2sxPgh8NRy1-c56KWwrqaOm4GAQtFwgJuQ2-L4gVcO39b8TGIXhdxd96AMI4N4FkcFyOFkGix-sqw_KL4tzZg"]));
     }
+    // Provider gets localized payload as well
+    Notification::send($provider, new LocalNotification($dataFront));
     if (!empty($user_sekker->fcm_token)) {
         Notification::send($user_sekker, new FcmPushNotification($title, $message, [$user_sekker->fcm_token]));
          // Notification::send("fMYK1Y4aImtQRe5Tqhru6A:APA91bGaUdFv2G_U5nuiHhjrWfrzpMrKgQ2sxPgh8NRy1-c56KWwrqaOm4GAQtFwgJuQ2-L4gVcO39b8TGIXhdxd96AMI4N4FkcFyOFkGix-sqw_KL4tzZg", new FcmPushNotification($title, $message, ["fMYK1Y4aImtQRe5Tqhru6A:APA91bGaUdFv2G_U5nuiHhjrWfrzpMrKgQ2sxPgh8NRy1-c56KWwrqaOm4GAQtFwgJuQ2-L4gVcO39b8TGIXhdxd96AMI4N4FkcFyOFkGix-sqw_KL4tzZg"]));
-         Notification::send($user_sekker, new LocalNotification($data));
+         // Frontend user (seeker) gets localized payload
+         Notification::send($user_sekker, new LocalNotification($dataFront));
     }
     foreach ($users as $user) {
           Notification::send($user, new FcmPushNotification($title, $message, [$user->fcm_token]));
-        Notification::send($user, new LocalNotification($data));
+        // Admin/superadmin (dashboard) gets translation-key payload
+        Notification::send($user, new LocalNotification($dataAdmin));
     }
 
     DB::commit();
