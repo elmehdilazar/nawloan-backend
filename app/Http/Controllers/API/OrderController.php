@@ -1022,7 +1022,7 @@ $dataFront = [
     $users = User::where('type', 'admin')->orWhere('type', 'superadministrator')->get();
 
     // Determine provider id from order (service_provider) or from offer
-    $providerId = $order->service_provider ?? ($offer->driver_id ?? null);
+    $providerId = $order->driver_id;
     $provider = $providerId ? User::find($providerId) : null;
     $user_sekker = User::find($order->user_id);
 
