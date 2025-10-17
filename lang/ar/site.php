@@ -721,4 +721,24 @@
 'chat_message_holder'=>'اكتب رسالة...',
 'show_password' => 'إظهار كلمة المرور',
 
+        // Added to match English keys
+        'add_career'                =>      'أضف وظيفة',
+        'added_at'                  =>      'أضيف في',
+        'can_not_save_data'         =>      'لا يمكن حفظ البيانات حدث خطأ',
+        'can_not_update_data'       =>      'لا يمكن تحديث البيانات حدث خطأ',
+        'car_not_found'             =>      'نوع الشاحنة غير موجود',
+        'choose_company'            =>      'اختر الشركة',
+        'choose_service_seeker'     =>      'اختر طالب الخدمة',
+        'drop_of_late'              =>      'خط عرض نقطة التسليم',
+        'drop_of_long'              =>      'خط طول نقطة التسليم',
+        'father_info'               =>      'معلومات الأب',
+        'mother_info'               =>      'معلومات الأم',
+        'not_delivered_order'       =>      'تم التسليم من السائق',
+        'not_delivered_order_msg'   =>      'تم التسليم للطلب رقم',
+        'not_pick_up_order'         =>      'استلام السائق',
+        'not_pick_up_order_msg'     =>      'استلام السائق للطلب رقم',
+        'pick_up_late'              =>      'خط عرض نقطة الاستلام',
+        'pick_up_long'              =>      'خط طول نقطة الاستلام',
+        'Primary Link'              =>      'الرابط الأساسي',
+
     ];
