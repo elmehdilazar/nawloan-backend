@@ -85,6 +85,7 @@ return [
     'new_driver_from_company'              =>      'New Driver from Company ',
     'new_payment'           =>      'New Payment In',
     'new_payment_received'  =>      'New Payment Received In',
+    'payment_received_amount' =>    'A new payment of :amount :currency has been received.',
     'logout'                =>      'Logout',
     'name'                  =>      'Name',
     'email'                 =>      'Email',

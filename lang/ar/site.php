@@ -83,6 +83,7 @@
         'new_driver_from_company' =>   'سائق جديد من شركة',
         'new_payment'           =>      'عملية دفع جديدة في',
         'new_payment_received'=> 'تم إستلام عملية دفع جديدة في',
+        'payment_received_amount' => 'تم استلام دفعة جديدة بقيمة :amount :currency.',
         'logout'                =>      'الخروج',
         'name'                  =>      'الاسم',
         'email'                 =>      'البريد الإلكتروني',

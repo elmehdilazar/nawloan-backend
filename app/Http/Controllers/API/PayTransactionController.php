@@ -204,22 +204,57 @@ class PayTransactionController extends BaseController
                 }
             }
 
-            $notificationData = [
-                'title' => 'site.new_payment_received',
-                'body' => 'A new payment of ' . $request->amount . ' ' . $request->currency . ' has been made.',
-                'target' => 'order',
-                'link'  => route('admin.transactions.index', ['transaction_id' => $payTran->transaction_id]),
-                'target_id' => $request->order_id,
-                'sender' => $user->name ?? 'System',
+            // Build role-aware notification payloads
+            $titleKey = 'new_payment_received';
+            $bodyKey  = 'payment_received_amount';
+
+            $object = [
+                'order_id'        => (int) $request->order_id,
+                'user_id'         => (int) $request->user_id,
+                'transaction_id'  => (string) $payTran->transaction_id,
+                'amount'          => (float) $request->amount,
+                'currency'        => (string) $request->currency,
+                'status'          => (string) $request->status,
             ];
 
-            Notification::send($user, new LocalNotification($notificationData));
-            $message = Lang::get('site.new_payment_received') . ' ' .  $payTran->transaction_id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user')  . ' ' .  $user->name ?? 'System';
-            $title = Lang::get('site.new_payment_received');
+            // Admin dashboard payload (use keys; Blade resolves via @lang('site.' . key))
+            $notificationDataAdmin = [
+                'title'     => $titleKey,
+                'body'      => $bodyKey,
+                'target'    => 'order',
+                'object'    => $object,
+                'link'      => route('admin.transactions.index', ['transaction_id' => $payTran->transaction_id]),
+                'target_id' => $request->order_id,
+                'sender'    => $user->name ?? 'System',
+            ];
+
+            // Frontend payload (literal localized strings)
+            $notificationDataFront = [
+                'title' => [
+                    'ar' => Lang::get('site.' . $titleKey, [], 'ar'),
+                    'en' => Lang::get('site.' . $titleKey, [], 'en'),
+                ],
+                'body' => [
+                    'ar' => Lang::get('site.' . $bodyKey, ['amount' => $request->amount, 'currency' => $request->currency], 'ar'),
+                    'en' => Lang::get('site.' . $bodyKey, ['amount' => $request->amount, 'currency' => $request->currency], 'en'),
+                ],
+                'target'    => 'order',
+                'object'    => $object,
+                'link'      => route('admin.transactions.index', ['transaction_id' => $payTran->transaction_id]),
+                'target_id' => $request->order_id,
+                'sender'    => $user->name ?? 'System',
+            ];
+
+            // Send to payer/user (frontend-style payload)
+            Notification::send($user, new LocalNotification($notificationDataFront));
+
+            // Admins receive FCM + admin-style LocalNotification
+            $message = Lang::get('site.' . $titleKey) . ' ' .  $payTran->transaction_id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user')  . ' ' .  ($user->name ?? 'System');
+            $title = Lang::get('site.' . $titleKey);
             $admins = User::whereIn('type', ['admin', 'superadministrator'])->get();
             foreach ($admins as $admin) {
                 Notification::send($admin, new FcmPushNotification($title, $message, [$admin->fcm_token]));
-                Notification::send($admin, new LocalNotification($notificationData));
+                Notification::send($admin, new LocalNotification($notificationDataAdmin));
             }
 
             DB::commit();
