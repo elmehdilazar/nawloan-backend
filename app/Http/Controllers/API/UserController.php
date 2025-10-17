@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Facades\Image;
 use Illuminate\Validation\Rule;
@@ -96,37 +97,60 @@ class UserController extends BaseController
 
             // Resolve title (supports array ['ar'=>..,'en'=>..] or key string)
             $titleText = '';
+            $titleAr = '';
+            $titleEn = '';
             if (isset($data['title'])) {
                 if (is_array($data['title'])) {
-                    $titleText = $data['title'][$locale] ?? ($data['title']['en'] ?? reset($data['title']));
+                    $titleAr = $data['title']['ar'] ?? ($data['title']['en'] ?? reset($data['title']));
+                    $titleEn = $data['title']['en'] ?? ($data['title']['ar'] ?? reset($data['title']));
+                    $titleText = $data['title'][$locale] ?? ($data['title']['en'] ?? $titleEn);
                 } else {
                     $titleKey = (string) $data['title'];
-                    $titleText = __($titleKey && substr($titleKey, 0, 5) !== 'site.' ? 'site.' . $titleKey : $titleKey);
+                    $key = $titleKey && substr($titleKey, 0, 5) !== 'site.' ? 'site.' . $titleKey : $titleKey;
+                    $titleAr = Lang::get($key, [], 'ar');
+                    $titleEn = Lang::get($key, [], 'en');
+                    $titleText = Lang::get($key);
                 }
             }
 
             // Resolve body (supports array or key string)
             $bodyText = '';
+            $bodyAr = '';
+            $bodyEn = '';
             if (isset($data['body'])) {
                 if (is_array($data['body'])) {
-                    $bodyText = $data['body'][$locale] ?? ($data['body']['en'] ?? reset($data['body']));
+                    $bodyAr = $data['body']['ar'] ?? ($data['body']['en'] ?? reset($data['body']));
+                    $bodyEn = $data['body']['en'] ?? ($data['body']['ar'] ?? reset($data['body']));
+                    $bodyText = $data['body'][$locale] ?? ($data['body']['en'] ?? $bodyEn);
                 } else {
                     $bodyKey = (string) $data['body'];
-                    $bodyText = __($bodyKey && substr($bodyKey, 0, 5) !== 'site.' ? 'site.' . $bodyKey : $bodyKey);
+                    $key = $bodyKey && substr($bodyKey, 0, 5) !== 'site.' ? 'site.' . $bodyKey : $bodyKey;
+                    $bodyAr = Lang::get($key, [], 'ar');
+                    $bodyEn = Lang::get($key, [], 'en');
+                    $bodyText = Lang::get($key);
                 }
             }
 
             // Resolve target label when present
             $targetKey = $data['target'] ?? '';
-            $targetText = $targetKey ? __(substr($targetKey, 0, 5) !== 'site.' ? 'site.' . $targetKey : $targetKey) : '';
+            $targetText = $targetKey ? Lang::get(substr($targetKey, 0, 5) !== 'site.' ? 'site.' . $targetKey : $targetKey) : '';
+            $targetTextAr = $targetKey ? Lang::get(substr($targetKey, 0, 5) !== 'site.' ? 'site.' . $targetKey : $targetKey, [], 'ar') : '';
+            $targetTextEn = $targetKey ? Lang::get(substr($targetKey, 0, 5) !== 'site.' ? 'site.' . $targetKey : $targetKey, [], 'en') : '';
 
             // Build message: prefer body; else use title + target
             $message = trim(($bodyText ?: trim($titleText . ' ' . $targetText)) . ' ' . ($data['target_id'] ?? ''));
 
+            // Build i18n message variants
+            $messageAr = trim((($bodyAr ?: trim($titleAr . ' ' . $targetTextAr)) . ' ' . ($data['target_id'] ?? '')));
+            $messageEn = trim((($bodyEn ?: trim($titleEn . ' ' . $targetTextEn)) . ' ' . ($data['target_id'] ?? '')));
+
             $items[] = [
                 'id'        => $noti->id,
                 'title'     => $titleText,
+                'title_i18n'=> ['ar' => $titleAr, 'en' => $titleEn],
                 'message'   => $message,
+                'message_i18n' => ['ar' => $messageAr, 'en' => $messageEn],
+                'body_i18n' => ['ar' => $bodyAr, 'en' => $bodyEn],
                 'by'        => $data['user'] ?? '',
                 'link'      => $data['link'] ?? '',
                 'object'    => $data['object'] ?? null,
