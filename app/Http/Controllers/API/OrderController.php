@@ -875,27 +875,29 @@ $users = User::where('type', 'superadministrator')->orWhere('type', 'admin')->or
         ]);
 
         $offer = Offer::find($order->offer_id);
-                /* -------- NEW: update driver availability -------- */
-$driverData = UserData::where('user_id', $offer->driver_id)->first();
-if ($driverData) {
-    switch ($order->status) {
-        case 'approve':                       // offer accepted
-            $driverData->update(['status' => 'busy']);
-            break;
-
-        case 'pick_up':                       // driver en-route / loading
-        case 'delivered':                      // still handling shipment
-            $driverData->update(['status' => 'in_Shipment']);
-            break;
-
-        case 'completed':
-            case 'complete':  // job finished
-        case 'cancel':
-            case 'cancelled': // cancelled by driver / seeker
-            $driverData->update(['status' => 'available']);
-            break;
-    }
+        /* -------- Update driver availability only if offer exists -------- */
         if ($offer) {
+            $driverData = UserData::where('user_id', $offer->driver_id)->first();
+            if ($driverData) {
+                switch ($order->status) {
+                    case 'approve':                       // offer accepted
+                        $driverData->update(['status' => 'busy']);
+                        break;
+
+                    case 'pick_up':                       // driver en-route / loading
+                    case 'delivered':                      // still handling shipment
+                        $driverData->update(['status' => 'in_Shipment']);
+                        break;
+
+                    case 'completed':
+                    case 'complete':  // job finished
+                    case 'cancel':
+                    case 'cancelled': // cancelled by driver / seeker
+                        $driverData->update(['status' => 'available']);
+                        break;
+                }
+            }
+
             $offer->update(['status' => $order->status]);
             OfferStatus::create([
                 'user_id' => $offer->driver_id,
@@ -904,7 +906,6 @@ if ($driverData) {
                 'change_by' => $offer->driver_id,
             ]);
         }
-    }
 
     if ($order->status === 'approve') {
         $chatRoom = \App\Models\ChatRoom::updateOrCreate(
@@ -1018,20 +1019,27 @@ $dataFront = [
 
 
 
-   $users = User::where('type', 'admin')->orWhere('type', 'superadministrator')->get();
-    $provider = User::find($order->driver_id);
-     $user_sekker = User::find($order->user_id);
-    if (!empty($provider->fcm_token)) {
-        Notification::send($provider, new FcmPushNotification($title, $message, [$provider->fcm_token]));
-        // Notification::send("fMYK1Y4aImtQRe5Tqhru6A:APA91bGaUdFv2G_U5nuiHhjrWfrzpMrKgQ2sxPgh8NRy1-c56KWwrqaOm4GAQtFwgJuQ2-L4gVcO39b8TGIXhdxd96AMI4N4FkcFyOFkGix-sqw_KL4tzZg", new FcmPushNotification($title, $message, ["fMYK1Y4aImtQRe5Tqhru6A:APA91bGaUdFv2G_U5nuiHhjrWfrzpMrKgQ2sxPgh8NRy1-c56KWwrqaOm4GAQtFwgJuQ2-L4gVcO39b8TGIXhdxd96AMI4N4FkcFyOFkGix-sqw_KL4tzZg"]));
+    $users = User::where('type', 'admin')->orWhere('type', 'superadministrator')->get();
+
+    // Determine provider id from order (service_provider) or from offer
+    $providerId = $order->service_provider ?? ($offer->driver_id ?? null);
+    $provider = $providerId ? User::find($providerId) : null;
+    $user_sekker = User::find($order->user_id);
+
+    // Notify provider if available
+    if ($provider) {
+        if (!empty($provider->fcm_token)) {
+            Notification::send($provider, new FcmPushNotification($title, $message, [$provider->fcm_token]));
+        }
+        Notification::send($provider, new LocalNotification($dataFront));
     }
-    // Provider gets localized payload as well
-    Notification::send($provider, new LocalNotification($dataFront));
-    if (!empty($user_sekker->fcm_token)) {
-        Notification::send($user_sekker, new FcmPushNotification($title, $message, [$user_sekker->fcm_token]));
-         // Notification::send("fMYK1Y4aImtQRe5Tqhru6A:APA91bGaUdFv2G_U5nuiHhjrWfrzpMrKgQ2sxPgh8NRy1-c56KWwrqaOm4GAQtFwgJuQ2-L4gVcO39b8TGIXhdxd96AMI4N4FkcFyOFkGix-sqw_KL4tzZg", new FcmPushNotification($title, $message, ["fMYK1Y4aImtQRe5Tqhru6A:APA91bGaUdFv2G_U5nuiHhjrWfrzpMrKgQ2sxPgh8NRy1-c56KWwrqaOm4GAQtFwgJuQ2-L4gVcO39b8TGIXhdxd96AMI4N4FkcFyOFkGix-sqw_KL4tzZg"]));
-         // Frontend user (seeker) gets localized payload
-         Notification::send($user_sekker, new LocalNotification($dataFront));
+
+    // Notify seeker if available
+    if ($user_sekker) {
+        if (!empty($user_sekker->fcm_token)) {
+            Notification::send($user_sekker, new FcmPushNotification($title, $message, [$user_sekker->fcm_token]));
+        }
+        Notification::send($user_sekker, new LocalNotification($dataFront));
     }
     foreach ($users as $user) {
           Notification::send($user, new FcmPushNotification($title, $message, [$user->fcm_token]));
