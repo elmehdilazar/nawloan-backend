@@ -2573,6 +2573,101 @@
         }
       }
     },
+    "/users/getNotifications/{id}": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Get notifications for user",
+        "description": "Returns the user's notifications including dual-locale fields (ar/en). The plain title/message reflect the optional ?lang parameter or app locale.",
+        "operationId": "getUserNotifications",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "User ID",
+            "required": true,
+            "type": "integer",
+            "example": 90
+          },
+          {
+            "name": "lang",
+            "in": "query",
+            "description": "Optional locale for flattened title/message (ar|en). i18n fields are always included.",
+            "required": false,
+            "type": "string",
+            "enum": ["ar", "en"]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User notifications retrieved successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": { "type": "boolean", "example": true },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "count": { "type": "integer", "example": 5 },
+                    "notifications": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string", "example": "861caafa-fb73-4543-ab44-8bf88d376dd1" },
+                          "title": { "type": "string", "example": "New order" },
+                          "title_i18n": {
+                            "type": "object",
+                            "properties": {
+                              "ar": { "type": "string", "example": "طلب جديد" },
+                              "en": { "type": "string", "example": "New order" }
+                            }
+                          },
+                          "body_i18n": {
+                            "type": "object",
+                            "properties": {
+                              "ar": { "type": "string", "example": "تم إضافة طلب جديد بالرقم" },
+                              "en": { "type": "string", "example": "New order number" }
+                            }
+                          },
+                          "message": { "type": "string", "example": "New order number 678" },
+                          "message_i18n": {
+                            "type": "object",
+                            "properties": {
+                              "ar": { "type": "string", "example": "تم إضافة طلب جديد بالرقم 678" },
+                              "en": { "type": "string", "example": "New order number 678" }
+                            }
+                          },
+                          "by": { "type": "string", "example": "Mariam" },
+                          "link": { "type": "string", "example": "https://nawloan.net/admin/orders?number=678" },
+                          "object": {
+                            "type": "object",
+                            "properties": {
+                              "order_id": { "type": "integer", "example": 678 },
+                              "user_id": { "type": "integer", "example": 90 },
+                              "offer_id": { "type": ["integer", "null"], "example": null },
+                              "status": { "type": "string", "example": "pending" }
+                            }
+                          },
+                          "target_id": { "type": "integer", "example": 678 },
+                          "target": { "type": "string", "example": "order" }
+                        }
+                      }
+                    }
+                  }
+                },
+                "message": { "type": "string", "example": "User Notification." }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
     "/users/normal": {
       "get": {
         "tags": [
