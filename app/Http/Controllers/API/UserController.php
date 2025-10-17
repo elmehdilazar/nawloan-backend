@@ -85,25 +85,60 @@ class UserController extends BaseController
     public function getNotifications($id)
     {
         $user = User::find($id);
-        $notifications =auth()->user()->notifications()->select('id','data')->latest()->orderBy('created_at','ASC')->get();
-        $notis=[];
-        foreach($notifications as $noti){
-            $not=[
-                'id'=>$noti->id,
-                'title'=>__('site.'.$noti->data['title'].'') . ' '. $noti->data['target'] ,
-                'message'=>__('site.'.$noti->data['title'].'') . ' '. $noti->data['target'] . ' '.
-                         $noti->data['target_id']. ' ',
-                 'by'=>  $noti->data['user'] . ' ',
-                 'link'=>$noti->data['link'],
-                 'object'=>$noti->data['object'] ??'',
+        $notifications = auth()->user()->notifications()->select('id', 'data')->latest()->orderBy('created_at', 'ASC')->get();
 
-                 'target_id'=> $noti->data['target_id'],
-                  'target'=> $noti->data['target']
+        // Choose locale: request param ?lang=ar|en > app locale > en
+        $locale = request('lang', app()->getLocale() ?: 'en');
+
+        $items = [];
+        foreach ($notifications as $noti) {
+            $data = (array) $noti->data;
+
+            // Resolve title (supports array ['ar'=>..,'en'=>..] or key string)
+            $titleText = '';
+            if (isset($data['title'])) {
+                if (is_array($data['title'])) {
+                    $titleText = $data['title'][$locale] ?? ($data['title']['en'] ?? reset($data['title']));
+                } else {
+                    $titleKey = (string) $data['title'];
+                    $titleText = __($titleKey && substr($titleKey, 0, 5) !== 'site.' ? 'site.' . $titleKey : $titleKey);
+                }
+            }
+
+            // Resolve body (supports array or key string)
+            $bodyText = '';
+            if (isset($data['body'])) {
+                if (is_array($data['body'])) {
+                    $bodyText = $data['body'][$locale] ?? ($data['body']['en'] ?? reset($data['body']));
+                } else {
+                    $bodyKey = (string) $data['body'];
+                    $bodyText = __($bodyKey && substr($bodyKey, 0, 5) !== 'site.' ? 'site.' . $bodyKey : $bodyKey);
+                }
+            }
+
+            // Resolve target label when present
+            $targetKey = $data['target'] ?? '';
+            $targetText = $targetKey ? __(substr($targetKey, 0, 5) !== 'site.' ? 'site.' . $targetKey : $targetKey) : '';
+
+            // Build message: prefer body; else use title + target
+            $message = trim(($bodyText ?: trim($titleText . ' ' . $targetText)) . ' ' . ($data['target_id'] ?? ''));
+
+            $items[] = [
+                'id'        => $noti->id,
+                'title'     => $titleText,
+                'message'   => $message,
+                'by'        => $data['user'] ?? '',
+                'link'      => $data['link'] ?? '',
+                'object'    => $data['object'] ?? null,
+                'target_id' => $data['target_id'] ?? null,
+                'target'    => $targetKey,
             ];
-            array_push($notis,$not);
         }
-        $success['count'] =  $notifications->count();
-        $success['notifications'] =  $notis;
+
+        $success = [
+            'count' => $notifications->count(),
+            'notifications' => $items,
+        ];
         return $this->sendResponse($success, 'User Notification.');
     }
      public function terms(Request $request){
