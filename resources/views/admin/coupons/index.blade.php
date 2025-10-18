@@ -24,6 +24,12 @@
             @endif
         </div>
     </div>
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+    @if(session('error_message'))
+        <div class="alert alert-danger">{{ session('error_message') }}</div>
+    @endif
     <div class="table-responsive">
         <table class="table datatables datatables-active" id="dataTable-2" cellspacing="0" width="100%">
             <thead>

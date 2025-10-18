@@ -10,9 +10,21 @@
     <!--=== Start Main ===-->
 
     <h2 class="section-title mb-5">@lang('site.create_coupons')</h2>
+    @if(session('error_message'))
+        <div class="alert alert-danger">{{ session('error_message') }}</div>
+    @endif
+    @if($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <form action="{{route('admin.coupons.store')}}" method="post">
         @csrf
-        @method('post')
         <div class="row">
                 <div class="col-xl-7 col-lg-9 co-12">
                     <div class="input-group">
