@@ -330,18 +330,24 @@ class OrderController extends BaseController
                     'order_id' => $request->order_id
                 ]);
 
-                // Prepare notification data
-                $notificationData = [
-                    'title' => $title,
-                    'body' => $message,
+                // Frontend localized payload for drivers
+                $notificationDataFront = [
+                    'title' => [
+                        'ar' => Lang::get('site.new_invited_by_company', [], 'ar'),
+                        'en' => Lang::get('site.new_invited_by_company', [], 'en'),
+                    ],
+                    'body' => [
+                        'ar' => Lang::get('site.order_number', [], 'ar') . ' ' . $request->order_id,
+                        'en' => Lang::get('site.order_number', [], 'en') . ' ' . $request->order_id,
+                    ],
                     'target' => 'order',
                     'link' => $link,
                     'target_id' => $request->order_id,
-                    'sender' => $company->name, // Company sending the invite
+                    'sender' => $company->name,
                 ];
 
                 // Send the local database notification
-                Notification::send($driver, new LocalNotification($notificationData));
+                Notification::send($driver, new LocalNotification($notificationDataFront));
                 $notifiedDrivers++;
             }
 
@@ -352,17 +358,17 @@ class OrderController extends BaseController
         }
         foreach ($admins as $admin) {
 
-            // Prepare notification data
-            $notificationData = [
-                'title' => $title,
-                'body' => $message,
+            // Admin payload (keys)
+            $notificationDataAdmin = [
+                'title' => 'new_invited_by_company',
+                'body'  => 'order_number',
                 'target' => 'order',
                 'link' => $link,
                 'target_id' => $request->order_id,
-                'sender' => $company->name, // Company sending the invite
+                'sender' => $company->name,
             ];
             // Send the local database notification
-            Notification::send($admin, new LocalNotification($notificationData));
+            Notification::send($admin, new LocalNotification($notificationDataAdmin));
             $message2 = $title  . ' ' . $company->name . ' ' . $message;
             //    $title = Lang::get('site.not_new_order');
             Notification::send($admin, new FcmPushNotification($title, $message2, [$admin->fcm_token]));
@@ -598,33 +604,58 @@ class OrderController extends BaseController
             'desc' => $request->desc,
             'notes' => $request->notes,
         ]);
-        $user = User::find($order->user_id);
+        $creator = User::find($order->user_id);
         $object = [
             'order_id' => $order->id,
             'user_id'  => $order->user_id,
             'offer_id' => $order->offer_id,
             'status'   => $order->status,
         ];
-        $data = [
-            'title' => 'edit',
-            'body' => 'edit_body',
-            'target' => 'order',
-            'object' => $object,
-            'link' => route('admin.orders.index', ['number' => $order->id]),
+        // Keys for notifications
+        $titleKey = 'not_edit_order';
+        $bodyKey  = 'not_edit_order_msg';
+        // Admin payload (keys)
+        $dataAdmin = [
+            'title'     => $titleKey,
+            'body'      => $bodyKey,
+            'target'    => 'order',
+            'object'    => $object,
+            'link'      => route('admin.orders.index', ['number' => $order->id]),
             'target_id' => $order->id,
-            'sender' => $user->name,
+            'sender'    => $creator->name ?? (auth()->user()->name ?? 'System'),
+        ];
+        // Frontend payload (localized)
+        $dataFront = [
+            'title' => [
+                'ar' => Lang::get('site.' . $titleKey, [], 'ar'),
+                'en' => Lang::get('site.' . $titleKey, [], 'en'),
+            ],
+            'body' => [
+                'ar' => Lang::get('site.' . $bodyKey, [], 'ar'),
+                'en' => Lang::get('site.' . $bodyKey, [], 'en'),
+            ],
+            'target'    => 'order',
+            'object'    => $object,
+            'link'      => route('admin.orders.index', ['number' => $order->id]),
+            'target_id' => $order->id,
+            'sender'    => $creator->name ?? (auth()->user()->name ?? 'System'),
         ];
 
 
         DB::commit();
         $order1 = Order::with(['user', 'car', 'serviceProvider', 'shipmentType', 'statuses', 'evaluate', 'paymentType', 'transaction', 'accountant'])->find($order->id);
-        $users = User::where('type', 'superadministrator')->orWhere('type', 'admin')->orWhere('user_type', 'service_provider')->get();
-        foreach ($users as $user) {
-            Notification::send($user, new LocalNotification($data));
-            if (!empty($user->fcm_token)) {
-                $message = Lang::get('site.not_edit_order_msg') . ' ' . $order->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user')  . ' ' . auth()->user()->name;
-                $title = Lang::get('site.not_edit_order');
-                Notification::send($user, new FcmPushNotification($title, $message, [$user->fcm_token]));
+        $recipients = User::where('type', 'superadministrator')
+            ->orWhere('type', 'admin')
+            ->orWhere('user_type', 'service_provider')
+            ->get();
+        $title = Lang::get('site.' . $titleKey);
+        $message = Lang::get('site.' . $bodyKey) . ' ' . $order->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user')  . ' ' . (auth()->user()->name ?? 'System');
+        foreach ($recipients as $recipient) {
+            $isAdmin = in_array($recipient->type, ['admin', 'superadministrator'], true);
+            $payload = $isAdmin ? $dataAdmin : $dataFront;
+            Notification::send($recipient, new LocalNotification($payload));
+            if (!empty($recipient->fcm_token)) {
+                Notification::send($recipient, new FcmPushNotification($title, $message, [$recipient->fcm_token]));
             }
         }
         $success['order'] = $order1;
