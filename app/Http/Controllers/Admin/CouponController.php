@@ -64,6 +64,15 @@ class CouponController extends Controller
             return view('admin.coupons.index', ['coupons' => $coupons]);
         }
 
+        // Default listing when no active filter is provided
+        $coupons = Coupon::when($request->name, function ($query) use ($request) {
+                return $query->where('name', 'like', '%' . $request->name . '%');
+            })->when($request->code, function ($query) use ($request) {
+                return $query->where('code', 'like', '%' . $request->code . '%');
+            })
+            ->select()->latest()->paginate(10);
+        return view('admin.coupons.index', ['coupons' => $coupons]);
+
 
     }
 
