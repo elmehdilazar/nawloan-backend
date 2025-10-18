@@ -50,31 +50,41 @@ class CouponController extends BaseController
            }
     }
 
-    public function store(CouponRequest $request){
-        try {
-            if ($request->type!='discount' && $request->type!='fixed') {
-                return response()->json('the type field must contain discount or fixed ');
-            }
-            if ($request->apply_to!='enterprise' && $request->apply_to!='customer' && $request->apply_to!='all') {
-                return response()->json('the apply to field must contain enterprise or customer or all ');
-            }
+    public function store(CouponRequest $request)
+    {
+        // Additional guards beyond form-request
+        $errors = [];
+        if (!in_array($request->type, ['percentage', 'fixed'], true)) {
+            $errors[] = 'The type field must be percentage or fixed.';
+        }
+        if (!in_array($request->apply_to, ['enterprise', 'customer', 'all'], true)) {
+            $errors[] = 'The apply_to field must be enterprise, customer, or all.';
+        }
+        if ($errors) {
+            return $this->sendError('Validation Error.', $errors, 422);
+        }
+
         DB::beginTransaction();
-        $coupon = $request->validated();
-        $coupon['user_id'] = auth()->user()->id;
-        Coupon::create($coupon);
-         $data = [
-             'title' =>'Add',
-             'body' => "Add ",
-             'target' => 'coupon',
-             'link'  => route('admin.coupons.index', [ 'name' => $coupon['name']]),
-             'target_id' => $coupon['name'],
-             'sender' => auth()->user()->name,
-             ];
-         $this->sendNotification($data);
-         DB::commit();
-            return $this->sendResponse($coupon, 'Add new  coupons success');
-        } catch (\Excaption $th) {
-            return $this->sendResponse($coupon,'Error: '.$th);
+        try {
+            $coupon = $request->validated();
+            $coupon['user_id'] = auth()->id();
+            $created = Coupon::create($coupon);
+
+            $data = [
+                'title' => 'Add',
+                'body' => 'Add',
+                'target' => 'coupon',
+                'link'  => route('admin.coupons.index', ['name' => $coupon['name']]),
+                'target_id' => $coupon['name'],
+                'sender' => auth()->user()->name ?? 'System',
+            ];
+            $this->sendNotification($data);
+
+            DB::commit();
+            return $this->sendResponse($created, 'Coupon created successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError('Coupon creation failed.', [$e->getMessage()], 500);
         }
     }
 
@@ -174,4 +184,3 @@ class CouponController extends BaseController
         }
     }
 }
-
