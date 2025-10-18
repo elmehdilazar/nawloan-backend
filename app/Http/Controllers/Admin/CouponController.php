@@ -157,23 +157,21 @@ class CouponController extends Controller
         }
         return view('admin.coupons.edit', ['coupon' => $coupon]);
     }
-    public function update(CouponRequest $request , $id){
-        if ($request->type!='discount' && $request->type!='fixed') {
-            session()->flash('errors', 'the type field must contain discount or fixed');
-            return back()->withInput();
-        }
-        if ($request->apply_to!='enterprise'&& $request->apply_to!='customer'&& $request->apply_to!='all') {
-            session()->flash('errors', 'the apply to field must contain enterprise or customer or all ');
-            return back()->withInput();
-        }
-            $coupon = Coupon::withTrashed()->findOrFail($id);
-            DB::beginTransaction();
+    public function update(CouponRequest $request , $id)
+    {
+        $coupon = Coupon::withTrashed()->findOrFail($id);
+        DB::beginTransaction();
+        try {
             $coupon->update($request->validated());
-            $this->notifyCouponEvent('edit', $coupon['name']);
-                DB::commit();
+            $this->notifyCouponEvent('edit', $coupon->name);
+            DB::commit();
             session()->flash('success', __('site.edited_success'));
-        return redirect()->route('admin.coupons.index');
-
+            return redirect()->route('admin.coupons.index');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            session()->flash('error_message', __('site.something_wrong'));
+            return back()->withInput();
+        }
     }
 
     public function destroy($id){
