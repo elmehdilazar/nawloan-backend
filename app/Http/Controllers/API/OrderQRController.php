@@ -80,30 +80,60 @@ class OrderQRController extends Controller
         }
         $message .= ' ' . $order->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user') . ' ' . $user->name;
 
-        $data = [
-            'title' => $order->status,
-            'body' => 'add_body',
-            'target' => 'order',
-            'link' => route('admin.orders.index', ['number' => $order->id]),
+        // Build dual-locale payloads
+        $object = [
+            'order_id' => $order->id,
+            'user_id'  => $order->user_id,
+            'offer_id' => $order->offer_id,
+            'status'   => $order->status,
+        ];
+        $map = [
+            'pick_up'   => ['not_pick_up_order',     'not_pick_up_order_msg'],
+            'delivered' => ['not_delivered_order',   'not_delivered_order_msg'],
+        ];
+        $titleKey = $map[$order->status][0] ?? 'not_pend_order';
+        $bodyKey  = $map[$order->status][1] ?? 'not_pend_order_msg';
+
+        $dataAdmin = [
+            'title'     => $titleKey,
+            'body'      => $bodyKey,
+            'target'    => 'order',
+            'object'    => $object,
+            'link'      => route('admin.orders.index', ['number' => $order->id]),
             'target_id' => $order->id,
-            'sender' => $user->name,
+            'sender'    => $user->name,
+        ];
+        $dataFront = [
+            'title' => [
+                'ar' => Lang::get('site.' . $titleKey, [], 'ar'),
+                'en' => Lang::get('site.' . $titleKey, [], 'en'),
+            ],
+            'body' => [
+                'ar' => Lang::get('site.' . $bodyKey, [], 'ar'),
+                'en' => Lang::get('site.' . $bodyKey, [], 'en'),
+            ],
+            'target'    => 'order',
+            'object'    => $object,
+            'link'      => route('admin.orders.index', ['number' => $order->id]),
+            'target_id' => $order->id,
+            'sender'    => $user->name,
         ];
 
         $users = User::where('type', 'admin')->orWhere('type', 'superadministrator')->get();
-        $provider = User::find($order->driver_id);
+        $provider = $order->driver_id ? User::find($order->driver_id) : null;
         $user_sekker = User::find($order->user_id);
-        if (!empty($provider->fcm_token)) {
+        if ($provider && !empty($provider->fcm_token)) {
             Notification::send($provider, new FcmPushNotification($title, $message, [$provider->fcm_token]));
             // Notification::send("fMYK1Y4aImtQRe5Tqhru6A:APA91bGaUdFv2G_U5nuiHhjrWfrzpMrKgQ2sxPgh8NRy1-c56KWwrqaOm4GAQtFwgJuQ2-L4gVcO39b8TGIXhdxd96AMI4N4FkcFyOFkGix-sqw_KL4tzZg", new FcmPushNotification($title, $message, ["fMYK1Y4aImtQRe5Tqhru6A:APA91bGaUdFv2G_U5nuiHhjrWfrzpMrKgQ2sxPgh8NRy1-c56KWwrqaOm4GAQtFwgJuQ2-L4gVcO39b8TGIXhdxd96AMI4N4FkcFyOFkGix-sqw_KL4tzZg"]));
         }
-        if (!empty($user_sekker->fcm_token)) {
+        if ($user_sekker && !empty($user_sekker->fcm_token)) {
             Notification::send($user_sekker, new FcmPushNotification($title, $message, [$user_sekker->fcm_token]));
             // Notification::send("fMYK1Y4aImtQRe5Tqhru6A:APA91bGaUdFv2G_U5nuiHhjrWfrzpMrKgQ2sxPgh8NRy1-c56KWwrqaOm4GAQtFwgJuQ2-L4gVcO39b8TGIXhdxd96AMI4N4FkcFyOFkGix-sqw_KL4tzZg", new FcmPushNotification($title, $message, ["fMYK1Y4aImtQRe5Tqhru6A:APA91bGaUdFv2G_U5nuiHhjrWfrzpMrKgQ2sxPgh8NRy1-c56KWwrqaOm4GAQtFwgJuQ2-L4gVcO39b8TGIXhdxd96AMI4N4FkcFyOFkGix-sqw_KL4tzZg"]));
-            Notification::send($user_sekker, new LocalNotification($data));
+            Notification::send($user_sekker, new LocalNotification($dataFront));
         }
         foreach ($users as $user) {
             Notification::send($user, new FcmPushNotification($title, $message, [$user->fcm_token]));
-            Notification::send($user, new LocalNotification($data));
+            Notification::send($user, new LocalNotification($dataAdmin));
         }
         OrderStatusQR::where('order_id', $order->id)
             ->where('type', $payload['type'])
