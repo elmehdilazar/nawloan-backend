@@ -563,23 +563,60 @@ class OfferController extends BaseController
             'notes' => $request->notes,
         ]);
         $offer['drivers'] = $drivers;
-        $user = User::find($offer->user_id);
-        $data = [
-            'title' => 'edit_offer',
-            'body' => 'edit_body',
-            'target' => 'order',
-            'link'  => route('admin.orders.index', ['number' => $offer->order_id]),
-            'target_id' => $offer->order_id,
-            'sender' => $user->name,
+        $creator = User::find($offer->user_id);
+        // Keys for notifications
+        $titleKey = 'not_edit_offer';
+        $bodyKey  = 'not_edit_offer_msg';
+        $object = [
+            'order_id' => $offer->order_id,
+            'user_id'  => $offer->user_id,
+            'offer_id' => $offer->id,
+            'status'   => $offer->status,
         ];
-        $message = Lang::get('site.not_edit_offer_msg') . ' ' . $offer->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user')  . ' ' . auth()->user()->name;
-        $title = Lang::get('site.not_edit_offer');
-        Notification::send($offer->order->user, new FcmPushNotification($title, $message, [$offer->order->user->fcm_token]));
-        Notification::send($offer->order->user, new LocalNotification($data));
-        $users = User::where('type', 'admin')->orWhere('type', 'superadministrator')->get();
-        foreach ($users as $user) {
-            Notification::send($user, new FcmPushNotification($title, $message, [$user->fcm_token]));
-            Notification::send($user, new LocalNotification($data));
+        // Admin payload (keys)
+        $dataAdmin = [
+            'title'     => $titleKey,
+            'body'      => $bodyKey,
+            'target'    => 'order',
+            'object'    => $object,
+            'link'      => route('admin.orders.index', ['number' => $offer->order_id]),
+            'target_id' => $offer->order_id,
+            'sender'    => $creator->name ?? (auth()->user()->name ?? 'System'),
+        ];
+        // Frontend payload (localized)
+        $dataFront = [
+            'title' => [
+                'ar' => Lang::get('site.' . $titleKey, [], 'ar'),
+                'en' => Lang::get('site.' . $titleKey, [], 'en'),
+            ],
+            'body' => [
+                'ar' => Lang::get('site.' . $bodyKey, [], 'ar'),
+                'en' => Lang::get('site.' . $bodyKey, [], 'en'),
+            ],
+            'target'    => 'order',
+            'object'    => $object,
+            'link'      => route('admin.orders.index', ['number' => $offer->order_id]),
+            'target_id' => $offer->order_id,
+            'sender'    => $creator->name ?? (auth()->user()->name ?? 'System'),
+        ];
+        // FCM text
+        $title = Lang::get('site.' . $titleKey);
+        $message = Lang::get('site.' . $bodyKey) . ' ' . $offer->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user')  . ' ' . (auth()->user()->name ?? 'System');
+        // Notify order owner
+        $orderOwner = $offer->order->user ?? null;
+        if ($orderOwner) {
+            if (!empty($orderOwner->fcm_token)) {
+                Notification::send($orderOwner, new FcmPushNotification($title, $message, [$orderOwner->fcm_token]));
+            }
+            Notification::send($orderOwner, new LocalNotification($dataFront));
+        }
+        // Notify admins
+        $admins = User::whereIn('type', ['admin','superadministrator'])->get();
+        foreach ($admins as $admin) {
+            if (!empty($admin->fcm_token)) {
+                Notification::send($admin, new FcmPushNotification($title, $message, [$admin->fcm_token]));
+            }
+            Notification::send($admin, new LocalNotification($dataAdmin));
         }
         DB::commit();
         $success['offer'] =  $offer;
@@ -719,43 +756,62 @@ class OfferController extends BaseController
             'offer_id' => $offer->id,
             'status'   => $offer->status,
         ];
-        $data = [
-            'title' => $offer->status,
-            'body' => 'add_body',
-            'target' => 'offer',
-            'object' => $object,
-            'link'  => route('admin.orders.index', ['number' => $offer->order_id]),
-            'target_id' => $offer->id,
-            'sender' => $user->name,
+        // Map status -> title/body keys
+        $map = [
+            'approve'     => ['not_approve_offer',      'not_approve_offer_msg'],
+            'wait_accept' => ['not_wait_accept_offer',  'not_wait_accept_offer_msg'],
+            'cancel'      => ['not_cancel_offer',       'not_cancel_offer_msg'],
+            'open'        => ['not_open_offer',         'not_open_offer_msg'],
         ];
-        $message = Lang::get('site.not_approve_offer_msg') . ' ' . $offer->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user')  . ' ' . auth()->user()->name;
-        $title = Lang::get('site.not_approve_offer');
-        if ($offer->status == 'approve') {
-            $message = Lang::get('site.not_approve_offer_msg') . ' ' . $offer->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user')  . ' ' . auth()->user()->name;
-            $title = Lang::get('site.not_approve_offer');
-        } elseif ($offer->status == 'wait_accept') {
-            $message = Lang::get('site.not_wait_accept_offer_msg') . ' ' . $offer->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user')  . ' ' . auth()->user()->name;
-            $title = Lang::get('site.not_wait_accept_offer');
-        } elseif ($offer->status == 'cancel') {
-            $message = Lang::get('site.not_cancel_offer_msg') . ' ' . $offer->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user')  . ' ' . auth()->user()->name;
-            $title = Lang::get('site.not_cancel_offer');
-        } elseif ($offer->status == 'open') {
-            $message = Lang::get('site.not_open_offer_msg') . ' ' . $offer->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user')  . ' ' . auth()->user()->name;
-            $title = Lang::get('site.not_open_offer');
+        $titleKey = $map[$offer->status][0] ?? 'not_pend_offer';
+        $bodyKey  = $map[$offer->status][1] ?? 'not_pend_offer_msg';
+
+        $dataAdmin = [
+            'title'     => $titleKey,
+            'body'      => $bodyKey,
+            'target'    => 'offer',
+            'object'    => $object,
+            'link'      => route('admin.orders.index', ['number' => $offer->order_id]),
+            'target_id' => $offer->id,
+            'sender'    => $user->name,
+        ];
+        $dataFront = [
+            'title' => [
+                'ar' => Lang::get('site.' . $titleKey, [], 'ar'),
+                'en' => Lang::get('site.' . $titleKey, [], 'en'),
+            ],
+            'body' => [
+                'ar' => Lang::get('site.' . $bodyKey, [], 'ar'),
+                'en' => Lang::get('site.' . $bodyKey, [], 'en'),
+            ],
+            'target'    => 'offer',
+            'object'    => $object,
+            'link'      => route('admin.orders.index', ['number' => $offer->order_id]),
+            'target_id' => $offer->id,
+            'sender'    => $user->name,
+        ];
+        $title = Lang::get('site.' . $titleKey);
+        $message = Lang::get('site.' . $bodyKey) . ' ' . $offer->id . ' ' . Lang::get('site.by') . ' ' . Lang::get('site.user')  . ' ' . (auth()->user()->name ?? 'System');
+        // Notify order owner (frontend)
+        if ($offer->order && $offer->order->user) {
+            Notification::send($offer->order->user, new LocalNotification($dataFront));
+            if (!empty($offer->order->user->fcm_token)) {
+                Notification::send($offer->order->user, new FcmPushNotification($title, $message, [$offer->order->user->fcm_token]));
+            }
         }
-        Notification::send($offer->order->user, new LocalNotification($data));
-        if (!empty($offer->order->user->fcm_token)) {
-            Notification::send($offer->order->user, new FcmPushNotification($title, $message, [$offer->order->user->fcm_token]));
+        // Notify offer owner (frontend)
+        if ($offer->user) {
+            Notification::send($offer->user, new LocalNotification($dataFront));
+            if (!empty($offer->user->fcm_token)) {
+                Notification::send($offer->user, new FcmPushNotification($title, $message, [$offer->user->fcm_token]));
+            }
         }
-        Notification::send($offer->user, new LocalNotification($data));
-        if (!empty($offer->user->fcm_token)) {
-            Notification::send($offer->user, new FcmPushNotification($title, $message, [$offer->user->fcm_token]));
-        }
-        $users = User::where('type', 'admin')->orWhere('type', 'superadministrator')->get();
-        foreach ($users as $user) {
-            Notification::send($user, new LocalNotification($data));
-            if (!empty($user->fcm_token)) {
-                Notification::send($user, new FcmPushNotification($title, $message, [$user->fcm_token]));
+        // Notify admins (keys)
+        $admins = User::whereIn('type', ['admin','superadministrator'])->get();
+        foreach ($admins as $admin) {
+            Notification::send($admin, new LocalNotification($dataAdmin));
+            if (!empty($admin->fcm_token)) {
+                Notification::send($admin, new FcmPushNotification($title, $message, [$admin->fcm_token]));
             }
         }
         DB::commit();
