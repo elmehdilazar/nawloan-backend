@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Notifications\FcmPushNotification;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class CouponController extends Controller
 {
@@ -35,7 +36,7 @@ class CouponController extends Controller
     }
     public function index (Request $request){
             if (session('success')) {
-                toast(session('success'), 'success');
+                Alert::toast(session('success'), 'success');
             }
             if($request->has('quick_search')){
                 $coupons = $this->quickSearch($request) ;
@@ -85,7 +86,7 @@ class CouponController extends Controller
             ->orWhere('apply_to','like','%'.$request->quick_search.'%')
             ->orWhere('start_date','like','%'.$request->quick_search.'%')
             ->orWhere('expiry_date','like','%'.$request->quick_search.'%')
-            ->get();
+            ->latest()->paginate(10);
             return $coupons;
 
     }
@@ -147,6 +148,7 @@ class CouponController extends Controller
 
         DB::commit();
         session()->flash('success', __('site.added_success'));
+        Alert::toast(__('site.added_success'), 'success');
         return redirect()->route('admin.coupons.index');
 
     } catch (\Exception $e) {
@@ -175,6 +177,7 @@ class CouponController extends Controller
             $this->notifyCouponEvent('edit', $coupon->name);
             DB::commit();
             session()->flash('success', __('site.edited_success'));
+            Alert::toast(__('site.edited_success'), 'success');
             return redirect()->route('admin.coupons.index');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -191,6 +194,7 @@ class CouponController extends Controller
                 $this->notifyCouponEvent('disable', $coupon['name']);
                     DB::commit();
                     session()->flash('success', __('site.disable_success'));
+                    Alert::toast(__('site.disable_success'), 'success');
                     return redirect()->route('admin.coupons.index');
             }
             session()->flash('errors', __('site.coupon_not_found'));
@@ -207,6 +211,7 @@ class CouponController extends Controller
                 $this->notifyCouponEvent('enable', $coupon['name']);
                     DB::commit();
                     session()->flash('success', __('site.enable_success'));
+                    Alert::toast(__('site.enable_success'), 'success');
                     return redirect()->route('admin.coupons.index');
 
             }
