@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Notifications\FcmPushNotification;
 
 class CouponController extends Controller
 {
@@ -133,16 +134,7 @@ class CouponController extends Controller
 
         // Double-check allowed values for type and apply_to using Rule in CouponRequest instead
         $msg=Coupon::create($coupon);
-
-        $data = [
-            'title' => 'add',
-            'body' => "add_body",
-            'target' => 'coupon',
-            'link' => route('admin.coupons.index', ['name' => $coupon['name']]),
-            'target_id' => $coupon['name'],
-            'sender' => auth()->user()->name,
-        ];
-        $this->sendNotification($data);
+        $this->notifyCouponEvent('add', $coupon['name']);
 
         DB::commit();
         session()->flash('success', __('site.added_success'));
@@ -177,15 +169,7 @@ class CouponController extends Controller
             $coupon = Coupon::withTrashed()->findOrFail($id);
             DB::beginTransaction();
             $coupon->update($request->validated());
-                $data = [
-                    'title' =>'edit',
-                    'body' => "edit_body",
-                    'target' => 'coupon',
-                    'link'  => route('admin.coupons.index', [ 'name' => $coupon['name']]),
-                    'target_id' => $coupon['name'],
-                    'sender' => auth()->user()->name,
-                ];
-                $this->sendNotification($data);
+            $this->notifyCouponEvent('edit', $coupon['name']);
                 DB::commit();
             session()->flash('success', __('site.edited_success'));
         return redirect()->route('admin.coupons.index');
@@ -197,15 +181,7 @@ class CouponController extends Controller
             if ($coupon) {
                 DB::beginTransaction();
                 $coupon->delete();
-                    $data = [
-                        'title' =>'disable',
-                        'body' => "disable_body",
-                        'target' => 'coupon',
-                        'link'  => route('admin.coupons.index', [ 'name' => $coupon['name']]),
-                        'target_id' =>$coupon['name'],
-                        'sender' => auth()->user()->name,
-                    ];
-                    $this->sendNotification($data);
+                $this->notifyCouponEvent('disable', $coupon['name']);
                     DB::commit();
                     session()->flash('success', __('site.disable_success'));
                     return redirect()->route('admin.coupons.index');
@@ -221,15 +197,7 @@ class CouponController extends Controller
 
                 DB::beginTransaction();
                 $coupon->restore();
-                    $data = [
-                        'title' =>'enable',
-                        'body' => "enable_body",
-                        'target' => 'coupon ',
-                        'link'  => route('admin.coupons.index', [ 'name' => $coupon['name']]),
-                        'target_id' =>$coupon['name'],
-                        'sender' => auth()->user()->name,
-                    ];
-                    $this->sendNotification($data);
+                $this->notifyCouponEvent('enable', $coupon['name']);
                     DB::commit();
                     session()->flash('success', __('site.enable_success'));
                     return redirect()->route('admin.coupons.index');
@@ -239,10 +207,64 @@ class CouponController extends Controller
             return redirect()->route('admin.coupons.index');
     }
 
-    private function sendNotification($data){
-        $users = User::where('type', 'admin')->orWhere('type', 'superadministrator')->get();
-        foreach ($users as $user) {
-            Notification::send($user, new LocalNotification($data));
+    private function notifyCouponEvent(string $titleKey, string $couponName): void
+    {
+        // Common fields
+        $link = route('admin.coupons.index', ['name' => $couponName]);
+        $sender = auth()->user()->name ?? 'System';
+
+        // Admin payload (translation keys)
+        $dataAdmin = [
+            'title'     => $titleKey,
+            // omit body key; admin view composes with title + target
+            'target'    => 'coupon',
+            'object'    => ['name' => $couponName],
+            'link'      => $link,
+            'target_id' => $couponName,
+            'sender'    => $sender,
+        ];
+
+        // Frontend payload (literal localized strings)
+        $dataFront = [
+            'title' => [
+                'ar' => Lang::get('site.' . $titleKey, [], 'ar'),
+                'en' => Lang::get('site.' . $titleKey, [], 'en'),
+            ],
+            // body omitted to allow client to compose message from title + target + target_id
+            'target'    => 'coupon',
+            'object'    => ['name' => $couponName],
+            'link'      => $link,
+            'target_id' => $couponName,
+            'sender'    => $sender,
+        ];
+
+        // FCM title/message for push
+        $fcmTitle = Lang::get('site.' . $titleKey);
+        $fcmMessage = $fcmTitle . ' ' . Lang::get('site.coupon') . ' ' . $couponName . ' ' . Lang::get('site.by') . ' ' . $sender;
+
+        // Admins
+        $admins = User::whereIn('type', ['admin','superadministrator'])->get();
+        foreach ($admins as $admin) {
+            Notification::send($admin, new LocalNotification($dataAdmin));
+            if (!empty($admin->fcm_token)) {
+                Notification::send($admin, new FcmPushNotification($fcmTitle, $fcmMessage, [$admin->fcm_token]));
+            }
+        }
+
+        // Providers and seekers as announcement
+        $providers = User::where('user_type','service_provider')->get();
+        $seekers   = User::whereIn('type', ['user','factory'])->get();
+        foreach ($providers as $prov) {
+            Notification::send($prov, new LocalNotification($dataFront));
+            if (!empty($prov->fcm_token)) {
+                Notification::send($prov, new FcmPushNotification($fcmTitle, $fcmMessage, [$prov->fcm_token]));
+            }
+        }
+        foreach ($seekers as $seeker) {
+            Notification::send($seeker, new LocalNotification($dataFront));
+            if (!empty($seeker->fcm_token)) {
+                Notification::send($seeker, new FcmPushNotification($fcmTitle, $fcmMessage, [$seeker->fcm_token]));
+            }
         }
     }
 
@@ -259,7 +281,7 @@ class CouponController extends Controller
             $data = [
                 'title' => 'disable',
                 'body' => 'disable_body',
-                'target' => 'country',
+                'target' => 'coupon',
                 'link'  => route('admin.coupons.index', ['name' => $coupon->name]),
                 'target_id' => $coupon->name,
                 'sender' => auth()->user()->name,
@@ -276,8 +298,8 @@ class CouponController extends Controller
             $data = [
                 'title' => 'enable',
                 'body' => 'enable_body',
-                'target' => 'country',
-                'link'  => route('admin.countries.index', ['name' => $coupon->name]),
+                'target' => 'coupon',
+                'link'  => route('admin.coupons.index', ['name' => $coupon->name]),
                 'target_id' => $coupon->name,
                 'sender' => auth()->user()->name,
             ];
