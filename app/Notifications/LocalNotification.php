@@ -19,11 +19,11 @@ class LocalNotification extends Notification
     }
     public function toArray($notifiable)
     {
-         
+        
        
         return [
             'title' => $this->data['title'] ?? '',
-            'body' => $this->data['body'],
+            'body' => $this->data['body'] ?? '',
             'target' => $this->data['target'] ?? '',
             'link'=>    $this->data['link']??'',
             'object'=>    $this->data['object']??'',
