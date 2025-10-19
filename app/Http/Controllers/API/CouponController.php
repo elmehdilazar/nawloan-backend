@@ -68,6 +68,7 @@ class CouponController extends BaseController
         try {
             $coupon = $request->validated();
             $coupon['user_id'] = auth()->id();
+            $coupon['active'] = 1;
             $created = Coupon::create($coupon);
 
             $data = [

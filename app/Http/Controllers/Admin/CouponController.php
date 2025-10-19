@@ -108,6 +108,7 @@ class CouponController extends Controller
         DB::beginTransaction();
         $coupon = $request->validated();
         $coupon['user_id'] = auth()->user()->id;
+        $coupon['active'] = 1;
         $coupon['name'] = $request->name;
         $coupon['code'] = $request->code;
         $coupon['number_availabe'] = $request->number_availabe;
@@ -173,7 +174,11 @@ class CouponController extends Controller
         $coupon = Coupon::withTrashed()->findOrFail($id);
         DB::beginTransaction();
         try {
-            $coupon->update($request->validated());
+            $data = $request->validated();
+            if (!isset($data['active'])) {
+                $data['active'] = $coupon->active ?? 1;
+            }
+            $coupon->update($data);
             $this->notifyCouponEvent('edit', $coupon->name);
             DB::commit();
             session()->flash('success', __('site.edited_success'));
