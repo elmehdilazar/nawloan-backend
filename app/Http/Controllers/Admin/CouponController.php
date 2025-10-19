@@ -155,7 +155,7 @@ class CouponController extends Controller
     } catch (\Exception $e) {
         DB::rollBack();
            
-        session()->flash('error_message', __('site.something_wrong'));
+        session()->flash('error_message',$e->getMessage() );
         return back()->withInput();
     }
 }
