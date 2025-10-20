@@ -93,22 +93,40 @@ $payload = [
     'body_ar'  => (string) $bodyAr,
   ], $this->data),
 ];
-try {
-   Log::info('[FCM] Sending notification', [
-       'project' => $projectId,
-       'token_present' => !empty($this->fcmTokens[0]),
-       'title' => $titleEn,
-       'has_data' => !empty($this->data),
-   ]);
-   $accessToken = $this->getAccessToken($serviceAccountPath);
-   $response = $this->sendMessage($accessToken, $projectId, $payload);
-   Log::info('[FCM] Response', [
-       'response' => $response,
-   ]);
-} catch (\Exception $e) {
-   Log::error('[FCM] v1 send failed; trying legacy key', [
-       'error' => $e->getMessage(),
-   ]);
+    try {
+       Log::info('[FCM] Sending notification', [
+           'project' => $projectId,
+           'token_present' => !empty($this->fcmTokens[0]),
+           'title' => $titleEn,
+           'has_data' => !empty($this->data),
+       ]);
+       $accessToken = $this->getAccessToken($serviceAccountPath);
+       $response = $this->sendMessage($accessToken, $projectId, $payload);
+       Log::info('[FCM] Response', [
+           'response' => $response,
+       ]);
+
+       // Clean up bad tokens to prevent repeated failures
+       if (is_array($response) && isset($response['error'])) {
+           $error = $response['error'];
+           $details = $error['details'][0]['errorCode'] ?? null;
+           if (in_array($details, ['UNREGISTERED', 'INVALID_ARGUMENT'], true)) {
+               try {
+                   User::where('fcm_token', $token)->update(['fcm_token' => null]);
+                   Log::warning('[FCM] Cleared invalid token from user record', [
+                       'errorCode' => $details,
+                   ]);
+               } catch (\Throwable $t) {
+                   Log::error('[FCM] Failed clearing invalid token', [
+                       'error' => $t->getMessage(),
+                   ]);
+               }
+           }
+       }
+    } catch (\Exception $e) {
+       Log::error('[FCM] v1 send failed; trying legacy key', [
+           'error' => $e->getMessage(),
+       ]);
    try {
        // Fallback to legacy API using larafirebase package
        Larafirebase::withTitle((string) $titleEn)
