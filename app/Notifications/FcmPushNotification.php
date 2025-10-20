@@ -30,8 +30,8 @@ class FcmPushNotification extends Notification implements ShouldQueue
         $this->message = $message;
         $this->fcmTokens = $fcmTokens;
         $this->data = $data;
-        // Defer queueing until after DB commit without redeclaring trait property
-        $this->afterCommit = true;
+        // Defer queueing until after database commit
+        $this->afterCommit();
     }
 
     /**

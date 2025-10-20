@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Translation\Translator;
 use App\Http\Requests\CouponRequest;
+use App\Jobs\SendCouponNotifications;
 use App\Models\Coupon;
 use App\Models\User;
 use App\Notifications\LocalNotification;
@@ -17,7 +18,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Notifications\FcmPushNotification;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class CouponController extends Controller
@@ -228,139 +228,10 @@ class CouponController extends Controller
 
     private function notifyCouponEvent(string $titleKey, Coupon $coupon): void
     {
-        // Common fields
-        $couponName = $coupon->name;
-        $link = route('admin.coupons.index', ['name' => $couponName]);
         $sender = auth()->user()->name ?? 'System';
 
-        // Build dynamic bilingual content
-        $durationDays = null;
-        try {
-            if (!empty($coupon->start_date) && !empty($coupon->expiry_date)) {
-                $start = Carbon::parse($coupon->start_date);
-                $end   = Carbon::parse($coupon->expiry_date);
-                $durationDays = max(1, $start->diffInDays($end));
-            }
-        } catch (\Throwable $e) {
-            $durationDays = null;
-        }
-
-        $durationEn = '';
-        $durationAr = '';
-        if ($durationDays) {
-            if ($durationDays === 1) {
-                $durationEn = 'for one day';
-                $durationAr = 'لمدة يوم واحد';
-            } elseif ($durationDays === 7) {
-                $durationEn = 'for one week';
-                $durationAr = 'لمدة أسبوع واحد';
-            } elseif ($durationDays >= 28 && $durationDays <= 31) {
-                $durationEn = 'for one month';
-                $durationAr = 'لمدة شهر واحد';
-            } else {
-                $durationEn = "for {$durationDays} days";
-                $durationAr = "لمدة {$durationDays} يوم";
-            }
-        }
-
-        $discountValue = (string) ($coupon->discount ?? '');
-        $isPercent = strtolower($coupon->type ?? '') === 'percentage';
-        $discountEn = $isPercent ? ($discountValue . '% discount') : ($discountValue . ' discount');
-        $discountAr = $isPercent ? ('خصم ' . $discountValue . '%') : ('خصم بقيمة ' . $discountValue);
-
-        $titleEn = match ($titleKey) {
-            'add'    => 'New coupon added',
-            'edit'   => 'Coupon updated',
-            'enable' => 'Coupon enabled',
-            'disable'=> 'Coupon disabled',
-            default  => 'Coupon update',
-        };
-        $titleAr = match ($titleKey) {
-            'add'    => 'تم إضافة كوبون جديد',
-            'edit'   => 'تم تحديث الكوبون',
-            'enable' => 'تم تفعيل الكوبون',
-            'disable'=> 'تم تعطيل الكوبون',
-            default  => 'تحديث على الكوبون',
-        };
-
-        $bodyEnParts = [];
-        $bodyArParts = [];
-        if ($discountEn) {
-            $bodyEnParts[] = $discountEn;
-            $bodyArParts[] = $discountAr;
-        }
-        if ($durationEn) {
-            $bodyEnParts[] = $durationEn;
-            $bodyArParts[] = $durationAr;
-        }
-        $bodyEn = trim(implode(' ', $bodyEnParts));
-        $bodyAr = trim(implode(' ', $bodyArParts));
-
-        // Admin payload (translation keys for title; details in body)
-        $dataAdmin = [
-            'title'     => $titleKey,
-            'body'      => [ 'en' => $bodyEn, 'ar' => $bodyAr ],
-            'target'    => 'coupon',
-            'object'    => [
-                'name'        => $couponName,
-                'code'        => $coupon->code,
-                'discount'    => $coupon->discount,
-                'type'        => $coupon->type,
-                'start_date'  => $coupon->start_date,
-                'expiry_date' => $coupon->expiry_date,
-            ],
-            'link'      => $link,
-            'target_id' => $couponName,
-            'sender'    => $sender,
-        ];
-
-        // Frontend payload (literal localized strings)
-        $dataFront = [
-            'title' => [ 'en' => $titleEn, 'ar' => $titleAr ],
-            'body'  => [ 'en' => $bodyEn,  'ar' => $bodyAr  ],
-            'target'    => 'coupon',
-            'object'    => [
-                'name'        => $couponName,
-                'code'        => $coupon->code,
-                'discount'    => $coupon->discount,
-                'type'        => $coupon->type,
-                'start_date'  => $coupon->start_date,
-                'expiry_date' => $coupon->expiry_date,
-            ],
-            'link'      => $link,
-            'target_id' => $couponName,
-            'sender'    => $sender,
-        ];
-
-        // FCM bilingual content + data
-        $fcmTitle = [ 'en' => $titleEn, 'ar' => $titleAr ];
-        $fcmBody  = [ 'en' => $bodyEn,  'ar' => $bodyAr  ];
-        $fcmData  = [ 'target' => 'coupon', 'target_id' => (string) $couponName ];
-
-        // Admins
-        $admins = User::whereIn('type', ['admin','superadministrator'])->get();
-        foreach ($admins as $admin) {
-            Notification::send($admin, new LocalNotification($dataAdmin));
-            if (!empty($admin->fcm_token)) {
-                Notification::send($admin, new FcmPushNotification($fcmTitle, $fcmBody, [$admin->fcm_token], $fcmData));
-            }
-        }
-
-        // Providers and seekers as announcement
-        $providers = User::where('user_type','service_provider')->get();
-        $seekers   = User::whereIn('type', ['user','factory'])->get();
-        foreach ($providers as $prov) {
-            Notification::send($prov, new LocalNotification($dataFront));
-            if (!empty($prov->fcm_token)) {
-                Notification::send($prov, new FcmPushNotification($fcmTitle, $fcmBody, [$prov->fcm_token], $fcmData));
-            }
-        }
-        foreach ($seekers as $seeker) {
-            Notification::send($seeker, new LocalNotification($dataFront));
-            if (!empty($seeker->fcm_token)) {
-                Notification::send($seeker, new FcmPushNotification($fcmTitle, $fcmBody, [$seeker->fcm_token], $fcmData));
-            }
-        }
+        SendCouponNotifications::dispatch($titleKey, $coupon->id, $sender)
+            ->afterCommit();
     }
 
     public function changeStatus($id)
