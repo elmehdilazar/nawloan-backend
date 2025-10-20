@@ -9,6 +9,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Kutia\Larafirebase\Messages\FirebaseMessage;
 use Google\Client;
+use Illuminate\Support\Facades\Log;
 
 class FcmPushNotification extends Notification implements ShouldQueue
 {
@@ -52,9 +53,21 @@ class FcmPushNotification extends Notification implements ShouldQueue
 
     public function toFirebase($notifiable)
     {
+        // Validate token
+        $token = $this->fcmTokens[0] ?? null;
+        if (empty($token)) {
+            Log::warning('[FCM] Missing FCM token; skipping send');
+            return;
+        }
 
-// Path to your service account JSON key file
-$serviceAccountPath = 'public/assets/nawkey.json';
+        // Resolve absolute path to service account JSON
+        $serviceAccountPath = base_path('public/assets/nawkey.json');
+        if (!file_exists($serviceAccountPath)) {
+            Log::error('[FCM] Service account JSON not found', [
+                'path' => $serviceAccountPath,
+            ]);
+            return;
+        }
 
 // Your Firebase project ID
 $projectId = 'nawloan-eff12';
@@ -67,7 +80,7 @@ $titleAr = is_array($this->title) ? ($this->title['ar'] ?? $titleEn) : $this->ti
 $bodyAr  = is_array($this->message) ? ($this->message['ar'] ?? $bodyEn) : $this->message;
 
 $payload = [
-  'token' => $this->fcmTokens[0],
+  'token' => $token,
   'notification' => [
     'title' => $titleEn,
     'body'  => $bodyEn,
@@ -80,11 +93,21 @@ $payload = [
   ], $this->data),
 ];
 try {
+   Log::info('[FCM] Sending notification', [
+       'project' => $projectId,
+       'token_present' => !empty($this->fcmTokens[0]),
+       'title' => $titleEn,
+       'has_data' => !empty($this->data),
+   ]);
    $accessToken = $this->getAccessToken($serviceAccountPath);
    $response = $this->sendMessage($accessToken, $projectId, $payload);
-//    echo 'Message sent successfully: ' . print_r($response, true);
+   Log::info('[FCM] Response', [
+       'response' => $response,
+   ]);
 } catch (\Exception $e) {
-//    echo 'Error: ' . $e->getMessage();
+   Log::error('[FCM] Send failed', [
+       'error' => $e->getMessage(),
+   ]);
 }
 
     }
