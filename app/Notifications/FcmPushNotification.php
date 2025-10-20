@@ -10,6 +10,7 @@ use Illuminate\Notifications\Notification;
 use Kutia\Larafirebase\Messages\FirebaseMessage;
 use Google\Client;
 use Illuminate\Support\Facades\Log;
+use Kutia\Larafirebase\Facades\Larafirebase;
 
 class FcmPushNotification extends Notification implements ShouldQueue
 {
@@ -105,9 +106,26 @@ try {
        'response' => $response,
    ]);
 } catch (\Exception $e) {
-   Log::error('[FCM] Send failed', [
+   Log::error('[FCM] v1 send failed; trying legacy key', [
        'error' => $e->getMessage(),
    ]);
+   try {
+       // Fallback to legacy API using larafirebase package
+       Larafirebase::withTitle((string) $titleEn)
+           ->withBody((string) $bodyEn)
+           ->withAdditionalData(array_merge([
+               'title_en' => (string) $titleEn,
+               'body_en'  => (string) $bodyEn,
+               'title_ar' => (string) $titleAr,
+               'body_ar'  => (string) $bodyAr,
+           ], $this->data))
+           ->sendNotification($token);
+       Log::info('[FCM] Legacy send dispatched');
+   } catch (\Throwable $t) {
+       Log::error('[FCM] Legacy send failed', [
+           'error' => $t->getMessage(),
+       ]);
+   }
 }
 
     }
