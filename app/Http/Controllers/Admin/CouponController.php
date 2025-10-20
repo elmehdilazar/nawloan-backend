@@ -264,7 +264,7 @@ class CouponController extends Controller
         }
 
         $discountValue = (string) ($coupon->discount ?? '');
-        $isPercent = strtolower($coupon->type ?? '') === 'discount';
+        $isPercent = strtolower($coupon->type ?? '') === 'percentage';
         $discountEn = $isPercent ? ($discountValue . '% discount') : ($discountValue . ' discount');
         $discountAr = $isPercent ? ('خصم ' . $discountValue . '%') : ('خصم بقيمة ' . $discountValue);
 

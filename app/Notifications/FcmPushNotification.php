@@ -13,7 +13,6 @@ use Google\Client;
 class FcmPushNotification extends Notification implements ShouldQueue
 {
     use Queueable;
-    public $afterCommit = true;
     private $title;
     private $message;
     private $fcmTokens;
@@ -29,6 +28,8 @@ class FcmPushNotification extends Notification implements ShouldQueue
         $this->message = $message;
         $this->fcmTokens = $fcmTokens;
         $this->data = $data;
+        // Defer queueing until after DB commit without redeclaring trait property
+        $this->afterCommit = true;
     }
 
     /**
@@ -82,7 +83,7 @@ try {
    $accessToken = $this->getAccessToken($serviceAccountPath);
    $response = $this->sendMessage($accessToken, $projectId, $payload);
 //    echo 'Message sent successfully: ' . print_r($response, true);
-} catch (Exception $e) {
+} catch (\Exception $e) {
 //    echo 'Error: ' . $e->getMessage();
 }
 
@@ -110,7 +111,7 @@ try {
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['message' => $message]));
         $response = curl_exec($ch);
          if ($response === false) {
-         throw new Exception('Curl error: ' . curl_error($ch));
+         throw new \Exception('Curl error: ' . curl_error($ch));
          }
         curl_close($ch);
         return json_decode($response, true);
