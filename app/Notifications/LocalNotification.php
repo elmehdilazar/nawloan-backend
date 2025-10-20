@@ -3,11 +3,13 @@
 namespace App\Notifications;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
   
-class LocalNotification extends Notification
+class LocalNotification extends Notification implements ShouldQueue
 {
     use Queueable;
+    public $afterCommit = true;
     private $data;
     public function __construct($data)
     {

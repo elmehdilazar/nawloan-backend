@@ -10,22 +10,25 @@ use Illuminate\Notifications\Notification;
 use Kutia\Larafirebase\Messages\FirebaseMessage;
 use Google\Client;
 
-class FcmPushNotification extends Notification
+class FcmPushNotification extends Notification implements ShouldQueue
 {
     use Queueable;
+    public $afterCommit = true;
     private $title;
     private $message;
     private $fcmTokens;
+    private $data;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($title, $message, $fcmTokens)
+    public function __construct($title, $message, $fcmTokens, array $data = [])
     {
         $this->title = $title;
         $this->message = $message;
         $this->fcmTokens = $fcmTokens;
+        $this->data = $data;
     }
 
     /**
@@ -56,16 +59,28 @@ $serviceAccountPath = 'public/assets/nawkey.json';
 $projectId = 'nawloan-eff12';
 
 // Example message payload
-$message = [
- 'token' => $this->fcmTokens[0],
- 'notification' => [
- 'title' => $this->title,
- 'body' =>$this->message,
- ],
+// Choose English as default for visible title/body; include bilingual in data
+$titleEn = is_array($this->title) ? ($this->title['en'] ?? reset($this->title)) : $this->title;
+$bodyEn  = is_array($this->message) ? ($this->message['en'] ?? reset($this->message)) : $this->message;
+$titleAr = is_array($this->title) ? ($this->title['ar'] ?? $titleEn) : $this->title;
+$bodyAr  = is_array($this->message) ? ($this->message['ar'] ?? $bodyEn) : $this->message;
+
+$payload = [
+  'token' => $this->fcmTokens[0],
+  'notification' => [
+    'title' => $titleEn,
+    'body'  => $bodyEn,
+  ],
+  'data' => array_merge([
+    'title_en' => (string) $titleEn,
+    'body_en'  => (string) $bodyEn,
+    'title_ar' => (string) $titleAr,
+    'body_ar'  => (string) $bodyAr,
+  ], $this->data),
 ];
 try {
    $accessToken = $this->getAccessToken($serviceAccountPath);
-   $response = $this->sendMessage($accessToken, $projectId, $message);
+   $response = $this->sendMessage($accessToken, $projectId, $payload);
 //    echo 'Message sent successfully: ' . print_r($response, true);
 } catch (Exception $e) {
 //    echo 'Error: ' . $e->getMessage();

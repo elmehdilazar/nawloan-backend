@@ -144,10 +144,12 @@ class CouponController extends Controller
         $coupon['user_id'] = auth()->user()->id;
 
         // Double-check allowed values for type and apply_to using Rule in CouponRequest instead
-        $msg=Coupon::create($coupon);
-        $this->notifyCouponEvent('add', $coupon['name']);
+        $msg = Coupon::create($coupon);
 
         DB::commit();
+
+        // Queue notifications in background with bilingual content after commit
+        $this->notifyCouponEvent('add', $msg);
         session()->flash('success', __('site.added_success'));
         Alert::toast(__('site.added_success'), 'success');
         return redirect()->route('admin.coupons.index');
@@ -179,8 +181,8 @@ class CouponController extends Controller
                 $data['active'] = $coupon->active ?? 1;
             }
             $coupon->update($data);
-            $this->notifyCouponEvent('edit', $coupon->name);
             DB::commit();
+            $this->notifyCouponEvent('edit', $coupon);
             session()->flash('success', __('site.edited_success'));
             Alert::toast(__('site.edited_success'), 'success');
             return redirect()->route('admin.coupons.index');
@@ -196,8 +198,8 @@ class CouponController extends Controller
             if ($coupon) {
                 DB::beginTransaction();
                 $coupon->delete();
-                $this->notifyCouponEvent('disable', $coupon['name']);
                     DB::commit();
+                    $this->notifyCouponEvent('disable', $coupon);
                     session()->flash('success', __('site.disable_success'));
                     Alert::toast(__('site.disable_success'), 'success');
                     return redirect()->route('admin.coupons.index');
@@ -213,8 +215,8 @@ class CouponController extends Controller
 
                 DB::beginTransaction();
                 $coupon->restore();
-                $this->notifyCouponEvent('enable', $coupon['name']);
                     DB::commit();
+                    $this->notifyCouponEvent('enable', $coupon);
                     session()->flash('success', __('site.enable_success'));
                     Alert::toast(__('site.enable_success'), 'success');
                     return redirect()->route('admin.coupons.index');
@@ -224,18 +226,89 @@ class CouponController extends Controller
             return redirect()->route('admin.coupons.index');
     }
 
-    private function notifyCouponEvent(string $titleKey, string $couponName): void
+    private function notifyCouponEvent(string $titleKey, Coupon $coupon): void
     {
         // Common fields
+        $couponName = $coupon->name;
         $link = route('admin.coupons.index', ['name' => $couponName]);
         $sender = auth()->user()->name ?? 'System';
 
-        // Admin payload (translation keys)
+        // Build dynamic bilingual content
+        $durationDays = null;
+        try {
+            if (!empty($coupon->start_date) && !empty($coupon->expiry_date)) {
+                $start = Carbon::parse($coupon->start_date);
+                $end   = Carbon::parse($coupon->expiry_date);
+                $durationDays = max(1, $start->diffInDays($end));
+            }
+        } catch (\Throwable $e) {
+            $durationDays = null;
+        }
+
+        $durationEn = '';
+        $durationAr = '';
+        if ($durationDays) {
+            if ($durationDays === 1) {
+                $durationEn = 'for one day';
+                $durationAr = 'لمدة يوم واحد';
+            } elseif ($durationDays === 7) {
+                $durationEn = 'for one week';
+                $durationAr = 'لمدة أسبوع واحد';
+            } elseif ($durationDays >= 28 && $durationDays <= 31) {
+                $durationEn = 'for one month';
+                $durationAr = 'لمدة شهر واحد';
+            } else {
+                $durationEn = "for {$durationDays} days";
+                $durationAr = "لمدة {$durationDays} يوم";
+            }
+        }
+
+        $discountValue = (string) ($coupon->discount ?? '');
+        $isPercent = strtolower($coupon->type ?? '') === 'discount';
+        $discountEn = $isPercent ? ($discountValue . '% discount') : ($discountValue . ' discount');
+        $discountAr = $isPercent ? ('خصم ' . $discountValue . '%') : ('خصم بقيمة ' . $discountValue);
+
+        $titleEn = match ($titleKey) {
+            'add'    => 'New coupon added',
+            'edit'   => 'Coupon updated',
+            'enable' => 'Coupon enabled',
+            'disable'=> 'Coupon disabled',
+            default  => 'Coupon update',
+        };
+        $titleAr = match ($titleKey) {
+            'add'    => 'تم إضافة كوبون جديد',
+            'edit'   => 'تم تحديث الكوبون',
+            'enable' => 'تم تفعيل الكوبون',
+            'disable'=> 'تم تعطيل الكوبون',
+            default  => 'تحديث على الكوبون',
+        };
+
+        $bodyEnParts = [];
+        $bodyArParts = [];
+        if ($discountEn) {
+            $bodyEnParts[] = $discountEn;
+            $bodyArParts[] = $discountAr;
+        }
+        if ($durationEn) {
+            $bodyEnParts[] = $durationEn;
+            $bodyArParts[] = $durationAr;
+        }
+        $bodyEn = trim(implode(' ', $bodyEnParts));
+        $bodyAr = trim(implode(' ', $bodyArParts));
+
+        // Admin payload (translation keys for title; details in body)
         $dataAdmin = [
             'title'     => $titleKey,
-            // omit body key; admin view composes with title + target
+            'body'      => [ 'en' => $bodyEn, 'ar' => $bodyAr ],
             'target'    => 'coupon',
-            'object'    => ['name' => $couponName],
+            'object'    => [
+                'name'        => $couponName,
+                'code'        => $coupon->code,
+                'discount'    => $coupon->discount,
+                'type'        => $coupon->type,
+                'start_date'  => $coupon->start_date,
+                'expiry_date' => $coupon->expiry_date,
+            ],
             'link'      => $link,
             'target_id' => $couponName,
             'sender'    => $sender,
@@ -243,28 +316,33 @@ class CouponController extends Controller
 
         // Frontend payload (literal localized strings)
         $dataFront = [
-            'title' => [
-                'ar' => Lang::get('site.' . $titleKey, [], 'ar'),
-                'en' => Lang::get('site.' . $titleKey, [], 'en'),
-            ],
-            // body omitted to allow client to compose message from title + target + target_id
+            'title' => [ 'en' => $titleEn, 'ar' => $titleAr ],
+            'body'  => [ 'en' => $bodyEn,  'ar' => $bodyAr  ],
             'target'    => 'coupon',
-            'object'    => ['name' => $couponName],
+            'object'    => [
+                'name'        => $couponName,
+                'code'        => $coupon->code,
+                'discount'    => $coupon->discount,
+                'type'        => $coupon->type,
+                'start_date'  => $coupon->start_date,
+                'expiry_date' => $coupon->expiry_date,
+            ],
             'link'      => $link,
             'target_id' => $couponName,
             'sender'    => $sender,
         ];
 
-        // FCM title/message for push
-        $fcmTitle = Lang::get('site.' . $titleKey);
-        $fcmMessage = $fcmTitle . ' ' . Lang::get('site.coupon') . ' ' . $couponName . ' ' . Lang::get('site.by') . ' ' . $sender;
+        // FCM bilingual content + data
+        $fcmTitle = [ 'en' => $titleEn, 'ar' => $titleAr ];
+        $fcmBody  = [ 'en' => $bodyEn,  'ar' => $bodyAr  ];
+        $fcmData  = [ 'target' => 'coupon', 'target_id' => (string) $couponName ];
 
         // Admins
         $admins = User::whereIn('type', ['admin','superadministrator'])->get();
         foreach ($admins as $admin) {
             Notification::send($admin, new LocalNotification($dataAdmin));
             if (!empty($admin->fcm_token)) {
-                Notification::send($admin, new FcmPushNotification($fcmTitle, $fcmMessage, [$admin->fcm_token]));
+                Notification::send($admin, new FcmPushNotification($fcmTitle, $fcmBody, [$admin->fcm_token], $fcmData));
             }
         }
 
@@ -274,13 +352,13 @@ class CouponController extends Controller
         foreach ($providers as $prov) {
             Notification::send($prov, new LocalNotification($dataFront));
             if (!empty($prov->fcm_token)) {
-                Notification::send($prov, new FcmPushNotification($fcmTitle, $fcmMessage, [$prov->fcm_token]));
+                Notification::send($prov, new FcmPushNotification($fcmTitle, $fcmBody, [$prov->fcm_token], $fcmData));
             }
         }
         foreach ($seekers as $seeker) {
             Notification::send($seeker, new LocalNotification($dataFront));
             if (!empty($seeker->fcm_token)) {
-                Notification::send($seeker, new FcmPushNotification($fcmTitle, $fcmMessage, [$seeker->fcm_token]));
+                Notification::send($seeker, new FcmPushNotification($fcmTitle, $fcmBody, [$seeker->fcm_token], $fcmData));
             }
         }
     }
