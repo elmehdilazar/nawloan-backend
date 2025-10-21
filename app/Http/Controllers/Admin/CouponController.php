@@ -292,12 +292,17 @@ class CouponController extends Controller
             $ids = array_filter(explode(',', $ids));
         }
         $ids = array_values(array_unique(array_map('intval', (array) $ids)));
+        // keep only positive integers
+        $ids = array_values(array_filter($ids, function ($id) { return $id > 0; }));
 
         if (empty($ids)) {
             return back()->with('error', __('site.no_items_selected'));
         }
 
-        Coupon::whereIn('id', $ids)->delete();
+        $deleted = Coupon::whereIn('id', $ids)->delete();
+        if ($deleted < 1) {
+            return back()->with('error', __('site.no_items_selected'));
+        }
 
         return back()->with('success', __('site.deleted_success'));
     }

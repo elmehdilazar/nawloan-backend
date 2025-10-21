@@ -165,7 +165,7 @@
     <script src='{{asset('assets/tiny/js/jquery.dataTables.min.js')}}'></script>
     <script src='{{asset('assets/tiny/js/dataTables.bootstrap4.min.js')}}'></script>
     <!-- DataTables Playground (Setups, Options, Actions) -->
-    <script src='{{asset('assets/js/dataTables-init.js')}}'></script>
+    <script src='{{ asset('assets/js/dataTables-init.js') }}?v={{ @filemtime(public_path('assets/js/dataTables-init.js')) }}'></script>
     <script>
         $(document).on('click', '#bulk-delete', function (e) {
             e.preventDefault();
