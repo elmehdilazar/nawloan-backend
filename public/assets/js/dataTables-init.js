@@ -8,7 +8,7 @@ var table = $('.datatables-active:not(.check-disabled)').DataTable({
             var rowId = meta.row;
             return `
                 <div class="dt-checkbox">
-                    <input type="checkbox" id="checkbox-${rowId}" name="id[]" value="' + $('<div/>').text(data).html() + '">
+                    <input type="checkbox" id="checkbox-${rowId}" name="id[]" value="${data}">
                     <label for="checkbox-${rowId}" class="visual-checkbox"></label>
                 </div>
             `;
@@ -101,12 +101,14 @@ function updateButtonVisibility() {
 }
 
 const container = document.querySelector('.dataTables_wrapper .row:nth-child(2) [class*="col-"]');
-container.addEventListener('wheel', (event) => {
-    if (container.scrollLeft === 0 && event.deltaY < 0) {
-        return;
-    } else if (container.scrollLeft === container.scrollWidth - container.clientWidth && event.deltaY > 0) {
-        return;
-    }
-    event.preventDefault();
-    container.scrollLeft += event.deltaY;
-});
+if (container) {
+    container.addEventListener('wheel', (event) => {
+        if (container.scrollLeft === 0 && event.deltaY < 0) {
+            return;
+        } else if (container.scrollLeft === container.scrollWidth - container.clientWidth && event.deltaY > 0) {
+            return;
+        }
+        event.preventDefault();
+        container.scrollLeft += event.deltaY;
+    });
+}
