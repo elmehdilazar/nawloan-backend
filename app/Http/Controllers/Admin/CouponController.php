@@ -32,6 +32,7 @@ class CouponController extends Controller
         $this->middleware(['permission:coupons_update'])->only('edit');
         $this->middleware(['permission:coupons_enable'])->only('restore');
         $this->middleware(['permission:coupons_disable'])->only('destroy');
+        $this->middleware(['permission:coupons_disable'])->only('destroySelected');
         $this->middleware(['permission:coupons_export'])->only('export');
     }
     public function index (Request $request){
@@ -282,5 +283,22 @@ class CouponController extends Controller
     {
 
         return Excel::download(new CouponExport,  Lang::get('site.coupons') . '-' . Carbon::now()->format('Y-m-d_H-i-s') . '.xlsx');
+    }
+
+    public function destroySelected(Request $request)
+    {
+        $ids = $request->query('ids', []);
+        if (is_string($ids)) {
+            $ids = array_filter(explode(',', $ids));
+        }
+        $ids = array_values(array_unique(array_map('intval', (array) $ids)));
+
+        if (empty($ids)) {
+            return back()->with('error', __('site.no_items_selected'));
+        }
+
+        Coupon::whereIn('id', $ids)->delete();
+
+        return back()->with('success', __('site.deleted_success'));
     }
 }

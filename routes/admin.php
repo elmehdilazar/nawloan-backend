@@ -167,6 +167,7 @@ Route::group(
                         Route::delete('/destroy/{id}', [\App\Http\Controllers\Admin\CouponController::class, 'destroy'])->name('destroy');
                         Route::get('/export', [\App\Http\Controllers\Admin\CouponController::class, 'export'])->name('export');
                         Route::post('/changeStatus/{id}', [\App\Http\Controllers\Admin\CouponController::class, 'changeStatus'])->name('changeStatus');
+                        Route::get('/destroy-selected', [\App\Http\Controllers\Admin\CouponController::class, 'destroySelected'])->name('destroy-selected');
 
                     }
                 );

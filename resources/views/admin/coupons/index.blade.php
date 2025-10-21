@@ -15,7 +15,9 @@
                     @lang('site.export')
                 </a>
             @endif
-            <a href="" class="btn btn-danger onchange-visible">Delete</a>
+            @if(auth()->user()->hasPermission('coupons_disable'))
+                <a href="#" id="bulk-delete" class="btn btn-danger onchange-visible">@lang('site.delete_selected')</a>
+            @endif
             @if(auth()->user()->hasPermission('coupons_create'))
                 <a class="btn btn-navy onchange-hidden" href="{{route('admin.coupons.create')}}"
                    title="@lang('site.create_coupons')">
@@ -24,12 +26,12 @@
             @endif
         </div>
     </div>
-    @if(session('success'))
+    {{-- @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
     @if(session('error_message'))
         <div class="alert alert-danger">{{ session('error_message') }}</div>
-    @endif
+    @endif --}}
     <div class="table-responsive">
         <table class="table datatables datatables-active" id="dataTable-2" cellspacing="0" width="100%">
             <thead>
@@ -54,7 +56,7 @@
             <tbody>
             @foreach ($coupons as $index=>$coupon)
                 <tr>
-                <td></td>
+                <td>{{$coupon->id}}</td>
                 <td>{{$index+1}}</td>
                 <td>{{$coupon->name}}</td>
                 <td>{{$coupon->code}}</td>
@@ -164,4 +166,23 @@
     <script src='{{asset('assets/tiny/js/dataTables.bootstrap4.min.js')}}'></script>
     <!-- DataTables Playground (Setups, Options, Actions) -->
     <script src='{{asset('assets/js/dataTables-init.js')}}'></script>
+    <script>
+        $(document).on('click', '#bulk-delete', function (e) {
+            e.preventDefault();
+            var selected = [];
+            $('.datatables-active tbody input[type="checkbox"]').not('#selectAll').each(function(){
+                if($(this).is(':checked')){
+                    selected.push($(this).val());
+                }
+            });
+            if(selected.length === 0){
+                alert(@json(__('site.no_items_selected')));
+                return;
+            }
+            if(confirm(@json(__('site.delete_selected_confirm')))){
+                var url = @json(route('admin.coupons.destroy-selected')) + '?ids=' + selected.join(',');
+                window.location = url;
+            }
+        });
+    </script>
 @endsection
