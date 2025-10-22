@@ -245,35 +245,14 @@ class CouponController extends Controller
         if ($coupon->active == 1) {
             $coupon->active = 0;
             $coupon->save();
-            $data = [
-                'title' => 'disable',
-                'body' => 'disable_body',
-                'target' => 'coupon',
-                'link'  => route('admin.coupons.index', ['name' => $coupon->name]),
-                'target_id' => $coupon->name,
-                'sender' => auth()->user()->name,
-            ];
-
-            $users = User::where('type', 'admin')->orWhere('type', 'superadministrator')->get();
-            foreach ($users as $user1) {
-                Notification::send($user1, new LocalNotification($data));
-            }
+            // Notify based on coupon apply_to
+            $this->notifyCouponEvent('disable', $coupon);
             session()->flash('success', __('site.disable_success'));
         } elseif ($coupon->active == 0) {
             $coupon->active = 1;
             $coupon->save();
-            $data = [
-                'title' => 'enable',
-                'body' => 'enable_body',
-                'target' => 'coupon',
-                'link'  => route('admin.coupons.index', ['name' => $coupon->name]),
-                'target_id' => $coupon->name,
-                'sender' => auth()->user()->name,
-            ];
-            $users = User::where('type', 'admin')->orWhere('type', 'superadministrator')->get();
-            foreach ($users as $user1) {
-                Notification::send($user1, new LocalNotification($data));
-            }
+            // Notify based on coupon apply_to
+            $this->notifyCouponEvent('enable', $coupon);
             session()->flash('success', __('site.enable_success'));
         }
         return redirect()->route('admin.coupons.index');

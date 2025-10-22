@@ -48,6 +48,12 @@ class SendCouponNotifications implements ShouldQueue
 
         [$titleEn, $titleAr, $bodyEn, $bodyAr] = $this->buildLocalizedContent($coupon, $this->titleKey);
 
+        // Resolve recipient groups from apply_to
+        $applyTo = strtolower((string) $coupon->apply_to);
+        $sendToUsers     = in_array($applyTo, ['customer', 'all'], true);
+        $sendToFactories = in_array($applyTo, ['enterprise', 'all'], true);
+        $sendToAdmins    = $applyTo === 'all';
+
         $dataAdmin = [
             'title'     => $this->titleKey,
             'body'      => ['en' => $bodyEn, 'ar' => $bodyAr],
@@ -72,38 +78,44 @@ class SendCouponNotifications implements ShouldQueue
         $fcmBody  = ['en' => $bodyEn,  'ar' => $bodyAr];
         $fcmData  = ['target' => 'coupon', 'target_id' => (string) $couponName];
 
-        // Notify admins
-        User::whereIn('type', ['admin', 'superadministrator'])
-            ->chunkById(200, function ($admins) use ($dataAdmin, $fcmTitle, $fcmBody, $fcmData) {
-                Notification::send($admins, new LocalNotification($dataAdmin));
-                foreach ($admins as $admin) {
-                    if (!empty($admin->fcm_token)) {
-                        Notification::send($admin, new FcmPushNotification($fcmTitle, $fcmBody, [$admin->fcm_token], $fcmData));
+        // Notify admins only when apply_to = all
+        if ($sendToAdmins) {
+            User::whereIn('type', ['admin', 'superadministrator'])
+                ->chunkById(200, function ($admins) use ($dataAdmin, $fcmTitle, $fcmBody, $fcmData) {
+                    Notification::send($admins, new LocalNotification($dataAdmin));
+                    foreach ($admins as $admin) {
+                        if (!empty($admin->fcm_token)) {
+                            Notification::send($admin, new FcmPushNotification($fcmTitle, $fcmBody, [$admin->fcm_token], $fcmData));
+                        }
                     }
-                }
-            });
+                });
+        }
 
-        // Notify providers
-        User::where('user_type', 'service_provider')
-            ->chunkById(200, function ($providers) use ($dataFront, $fcmTitle, $fcmBody, $fcmData) {
-                Notification::send($providers, new LocalNotification($dataFront));
-                foreach ($providers as $provider) {
-                    if (!empty($provider->fcm_token)) {
-                        Notification::send($provider, new FcmPushNotification($fcmTitle, $fcmBody, [$provider->fcm_token], $fcmData));
+        // Notify customers (type = user)
+        if ($sendToUsers) {
+            User::where('type', 'user')
+                ->chunkById(200, function ($users) use ($dataFront, $fcmTitle, $fcmBody, $fcmData) {
+                    Notification::send($users, new LocalNotification($dataFront));
+                    foreach ($users as $u) {
+                        if (!empty($u->fcm_token)) {
+                            Notification::send($u, new FcmPushNotification($fcmTitle, $fcmBody, [$u->fcm_token], $fcmData));
+                        }
                     }
-                }
-            });
+                });
+        }
 
-        // Notify seekers (users/factories)
-        User::whereIn('type', ['user', 'factory'])
-            ->chunkById(200, function ($seekers) use ($dataFront, $fcmTitle, $fcmBody, $fcmData) {
-                Notification::send($seekers, new LocalNotification($dataFront));
-                foreach ($seekers as $seeker) {
-                    if (!empty($seeker->fcm_token)) {
-                        Notification::send($seeker, new FcmPushNotification($fcmTitle, $fcmBody, [$seeker->fcm_token], $fcmData));
+        // Notify enterprises (type = factory)
+        if ($sendToFactories) {
+            User::where('type', 'factory')
+                ->chunkById(200, function ($factories) use ($dataFront, $fcmTitle, $fcmBody, $fcmData) {
+                    Notification::send($factories, new LocalNotification($dataFront));
+                    foreach ($factories as $f) {
+                        if (!empty($f->fcm_token)) {
+                            Notification::send($f, new FcmPushNotification($fcmTitle, $fcmBody, [$f->fcm_token], $fcmData));
+                        }
                     }
-                }
-            });
+                });
+        }
     }
 
     private function buildLocalizedContent(Coupon $coupon, string $titleKey): array
