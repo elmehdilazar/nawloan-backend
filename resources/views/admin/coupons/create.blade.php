@@ -10,7 +10,7 @@
     <!--=== Start Main ===-->
 
     <h2 class="section-title mb-5">@lang('site.create_coupons')</h2>
-    @if(session('error_message'))
+    {{-- @if(session('error_message'))
         <div class="alert alert-danger">{{ session('error_message') }}</div>
     @endif
     @if($errors->any())
@@ -21,7 +21,7 @@
                 @endforeach
             </ul>
         </div>
-    @endif
+    @endif --}}
 
     <form action="{{route('admin.coupons.store')}}" method="post">
         @csrf
