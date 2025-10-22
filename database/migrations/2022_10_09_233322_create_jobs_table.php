@@ -13,6 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
+        // Guard against environments where the table already exists
+        if (Schema::hasTable('jobs')) {
+            return;
+        }
+
         Schema::create('jobs', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('queue')->index();
