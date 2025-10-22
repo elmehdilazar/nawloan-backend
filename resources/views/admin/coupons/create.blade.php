@@ -42,6 +42,20 @@
                         @enderror
                     </div>
                     <div class="input-group">
+                        <label for="desc_ar">@lang('site.coupon_description_ar')</label>
+                        <textarea name="desc_ar" id="desc_ar" rows="3" placeholder="@lang('site.placeholder_coupon_description_ar')">{{ old('desc_ar') }}</textarea>
+                        @error('desc_ar')
+                        <small class="form-text text-danger">{{ $message }}</small>
+                        @enderror
+                    </div>
+                    <div class="input-group">
+                        <label for="desc_en">@lang('site.coupon_description_en')</label>
+                        <textarea name="desc_en" id="desc_en" rows="3" placeholder="@lang('site.placeholder_coupon_description_en')">{{ old('desc_en') }}</textarea>
+                        @error('desc_en')
+                        <small class="form-text text-danger">{{ $message }}</small>
+                        @enderror
+                    </div>
+                    <div class="input-group">
                         <label for="">@lang('site.number_available')</label>
                         <input required type="number" min="0" max="1000" name="number_availabe" id="number_availabe" placeholder="@lang('site.placeholder_number_available')">
                         @error("number_availabe")

@@ -33,6 +33,8 @@ class CouponRequest extends FormRequest
         'number_availabe' => 'required|numeric|min:1|max:1000',
         'discount' => 'required|numeric|min:0',
         'apply_to' => ['required', Rule::in(['customer', 'enterprise', 'all'])],
+        'desc_en' => 'nullable|string|max:1000',
+        'desc_ar' => 'nullable|string|max:1000',
     ];
 }
 
@@ -54,6 +56,8 @@ class CouponRequest extends FormRequest
             'discount.required' => 'The discount value is required',
             'apply_to.required' => 'Apply To is required',
             'apply_to.in' => 'Invalid value for Apply To',
+            'desc_en.max' => 'English description must not exceed 1000 characters',
+            'desc_ar.max' => 'Arabic description must not exceed 1000 characters',
         ];
     } else {
         return [
@@ -70,6 +74,8 @@ class CouponRequest extends FormRequest
             'discount.required' => 'قيمة الخصم مطلوبة',
             'apply_to.required' => 'يجب اختيار نوع المستخدم المستهدف',
             'apply_to.in' => 'قيمة غير صالحة للحقل Apply To',
+            'desc_en.max' => 'يجب ألا يتجاوز الوصف الإنجليزي 1000 حرف',
+            'desc_ar.max' => 'يجب ألا يتجاوز الوصف العربي 1000 حرف',
         ];
     }
 }

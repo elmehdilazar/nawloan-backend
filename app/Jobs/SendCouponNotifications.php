@@ -156,11 +156,19 @@ class SendCouponNotifications implements ShouldQueue
             default   => 'تحديث على الكوبون',
         };
 
-        $bodyEnParts = array_filter([$discountEn, $durationEn]);
-        $bodyArParts = array_filter([$discountAr, $durationAr]);
+        // Prefer custom description if provided; otherwise fallback to details
+        $descEn = trim((string) ($coupon->desc_en ?? ''));
+        $descAr = trim((string) ($coupon->desc_ar ?? ''));
 
-        $bodyEn = trim(implode(' ', $bodyEnParts));
-        $bodyAr = trim(implode(' ', $bodyArParts));
+        if ($descEn !== '' || $descAr !== '') {
+            $bodyEn = $descEn !== '' ? $descEn : trim($discountEn . ' ' . $durationEn);
+            $bodyAr = $descAr !== '' ? $descAr : trim($discountAr . ' ' . $durationAr);
+        } else {
+            $bodyEnParts = array_filter([$discountEn, $durationEn]);
+            $bodyArParts = array_filter([$discountAr, $durationAr]);
+            $bodyEn = trim(implode(' ', $bodyEnParts));
+            $bodyAr = trim(implode(' ', $bodyArParts));
+        }
 
         return [$titleEn, $titleAr, $bodyEn, $bodyAr];
     }
@@ -174,6 +182,8 @@ class SendCouponNotifications implements ShouldQueue
             'type'        => $coupon->type,
             'start_date'  => $coupon->start_date,
             'expiry_date' => $coupon->expiry_date,
+            'desc_en'     => $coupon->desc_en,
+            'desc_ar'     => $coupon->desc_ar,
         ];
     }
 }

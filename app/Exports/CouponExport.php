@@ -27,6 +27,8 @@ class CouponExport implements FromCollection ,WithHeadings, ShouldAutoSize
             'expiry_date' => Lang::get('site.expires'),
             'discount' => Lang::get('site.discount_amount'),
             'apply_to' => Lang::get('site.apply_to'),
+            'desc_en' => 'Description (EN)',
+            'desc_ar' => 'Description (AR)',
 
 
         ];
@@ -34,7 +36,7 @@ class CouponExport implements FromCollection ,WithHeadings, ShouldAutoSize
 
     public function collection()
     {
-        return Coupon::select('id', 'name', 'code', 'type', 'number_availabe', 'start_date', 'expiry_date','discount','apply_to')->get();
+        return Coupon::select('id', 'name', 'code', 'type', 'number_availabe', 'start_date', 'expiry_date','discount','apply_to', 'desc_en', 'desc_ar')->get();
 
     }
 }
