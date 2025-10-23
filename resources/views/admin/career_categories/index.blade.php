@@ -46,7 +46,7 @@
         @foreach ($categories as $index=>$category)
             <tr>
                 <td>{{$category->id}}</td>
-                <td>{{$category->id}}</td>
+                <td>{{$index + 1}}</td>
                 <td>{{$category->category_ar}}</td>
                 <td>{{$category->category_en}}</td>
                 <td>
