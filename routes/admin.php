@@ -189,6 +189,8 @@ Route::group(
                     Route::get('/transactions/export', [\App\Http\Controllers\Admin\TransactionController::class, 'export'])->name('transactions.export');
                     Route::get('/users/export', [\App\Http\Controllers\Admin\UserController::class, 'export'])->name('users.export');
 
+                    // Place destroy-selected BEFORE the resource to avoid being captured by users.show
+                    Route::get('/users/destroy-selected', [\App\Http\Controllers\Admin\UserController::class, 'destroySelected'])->name('users.destroy-selected');
                     Route::resource('/users', '\App\Http\Controllers\Admin\UserController');
                     Route::post('/users/{id}/changeStatus', [\App\Http\Controllers\Admin\UserController::class, 'changeStatus'])->name('users.changeStatus');
                 // Place destroy-selected BEFORE the resource to avoid being captured by ulists.show

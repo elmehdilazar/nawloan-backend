@@ -32,6 +32,7 @@ class UserController extends Controller
         $this->middleware(['permission:users_enable'])->only('changeStatus');
         $this->middleware(['permission:users_disable'])->only('changeStatus');
         $this->middleware(['permission:users_export'])->only('export');
+        $this->middleware(['permission:users_disable'])->only('destroySelected');
     }
     /**
      * Display a listing of the resource.
@@ -264,6 +265,51 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         //
+    }
+    public function destroySelected(Request $request)
+    {
+        $ids = $request->query('ids', []);
+        if (is_string($ids)) {
+            $ids = array_filter(explode(',', $ids));
+        }
+        $ids = array_values(array_unique(array_map('intval', (array)$ids)));
+        $ids = array_values(array_filter($ids, function ($id) { return $id > 0; }));
+
+        if (empty($ids)) {
+            return back()->with('error', __('site.no_items_selected'));
+        }
+
+        // Optional: prevent deleting yourself
+        $ids = array_values(array_diff($ids, [auth()->id()]));
+        if (empty($ids)) {
+            return back()->with('error', __('site.no_items_selected'));
+        }
+
+        DB::beginTransaction();
+        try {
+            // Clean up user images
+            $userDataList = UserData::whereIn('user_id', $ids)->get();
+            foreach ($userDataList as $ud) {
+                if (!empty($ud->image) && $ud->image !== 'uploads/users/default.png') {
+                    $path = public_path($ud->image);
+                    if (file_exists($path)) {
+                        @unlink($path);
+                    }
+                }
+            }
+            // Delete related data then users
+            UserData::whereIn('user_id', $ids)->delete();
+            $deleted = User::whereIn('id', $ids)->delete();
+            DB::commit();
+
+            if ($deleted < 1) {
+                return back()->with('error', __('site.no_items_selected'));
+            }
+            return back()->with('success', __('site.deleted_success'));
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return back()->with('error', __('site.something_wrong'));
+        }
     }
     public function changeStatus($id)
     {

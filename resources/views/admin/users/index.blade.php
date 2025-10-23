@@ -18,7 +18,9 @@
                 @lang('site.export')
             </a>
             @endif
-            <a href="#" class="btn btn-danger onchange-visible">Delete</a>
+            @if(auth()->user()->hasPermission('users_disable'))
+            <a href="#" id="bulk-delete" class="btn btn-danger onchange-visible">@lang('site.delete_selected')</a>
+            @endif
             @if(auth()->user()->hasPermission('users_create'))
             <a href="{{route('admin.users.create')}}" class="btn btn-navy onchange-hidden"
                title="@lang('site.add') @lang('site.user')">
@@ -95,7 +97,7 @@
         <tbody>
         @foreach ($users as $index=>$user)
             <tr>
-                <td></td>
+                <td>{{$user->id}}</td>
                 <td>{{$index + 1}}</td>
                 <td>{{$user->name}}</td>
                 <td>{{$user->phone}}</td>
@@ -201,12 +203,29 @@
     <script src='{{asset('assets/tiny/js/jquery.dataTables.min.js')}}'></script>
     <script src='{{asset('assets/tiny/js/dataTables.bootstrap4.min.js')}}'></script>
     <!-- DataTables Playground (Setups, Options, Actions) -->
-    <script src='{{asset('assets/js/dataTables-init.js')}}'></script>
+    <script src='{{ asset('assets/js/dataTables-init.js') }}?v={{ @filemtime(public_path('assets/js/dataTables-init.js')) }}'></script>
     <!-- IntlTelInput -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/8.4.7/js/intlTelInput.js"></script>
     <script>
         $(document).ready(function(){
+            $(document).on('click', '#bulk-delete', function (e) {
+                e.preventDefault();
+                var selected = [];
+                $('.datatables-active tbody input[type="checkbox"]').not('#selectAll').each(function(){
+                    if($(this).is(':checked')){
+                        selected.push($(this).val());
+                    }
+                });
+                if(selected.length === 0){
+                    alert(@json(__('site.no_items_selected')));
+                    return;
+                }
+                if(confirm(@json(__('site.delete_selected_confirm')))){
+                    var url = @json(route('admin.users.destroy-selected')) + '?ids=' + selected.join(',');
+                    window.location = url;
+                }
+            });
             let country_codes= <?php echo json_encode( \App\Models\Country::select('country_code')->get()); ?>;
             let countries=[];
             for(var i=0;i<country_codes.length;i++){
