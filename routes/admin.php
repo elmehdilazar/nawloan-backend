@@ -189,8 +189,10 @@ Route::group(
 
                     Route::resource('/users', '\App\Http\Controllers\Admin\UserController');
                     Route::post('/users/{id}/changeStatus', [\App\Http\Controllers\Admin\UserController::class, 'changeStatus'])->name('users.changeStatus');
-                    Route::resource('/ulists', '\App\Http\Controllers\Admin\UListController');
-                    Route::post('/ulists/{id}/changeStatus', [\App\Http\Controllers\Admin\UListController::class, 'changeStatus'])->name('ulists.changeStatus');
+                // Place destroy-selected BEFORE the resource to avoid being captured by ulists.show
+                Route::get('/ulists/destroy-selected', [\App\Http\Controllers\Admin\UListController::class, 'destroySelected'])->name('ulists.destroy-selected');
+                Route::resource('/ulists', '\App\Http\Controllers\Admin\UListController');
+                Route::post('/ulists/{id}/changeStatus', [\App\Http\Controllers\Admin\UListController::class, 'changeStatus'])->name('ulists.changeStatus');
                 Route::get('/ulists/export', [\App\Http\Controllers\Admin\UListController::class, 'export'])->name('ulists.export');
                 Route::get('/countries/export', [\App\Http\Controllers\Admin\CountryController::class, 'export'])->name('countries.export');
                 // Place destroy-selected BEFORE the resource to avoid being captured by countries.show

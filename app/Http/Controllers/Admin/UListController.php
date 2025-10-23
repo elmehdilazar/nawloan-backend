@@ -16,6 +16,12 @@ use Illuminate\Support\Facades\Notification;
 
 class UListController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+        // restrict bulk delete to users with disable permission
+        $this->middleware(['permission:ulists_disable'])->only('destroySelected');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -199,5 +205,35 @@ class UListController extends Controller
     }
     public function export(){
     //  return Excel::download(new UsersExport,  Lang::get('site.users').'-'.Carbon::now()->format('Y-m-d_H-i-s').'.xlsx');
+    }
+
+    public function destroySelected(Request $request)
+    {
+        $ids = $request->query('ids', []);
+        if (is_string($ids)) {
+            $ids = array_filter(explode(',', $ids));
+        }
+        $ids = array_values(array_unique(array_map('intval', (array)$ids)));
+        $ids = array_values(array_filter($ids, function ($id) { return $id > 0; }));
+
+        if (empty($ids)) {
+            return back()->with('error', __('site.no_items_selected'));
+        }
+
+        DB::beginTransaction();
+        try {
+            // Remove relations then delete lists
+            \App\Models\UListUser::whereIn('u_list_id', $ids)->delete();
+            $deleted = UList::whereIn('id', $ids)->delete();
+            DB::commit();
+
+            if ($deleted < 1) {
+                return back()->with('error', __('site.no_items_selected'));
+            }
+            return back()->with('success', __('site.deleted_success'));
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return back()->with('error', __('site.something_wrong'));
+        }
     }
 }

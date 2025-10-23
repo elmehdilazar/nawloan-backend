@@ -15,7 +15,9 @@
                     @lang('site.export')
                 </a>
             @endif
-            <a href="" class="btn btn-danger onchange-visible">Delete</a>
+            @if(auth()->user()->hasPermission('ulists_disable'))
+                <a href="#" id="bulk-delete" class="btn btn-danger onchange-visible">@lang('site.delete_selected')</a>
+            @endif
             @if(auth()->user()->hasPermission('ulists_create'))
                 <a class="btn btn-navy onchange-hidden" href="{{route('admin.ulists.create')}}"
                    title="@lang('site.add') @lang('site.ulist')">
@@ -44,7 +46,7 @@
         <tbody>
         @foreach ($ulists as $index=>$list)
             <tr>
-                <td></td>
+                <td>{{$list->id}}</td>
                 <td>{{$index + 1}}</td>
                 <td>{{$list->name_en}}</td>
                 <td class="text-arabic">{{$list->name_ar}}</td>
@@ -204,5 +206,24 @@
     <script src='{{asset('assets/tiny/js/jquery.dataTables.min.js')}}'></script>
     <script src='{{asset('assets/tiny/js/dataTables.bootstrap4.min.js')}}'></script>
     <!-- DataTables Playground (Setups, Options, Actions) -->
-    <script src='{{asset('assets/js/dataTables-init.js')}}'></script>
+    <script src='{{ asset('assets/js/dataTables-init.js') }}?v={{ @filemtime(public_path('assets/js/dataTables-init.js')) }}'></script>
+    <script>
+        $(document).on('click', '#bulk-delete', function (e) {
+            e.preventDefault();
+            var selected = [];
+            $('.datatables-active tbody input[type="checkbox"]').not('#selectAll').each(function(){
+                if($(this).is(':checked')){
+                    selected.push($(this).val());
+                }
+            });
+            if(selected.length === 0){
+                alert(@json(__('site.no_items_selected')));
+                return;
+            }
+            if(confirm(@json(__('site.delete_selected_confirm')))){
+                var url = @json(route('admin.ulists.destroy-selected')) + '?ids=' + selected.join(',');
+                window.location = url;
+            }
+        });
+    </script>
 @endsection
