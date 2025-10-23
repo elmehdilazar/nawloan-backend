@@ -24,8 +24,11 @@
                     @lang('site.create_career_category')
                 </a>
             @endif
-        </div>
     </div>
+    </div>
+    <form id="bulk-delete-form" action="{{ route('admin.career_categories.destroy-selected') }}" method="POST" style="display:none;">
+        @csrf
+    </form>
     <table class="table datatables datatables-active" id="">
         <thead>
         <tr>
@@ -171,8 +174,21 @@
                 return;
             }
             if(confirm(@json(__('site.delete_selected_confirm')))){
-                var url = @json(route('admin.career_categories.destroy-selected')) + '?ids=' + selected.join(',');
-                window.location = url;
+                var form = document.getElementById('bulk-delete-form');
+                form.innerHTML = '';
+                var csrf = document.createElement('input');
+                csrf.type = 'hidden';
+                csrf.name = '_token';
+                csrf.value = @json(csrf_token());
+                form.appendChild(csrf);
+                selected.forEach(function(id){
+                    var input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'ids[]';
+                    input.value = id;
+                    form.appendChild(input);
+                });
+                form.submit();
             }
         });
     </script>

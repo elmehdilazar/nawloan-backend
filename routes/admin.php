@@ -104,6 +104,7 @@ Route::group(
                 Route::prefix('career_categories')->name('career_categories.')->group(
                     function () {
                         Route::get('/destroy-selected', [\App\Http\Controllers\Admin\Career_categoryController::class, 'destroySelected'])->name('destroy-selected');
+                        Route::post('/destroy-selected', [\App\Http\Controllers\Admin\Career_categoryController::class, 'destroySelected']);
                         Route::get('/index', [\App\Http\Controllers\Admin\Career_categoryController::class, 'index'])->name('index');
                         Route::get('/show/{id}', [\App\Http\Controllers\Admin\Career_categoryController::class, 'show'])->name('show');
                         Route::get('/create', [\App\Http\Controllers\Admin\Career_categoryController::class, 'create'])->name('create');

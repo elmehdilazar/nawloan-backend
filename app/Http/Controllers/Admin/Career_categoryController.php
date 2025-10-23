@@ -164,7 +164,7 @@ class Career_categoryController extends Controller
 
     public function destroySelected(Request $request)
     {
-        $ids = $request->query('ids', []);
+        $ids = $request->input('ids', $request->query('ids', []));
         if (is_string($ids)) {
             $ids = array_filter(explode(',', $ids));
         }
