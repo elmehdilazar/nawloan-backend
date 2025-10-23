@@ -86,8 +86,9 @@ class GatewayController extends Controller
             $request->request->add(['active' => 1]);
         }
         $request_data = $request->except(['image']);
-        $request_userData['image'] = 'uploads/gateway/default.png';
-        if ($request->image) {
+        // Ensure an image path key always exists
+        $request_data['image'] = 'uploads/gateway/default.png';
+        if ($request->hasFile('image')) {
             Image::make($request->image)
                 ->save(public_path('uploads/gateway/' . $request->image->hashName()));
             $request_data['image'] = 'uploads/gateway/' . $request->image->hashName();
