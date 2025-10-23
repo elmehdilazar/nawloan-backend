@@ -43,6 +43,12 @@
         <table class="table datatables" id="dataTable-2" cellspacing="0" width="100%">
             <thead>
             <tr>
+                <th>
+                    <div class="dt-checkbox">
+                        <input type="checkbox" name="select_all" value="1" id="selectAll">
+                        <label for="selectAll" class="visual-checkbox"></label>
+                    </div>
+                </th>
                 <th>@lang('site.num')</th>
                 <th>@lang('site.Article Name')</th>
                 <th>@lang('site.category')</th>
@@ -55,6 +61,7 @@
 
             @foreach($articles as $index => $article)
                 <tr>
+                    <td></td>
                     <td>{{$index+1}}</td>
                     <td>
                         <p>{{$article->article_en}}</p>
