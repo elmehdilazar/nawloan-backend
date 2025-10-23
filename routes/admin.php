@@ -180,6 +180,8 @@ Route::group(
                     Route::put('/offers/{id}', [\App\Http\Controllers\Admin\OfferController::class, 'update'])->name('offers.update');
                   //  Route::put('offers/{id}/changeOfferStatus', [\App\Http\Controllers\Admin\OfferController::class, 'changeOfferStatus'])->name('offers.changeOfferStatus');
                     Route::get('/gateway/export', [\App\Http\Controllers\Admin\GatewayController::class, 'export'])->name('gateway.export');
+                    // Place destroy-selected BEFORE the resource to avoid being captured by gateway.show
+                    Route::get('/gateway/destroy-selected', [\App\Http\Controllers\Admin\GatewayController::class, 'destroySelected'])->name('gateway.destroy-selected');
                     Route::resource('/gateway', '\App\Http\Controllers\Admin\GatewayController');
                     Route::post('/gateway/{id}/changeStatus', [\App\Http\Controllers\Admin\GatewayController::class, 'changeStatus'])->name('gateway.changeStatus');
 

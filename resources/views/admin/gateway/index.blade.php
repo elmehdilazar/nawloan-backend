@@ -13,13 +13,11 @@
                title="@lang('site.export') @lang('site.the_gateway')">
                 @lang('site.export')
             </a>
-            <a href="" class="btn btn-danger onchange-visible">Delete</a>
-            @if(auth()->user()->hasPermission('drivers_create'))
+            <a href="#" id="bulk-delete" class="btn btn-danger onchange-visible">@lang('site.delete_selected')</a>
             <a class="btn btn-navy onchange-hidden" href="{{route('admin.gateway.create')}}"
                title="@lang('site.add') @lang('site.the_gateway')">
                 @lang('site.add') @lang('site.the_gateway')
             </a>
-            @endif
         </div>
     </div>
     <form action="{{route('admin.gateway.index')}}" method="GET">
@@ -86,7 +84,7 @@
         <tbody>
         @foreach ($gateway as $index=>$gate)
             <tr>
-                <td></td>
+                <td>{{$gate->id}}</td>
                 <td>{{$index + 1}}</td>
                 <td>
                     <div class="user-col">
@@ -184,5 +182,24 @@
     <script src='{{asset('assets/tiny/js/jquery.dataTables.min.js')}}'></script>
     <script src='{{asset('assets/tiny/js/dataTables.bootstrap4.min.js')}}'></script>
     <!-- DataTables Playground (Setups, Options, Actions) -->
-    <script src='{{asset('assets/js/dataTables-init.js')}}'></script>
+    <script src='{{ asset('assets/js/dataTables-init.js') }}?v={{ @filemtime(public_path('assets/js/dataTables-init.js')) }}'></script>
+    <script>
+        $(document).on('click', '#bulk-delete', function (e) {
+            e.preventDefault();
+            var selected = [];
+            $('.datatables-active tbody input[type="checkbox"]').not('#selectAll').each(function(){
+                if($(this).is(':checked')){
+                    selected.push($(this).val());
+                }
+            });
+            if(selected.length === 0){
+                alert(@json(__('site.no_items_selected')));
+                return;
+            }
+            if(confirm(@json(__('site.delete_selected_confirm')))){
+                var url = @json(route('admin.gateway.destroy-selected')) + '?ids=' + selected.join(',');
+                window.location = url;
+            }
+        });
+    </script>
 @endsection
