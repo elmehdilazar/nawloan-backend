@@ -30,6 +30,7 @@ class CareerController extends Controller
         $this->middleware(['permission:careers_enable'])->only('changeStatus');
         $this->middleware(['permission:careers_disable'])->only('changeStatus');
         $this->middleware(['permission:careers_export'])->only('export');
+        $this->middleware(['permission:careers_disable'])->only('destroySelected');
     }
     /**
      * Display a listing of the resource.
@@ -335,5 +336,24 @@ class CareerController extends Controller
     }
 
 
-}
+    public function destroySelected(Request $request)
+    {
+        $ids = $request->query('ids', []);
+        if (is_string($ids)) {
+            $ids = array_filter(explode(',', $ids));
+        }
+        $ids = array_values(array_unique(array_map('intval', (array)$ids)));
+        $ids = array_values(array_filter($ids, function ($id) { return $id > 0; }));
 
+        if (empty($ids)) {
+            return back()->with('error', __('site.no_items_selected'));
+        }
+
+        $deleted = Career::whereIn('id', $ids)->delete();
+        if ($deleted < 1) {
+            return back()->with('error', __('site.no_items_selected'));
+        }
+
+        return back()->with('success', __('site.deleted_success'));
+    }
+}

@@ -19,7 +19,9 @@
                title="@lang('site.careers') @lang('site.categories')">
                 @lang('site.categories')
             </a>
-            <a href="" class="btn btn-danger onchange-visible">Delete</a>
+            @if(auth()->user()->hasPermission('careers_disable'))
+                <a href="#" id="bulk-delete" class="btn btn-danger onchange-visible">@lang('site.delete_selected')</a>
+            @endif
             @if(auth()->user()->hasPermission('careers_create'))
                 <a class="btn btn-navy onchange-hidden" href="{{route('admin.careers.create')}}"
                    title="@lang('site.create_career')">
@@ -118,7 +120,7 @@
         <tbody>
         @foreach ($careers as $index=>$career)
             <tr>
-                <td></td>
+                <td>{{$career->id}}</td>
                 <td>{{$career->id}}</td>
                 <td>{{$career->name_ar}}</td>
                 <td>{{$career->name_en}}</td>
@@ -234,5 +236,24 @@
     <script src='{{asset('assets/tiny/js/jquery.dataTables.min.js')}}'></script>
     <script src='{{asset('assets/tiny/js/dataTables.bootstrap4.min.js')}}'></script>
     <!-- DataTables Playground (Setups, Options, Actions) -->
-    <script src='{{asset('assets/js/dataTables-init.js')}}'></script>
+    <script src='{{ asset('assets/js/dataTables-init.js') }}?v={{ @filemtime(public_path('assets/js/dataTables-init.js')) }}'></script>
+    <script>
+        $(document).on('click', '#bulk-delete', function (e) {
+            e.preventDefault();
+            var selected = [];
+            $('.datatables-active tbody input[type="checkbox"]').not('#selectAll').each(function(){
+                if($(this).is(':checked')){
+                    selected.push($(this).val());
+                }
+            });
+            if(selected.length === 0){
+                alert(@json(__('site.no_items_selected')));
+                return;
+            }
+            if(confirm(@json(__('site.delete_selected_confirm')))){
+                var url = @json(route('admin.careers.destroy-selected')) + '?ids=' + selected.join(',');
+                window.location = url;
+            }
+        });
+    </script>
 @endsection

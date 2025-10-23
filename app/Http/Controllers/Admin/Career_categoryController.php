@@ -28,6 +28,7 @@ class Career_categoryController extends Controller
         $this->middleware(['permission:careercategories_enable'])->only('changeStatus');
         $this->middleware(['permission:careercategories_disable'])->only('changeStatus');
         $this->middleware(['permission:careercategories_export'])->only('export');
+        $this->middleware(['permission:careercategories_disable'])->only('destroySelected');
     }
 
     public function index (){
@@ -161,4 +162,25 @@ class Career_categoryController extends Controller
     }
 
 
+    public function destroySelected(Request $request)
+    {
+        $ids = $request->query('ids', []);
+        if (is_string($ids)) {
+            $ids = array_filter(explode(',', $ids));
+        }
+        $ids = array_values(array_unique(array_map('intval', (array)$ids)));
+        $ids = array_values(array_filter($ids, function ($id) { return $id > 0; }));
+
+        if (empty($ids)) {
+            return back()->with('error', __('site.no_items_selected'));
+        }
+
+        // Soft delete selected categories
+        $deleted = Career_category::whereIn('id', $ids)->delete();
+        if ($deleted < 1) {
+            return back()->with('error', __('site.no_items_selected'));
+        }
+
+        return back()->with('success', __('site.deleted_success'));
+    }
 }
