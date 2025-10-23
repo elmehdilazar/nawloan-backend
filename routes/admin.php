@@ -193,10 +193,10 @@ Route::group(
                     Route::post('/ulists/{id}/changeStatus', [\App\Http\Controllers\Admin\UListController::class, 'changeStatus'])->name('ulists.changeStatus');
                 Route::get('/ulists/export', [\App\Http\Controllers\Admin\UListController::class, 'export'])->name('ulists.export');
                 Route::get('/countries/export', [\App\Http\Controllers\Admin\CountryController::class, 'export'])->name('countries.export');
+                // Place destroy-selected BEFORE the resource to avoid being captured by countries.show
+                Route::get('/countries/destroy-selected', [\App\Http\Controllers\Admin\CountryController::class, 'destroySelected'])->name('countries.destroy-selected');
                 Route::resource('/countries', '\App\Http\Controllers\Admin\CountryController');
                 Route::post('/countries/{id}/changeStatus', [\App\Http\Controllers\Admin\CountryController::class, 'changeStatus'])->name('countries.changeStatus');
-              Route::get('/countries/destroy-selected', [\App\Http\Controllers\Admin\CountryController::class, 'destroySelected'])
-    ->name('countries.destroy-selected');
 
                 Route::get('/factories/export', [\App\Http\Controllers\Admin\FactoryController::class, 'export'])->name('factories.export');
                     Route::resource('/factories', '\App\Http\Controllers\Admin\FactoryController');
