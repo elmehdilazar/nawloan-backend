@@ -27,6 +27,7 @@ class CountryController extends Controller
         $this->middleware(['permission:countries_update'])->only('edit');
         $this->middleware(['permission:countries_enable'])->only('changeStatus');
         $this->middleware(['permission:countries_disable'])->only('changeStatus');
+        $this->middleware(['permission:countries_disable'])->only('destroySelected');
         $this->middleware(['permission:countries_export'])->only('export');
     }
     /**
@@ -251,6 +252,7 @@ class CountryController extends Controller
         $ids = array_filter(explode(',', $ids));
     }
     $ids = array_values(array_unique(array_map('intval', Arr::wrap($ids))));
+    $ids = array_values(array_filter($ids, function ($id) { return $id > 0; }));
 
     if (empty($ids)) {
         return back()->with('error', __('site.no_items_selected'));
@@ -260,7 +262,10 @@ class CountryController extends Controller
     // $countries = Country::whereIn('id', $ids)->get();
     // foreach ($countries as $country) { /* unlink files if needed */ }
 
-    Country::whereIn('id', $ids)->delete();
+    $deleted = Country::whereIn('id', $ids)->delete();
+    if ($deleted < 1) {
+        return back()->with('error', __('site.no_items_selected'));
+    }
 
     return back()->with('success', __('site.deleted_success'));
 }
