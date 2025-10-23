@@ -32,6 +32,7 @@ class Article_categoryController extends Controller
         $this->middleware(['permission:articlecategories_enable'])->only('changeStatus');
         $this->middleware(['permission:articlecategories_disable'])->only('changeStatus');
         $this->middleware(['permission:articlecategories_export'])->only('export');
+        $this->middleware(['permission:articlecategories_disable'])->only('destroySelected');
     }
 
     public function index (Request $request){
@@ -175,6 +176,27 @@ class Article_categoryController extends Controller
 
     private function indixOnlyTrashed(){
         $categories = Article_Category::onlyTrashed()->paginate;
+    }
+
+    public function destroySelected(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        if (is_string($ids)) {
+            $ids = array_filter(explode(',', $ids));
+        }
+        $ids = array_values(array_unique(array_map('intval', (array)$ids)));
+        $ids = array_values(array_filter($ids, function ($id) { return $id > 0; }));
+
+        if (empty($ids)) {
+            return back()->with('error', __('site.no_items_selected'));
+        }
+
+        $deleted = Article_Category::whereIn('id', $ids)->delete();
+        if ($deleted < 1) {
+            return back()->with('error', __('site.no_items_selected'));
+        }
+
+        return back()->with('success', __('site.deleted_success'));
     }
 
     public function changeStatus($id)

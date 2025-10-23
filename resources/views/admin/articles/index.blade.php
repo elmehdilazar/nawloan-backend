@@ -11,7 +11,9 @@
             @if(auth()->user()->hasPermission('articlecategories_read'))
             <a href="{{route('admin.article_categories.index')}}" class="btn btn-transparent navy">@lang('site.categories')</a>
             @endif
-            <a href="" class="btn btn-danger onchange-visible">Delete</a>
+            @if(auth()->user()->hasPermission('articles_disable'))
+            <a href="#" id="bulk-delete" class="btn btn-danger onchange-visible">@lang('site.delete_selected')</a>
+            @endif
             @if(auth()->user()->hasPermission('articles_create'))
                 <a class="btn btn-navy onchange-hidden" href="{{route('admin.articles.create')}}"
                    title="@lang('site.create_coupons')">
@@ -40,7 +42,10 @@
         </div>
     </div>--}}
     <div class="table-responsive">
-        <table class="table datatables" id="dataTable-2" cellspacing="0" width="100%">
+        <form id="bulk-delete-form" action="{{ route('admin.articles.destroy-selected') }}" method="POST" style="display:none;">
+            @csrf
+        </form>
+        <table class="table datatables datatables-active" id="dataTable-2" cellspacing="0" width="100%">
             <thead>
             <tr>
                 <th>
@@ -61,7 +66,7 @@
 
             @foreach($articles as $index => $article)
                 <tr>
-                    <td></td>
+                    <td>{{$article->id}}</td>
                     <td>{{$index+1}}</td>
                     <td>
                         <p>{{$article->article_en}}</p>
@@ -178,5 +183,37 @@
     <script src='{{asset('assets/tiny/js/jquery.dataTables.min.js')}}'></script>
     <script src='{{asset('assets/tiny/js/dataTables.bootstrap4.min.js')}}'></script>
     <!-- DataTables Playground (Setups, Options, Actions) -->
-    <script src='{{asset('assets/js/dataTables-init.js')}}'></script>
+    <script src='{{ asset('assets/js/dataTables-init.js') }}?v={{ @filemtime(public_path('assets/js/dataTables-init.js')) }}'></script>
+    <script>
+        $(document).on('click', '#bulk-delete', function (e) {
+            e.preventDefault();
+            var selected = [];
+            $('.datatables-active tbody input[type="checkbox"]').not('#selectAll').each(function(){
+                if($(this).is(':checked')){
+                    selected.push($(this).val());
+                }
+            });
+            if(selected.length === 0){
+                alert(@json(__('site.no_items_selected')));
+                return;
+            }
+            if(confirm(@json(__('site.delete_selected_confirm')))){
+                var form = document.getElementById('bulk-delete-form');
+                form.innerHTML = '';
+                var csrf = document.createElement('input');
+                csrf.type = 'hidden';
+                csrf.name = '_token';
+                csrf.value = @json(csrf_token());
+                form.appendChild(csrf);
+                selected.forEach(function(id){
+                    var input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'ids[]';
+                    input.value = id;
+                    form.appendChild(input);
+                });
+                form.submit();
+            }
+        });
+    </script>
 @endsection

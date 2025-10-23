@@ -126,6 +126,8 @@ Route::group(
 
                 Route::prefix('article_categories')->name('article_categories.')->group(
                     function () {
+                        // bulk destroy first to avoid capture by show
+                        Route::post('/destroy-selected', [\App\Http\Controllers\Admin\Article_categoryController::class, 'destroySelected'])->name('destroy-selected');
                         Route::get('/index', [\App\Http\Controllers\Admin\Article_categoryController::class, 'index'])->name('index');
                         Route::get('/show/{id}', [\App\Http\Controllers\Admin\Article_categoryController::class, 'show'])->name('show');
                         Route::get('/create', [\App\Http\Controllers\Admin\Article_categoryController::class, 'create'])->name('create');
@@ -142,6 +144,8 @@ Route::group(
 
                 Route::prefix('articles')->name('articles.')->group(
                     function () {
+                        // bulk destroy first to avoid capture by show
+                        Route::post('/destroy-selected', [\App\Http\Controllers\Admin\ArticleController::class, 'destroySelected'])->name('destroy-selected');
                         Route::get('/index', [\App\Http\Controllers\Admin\ArticleController::class, 'index'])->name('index');
                         Route::get('/show/{id}', [\App\Http\Controllers\Admin\ArticleController::class, 'show'])->name('show');
                         Route::get('/create', [\App\Http\Controllers\Admin\ArticleController::class, 'create'])->name('create');

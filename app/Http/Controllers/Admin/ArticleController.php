@@ -31,6 +31,7 @@ class ArticleController extends Controller
         $this->middleware(['permission:articles_enable'])->only('changeStatus');
         $this->middleware(['permission:articles_disable'])->only('changeStatus');
         $this->middleware(['permission:articles_export'])->only('export');
+        $this->middleware(['permission:articles_disable'])->only('destroySelected');
     }
 
     public function index (Request $request){
@@ -237,6 +238,33 @@ class ArticleController extends Controller
                 DB::commit();
                 session()->flash('success', __('site.enable_success'));
                 return redirect()->route('admin.articles.index');
+        }
+    }
+
+    public function destroySelected(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        if (is_string($ids)) {
+            $ids = array_filter(explode(',', $ids));
+        }
+        $ids = array_values(array_unique(array_map('intval', (array)$ids)));
+        $ids = array_values(array_filter($ids, function ($id) { return $id > 0; }));
+
+        if (empty($ids)) {
+            return back()->with('error', __('site.no_items_selected'));
+        }
+
+        DB::beginTransaction();
+        try {
+            $deleted = Article::whereIn('id', $ids)->delete();
+            DB::commit();
+            if ($deleted < 1) {
+                return back()->with('error', __('site.no_items_selected'));
+            }
+            return back()->with('success', __('site.deleted_success'));
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return back()->with('error', __('site.something_wrong'));
         }
     }
 

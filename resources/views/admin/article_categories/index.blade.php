@@ -16,7 +16,9 @@
                     @lang('site.export')
                 </a>
             @endif
-            <a href="" class="btn btn-danger onchange-visible">Delete</a>
+            @if(auth()->user()->hasPermission('articlecategories_disable'))
+            <a href="#" id="bulk-delete" class="btn btn-danger onchange-visible">@lang('site.delete_selected')</a>
+            @endif
             @if(auth()->user()->hasPermission('articlecategories_create'))
                 <a class="btn btn-navy onchange-hidden" href="{{route('admin.article_categories.create')}}"
                    title="@lang('site.Add New')">
@@ -26,6 +28,7 @@
         </div>
     </div>
     <div class="table-responsive">
+        <form id="bulk-delete-form" action="{{ route('admin.article_categories.destroy-selected') }}" method="POST" style="display:none;">@csrf</form>
         <table class="table datatables datatables-active" id="dataTable-2" cellspacing="0" width="100%">
             <thead>
             <tr>
@@ -45,7 +48,7 @@
             <tbody>
             @foreach($categories as $index=> $categorie)
                 <tr>
-                    <td></td>
+                    <td>{{$categorie->id}}</td>
                     <td>{{$index+1}}</td>
                     <td>{{$categorie->category_en}}</td>
                     <td class="text-arabic">{{$categorie->category_ar}}</td>
@@ -152,5 +155,37 @@
     <script src='{{asset('assets/tiny/js/jquery.dataTables.min.js')}}'></script>
     <script src='{{asset('assets/tiny/js/dataTables.bootstrap4.min.js')}}'></script>
     <!-- DataTables Playground (Setups, Options, Actions) -->
-    <script src='{{asset('assets/js/dataTables-init.js')}}'></script>
+    <script src='{{ asset('assets/js/dataTables-init.js') }}?v={{ @filemtime(public_path('assets/js/dataTables-init.js')) }}'></script>
+    <script>
+        $(document).on('click', '#bulk-delete', function (e) {
+            e.preventDefault();
+            var selected = [];
+            $('.datatables-active tbody input[type="checkbox"]').not('#selectAll').each(function(){
+                if($(this).is(':checked')){
+                    selected.push($(this).val());
+                }
+            });
+            if(selected.length === 0){
+                alert(@json(__('site.no_items_selected')));
+                return;
+            }
+            if(confirm(@json(__('site.delete_selected_confirm')))){
+                var form = document.getElementById('bulk-delete-form');
+                form.innerHTML = '';
+                var csrf = document.createElement('input');
+                csrf.type = 'hidden';
+                csrf.name = '_token';
+                csrf.value = @json(csrf_token());
+                form.appendChild(csrf);
+                selected.forEach(function(id){
+                    var input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'ids[]';
+                    input.value = id;
+                    form.appendChild(input);
+                });
+                form.submit();
+            }
+        });
+    </script>
 @endsection
