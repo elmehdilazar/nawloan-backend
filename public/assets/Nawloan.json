@@ -36,8 +36,7 @@
 
     {
       "name": "users",
-      "description": "Operations about all users type",
-   
+      "description": "Operations about all users type"
     },
     {
       "name": "supportCenter",
@@ -288,8 +287,7 @@
           "properties": {
             "type": {
               "type": "string",
-              "enum": ["pick_up", "receive"],
-              
+              "enum": ["pick_up", "receive"]
             }
           },
           "required": ["type"]
@@ -3131,70 +3129,33 @@
         }
       }
     },
-{
-  "path": "/api/users/drivercompany/image/{id}",
-  "method": "post",
-  "tags": ["Users"],
-  "summary": "Upload Driver Company Images",
-  "parameters": [
-    {
-      "name": "id",
-      "in": "path",
-      "required": true,
-      "schema": {
-        "type": "integer"
+    "/users/drivercompany/image/{id}": {
+  "post": {
+    "tags": ["users"],
+    "summary": "Upload Driver Company Images",
+    "consumes": ["multipart/form-data"],
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "type": "integer",
+        "description": "Driver company ID"
       },
-      "description": "Driver company ID"
-    }
-  ],
-  "requestBody": {
-    "required": true,
-    "content": {
-      "multipart/form-data": {
-        "schema": {
-          "type": "object",
-          "properties": {
-            "image": {
-              "type": "string",
-              "format": "binary"
-            },
-            "commercial_record_image_f": {
-              "type": "string",
-              "format": "binary"
-            },
-            "commercial_record_image_b": {
-              "type": "string",
-              "format": "binary"
-            },
-            "tax_card_image_f": {
-              "type": "string",
-              "format": "binary"
-            },
-            "tax_card_image_b": {
-              "type": "string",
-              "format": "binary"
-            }
-          }
-        }
-      }
-    }
-  },
-  "responses": {
-    "200": {
-      "description": "Driver company images uploaded successfully"
-    },
-    "400": {
-      "description": "Validation error"
-    },
-    "404": {
-      "description": "Shipping Company not exists"
+      { "name": "image", "in": "formData", "type": "file", "required": false },
+      { "name": "commercial_record_image_f", "in": "formData", "type": "file", "required": false },
+      { "name": "commercial_record_image_b", "in": "formData", "type": "file", "required": false },
+      { "name": "tax_card_image_f", "in": "formData", "type": "file", "required": false },
+      { "name": "tax_card_image_b", "in": "formData", "type": "file", "required": false }
+    ],
+    "responses": {
+      "200": { "description": "Driver company images uploaded successfully" },
+      "400": { "description": "Validation error" },
+      "404": { "description": "Shipping Company not exists" }
     }
   }
 },
-    
-    
-    
-    
+
     "/users/driverInfo/{id}": {
   "post": {
     "tags": ["users"],
