@@ -203,59 +203,26 @@
         "tags": ["users"],
         "summary": "Upload Factory/Customer Company Upload Images",
         "operationId": "registerFactoryImage",
+        "consumes": ["multipart/form-data"],
+        "produces": ["application/json"],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "description": "Factory ID",
             "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
+            "type": "integer"
+          },
+          { "name": "image", "in": "formData", "type": "file", "required": false },
+          { "name": "commercial_record_image_f", "in": "formData", "type": "file", "required": false },
+          { "name": "commercial_record_image_b", "in": "formData", "type": "file", "required": false },
+          { "name": "tax_card_image_f", "in": "formData", "type": "file", "required": false },
+          { "name": "tax_card_image_b", "in": "formData", "type": "file", "required": false }
         ],
-        "requestBody": {
-          "required": false,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "image": {
-                    "type": "string",
-                    "format": "binary"
-                  },
-                  "commercial_record_image_f": {
-                    "type": "string",
-                    "format": "binary"
-                  },
-                  "commercial_record_image_b": {
-                    "type": "string",
-                    "format": "binary"
-                  },
-                  "tax_card_image_f": {
-                    "type": "string",
-                    "format": "binary"
-                  },
-                  "tax_card_image_b": {
-                    "type": "string",
-                    "format": "binary"
-                  }
-                }
-              }
-            }
-          }
-        },
         "responses": {
-          "200": {
-            "description": "Customer company images uploaded successfully"
-          },
-          "422": {
-            "description": "Validation error"
-          },
-          "404": {
-            "description": "Customer company not found"
-          }
+          "200": { "description": "Customer company images uploaded successfully" },
+          "422": { "description": "Validation error" },
+          "404": { "description": "Customer company not found" }
         }
       }
     },
@@ -363,7 +330,7 @@
     ],
     "summary": "assign drivers by company",
     "description": "Allows a company to invite selected drivers to an order by sending notifications.",
-    "operationId": "sendNotificatonToDrivers",
+    "operationId": "assignDriversByCompany",
     "consumes": [
       "application/json"
     ],
@@ -372,7 +339,7 @@
     ],
     "parameters": [
       {
-        "name": "id",
+        "name": "company_id",
         "in": "path",
         "description": "Company ID",
         "required": true,
@@ -387,9 +354,8 @@
           "type": "object",
           "properties": {
             "order_id": {
-              "type": "integer",
-              "example": 123
-            },
+              "type": "integer"
+              },
             "drivers_id": {
               "type": "array",
               "items": {
@@ -450,9 +416,8 @@
           "type": "object",
           "properties": {
             "message": {
-              "type": "string",
-              "example": "Offers retrieved successfully."
-            },
+              "type": "string"
+              },
             "data": {
               "type": "array",
               "items": {
@@ -491,17 +456,14 @@
           "type": "object",
           "properties": {
             "user_id": {
-              "type": "integer",
-              "example": 1
-            },
+              "type": "integer"
+              },
             "user2_id": {
-              "type": "integer",
-              "example": 2
-            },
+              "type": "integer"
+              },
             "order_id": {
-              "type": "integer",
-              "example": 100
-            }
+              "type": "integer"
+              }
           },
           "required": [
             "user_id",
@@ -518,9 +480,8 @@
           "type": "object",
           "properties": {
             "message": {
-              "type": "string",
-              "example": "Rating already exists."
-            },
+              "type": "string"
+              },
             "exists": {
               "type": "boolean",
               "example": true
@@ -542,67 +503,41 @@
         "tags": ["users"],
         "summary": "Register Factory/Customer Company Info",
         "operationId": "registerFactoryInfo",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "description": "Factory ID",
             "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
             "schema": {
-              "type": "integer"
+              "type": "object",
+              "properties": {
+                "commercial_record": { "type": "string" },
+                "tax_card": { "type": "string" },
+                "longitude": { "type": "string" },
+                "latitude": { "type": "string" },
+                "location": { "type": "string" },
+                "bank_name": { "type": "string" },
+                "branch_name": { "type": "string" },
+                "account_holder_name": { "type": "string" },
+                "account_number": { "type": "string" },
+                "soft_code": { "type": "string" },
+                "iban": { "type": "string" }
+              },
+              "required": ["commercial_record", "tax_card"]
             }
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "commercial_record": {
-                    "type": "string"
-                  },
-                  "tax_card": {
-                    "type": "string"
-                  },
-                  "longitude": {
-                    "type": "string"
-                  },
-                  "latitude": {
-                    "type": "string"
-                  },
-                  "location": {
-                    "type": "string"
-                  },
-                  "bank_name": {
-                    "type": "string"
-                  },
-                  "branch_name": {
-                    "type": "string"
-                  },
-                  "account_holder_name": {
-                    "type": "string"
-                  },
-                  "account_number": {
-                    "type": "string"
-                  },
-                  "soft_code": {
-                    "type": "string"
-                  },
-                  "iban": {
-                    "type": "string"
-                  }
-                },
-                "required": ["commercial_record", "tax_card"]
-              }
-            }
-          }
-        },
         "responses": {
-          "200": {
-            "description": "Factory information added successfully"
-          }
+          "200": { "description": "Factory information added successfully" }
         }
       }
     
@@ -741,9 +676,8 @@
           "in": "path",
           "description": "ID of the factory user",
           "required": true,
-          "type": "integer",
-          "example": 10
-        }
+          "type": "integer"
+          }
       ],
       "responses": {
         "200": {
@@ -752,55 +686,44 @@
             "type": "object",
             "properties": {
               "count": {
-                "type": "integer",
-                "example": 3
-              },
+                "type": "integer"
+                },
               "aviable_balance": {
-                "type": "string",
-                "example": "5000.00"
-              },
+                "type": "string"
+                },
               "outstanding_balance": {
-                "type": "string",
-                "example": "1500.00"
-              },
+                "type": "string"
+                },
               "transaction": {
                 "type": "array",
                 "items": {
                   "type": "object",
                   "properties": {
                     "id": {
-                      "type": "integer",
-                      "example": 101
-                    },
+                      "type": "integer"
+                      },
                     "payment_method_id": {
-                      "type": "integer",
-                      "example": 2
-                    },
+                      "type": "integer"
+                      },
                     "payment_status": {
-                      "type": "string",
-                      "example": "completed"
-                    },
+                      "type": "string"
+                      },
                     "pick_up_address": {
-                      "type": "string",
-                      "example": "123 Factory Lane"
-                    },
+                      "type": "string"
+                      },
                     "drop_of_address": {
-                      "type": "string",
-                      "example": "456 Warehouse Blvd"
-                    },
+                      "type": "string"
+                      },
                     "total_price": {
-                      "type": "string",
-                      "example": "2000.00"
-                    },
+                      "type": "string"
+                      },
                     "order_status": {
-                      "type": "string",
-                      "example": "delivered"
-                    },
+                      "type": "string"
+                      },
                     "created_at": {
                       "type": "string",
-                      "format": "date-time",
-                      "example": "2025-04-13 09:13:22"
-                    }
+                      "format": "date-time"
+                      }
                   }
                 }
               }
@@ -827,9 +750,8 @@
           "in": "path",
           "description": "ID of the driver",
           "required": true,
-          "type": "integer",
-          "example": 20
-        }
+          "type": "integer"
+          }
       ],
       "responses": {
         "200": {
@@ -838,59 +760,47 @@
             "type": "object",
             "properties": {
               "count": {
-                "type": "integer",
-                "example": 5
-              },
+                "type": "integer"
+                },
               "aviable_balance": {
-                "type": "string",
-                "example": "3000.00"
-              },
+                "type": "string"
+                },
               "pending_balance": {
-                "type": "string",
-                "example": "500.00"
-              },
+                "type": "string"
+                },
               "total_balance": {
-                "type": "string",
-                "example": "3500.00"
-              },
+                "type": "string"
+                },
               "transaction": {
                 "type": "array",
                 "items": {
                   "type": "object",
                   "properties": {
                     "id": {
-                      "type": "integer",
-                      "example": 202
-                    },
+                      "type": "integer"
+                      },
                     "payment_method_id": {
-                      "type": "integer",
-                      "example": 3
-                    },
+                      "type": "integer"
+                      },
                     "payment_status": {
-                      "type": "string",
-                      "example": "pending"
-                    },
+                      "type": "string"
+                      },
                     "pick_up_address": {
-                      "type": "string",
-                      "example": "789 Driver St"
-                    },
+                      "type": "string"
+                      },
                     "drop_of_address": {
-                      "type": "string",
-                      "example": "321 Delivery Ave"
-                    },
+                      "type": "string"
+                      },
                     "total_price": {
-                      "type": "string",
-                      "example": "1500.00"
-                    },
+                      "type": "string"
+                      },
                     "order_status": {
-                      "type": "string",
-                      "example": "in_transit"
-                    },
+                      "type": "string"
+                      },
                     "created_at": {
                       "type": "string",
-                      "format": "date-time",
-                      "example": "2025-04-12 14:30:00"
-                    }
+                      "format": "date-time"
+                      }
                   }
                 }
               }
@@ -917,9 +827,8 @@
         "in": "path",
         "description": "ID of the driver company",
         "required": true,
-        "type": "integer",
-        "example": 30
-      }
+        "type": "integer"
+        }
     ],
     "responses": {
       "200": {
@@ -928,59 +837,47 @@
           "type": "object",
           "properties": {
             "count": {
-              "type": "integer",
-              "example": 7
-            },
+              "type": "integer"
+              },
             "aviable_balance": {
-              "type": "string",
-              "example": "8000.00"
-            },
+              "type": "string"
+              },
             "pending_balance": {
-              "type": "string",
-              "example": "2000.00"
-            },
+              "type": "string"
+              },
             "total_balance": {
-              "type": "string",
-              "example": "10000.00"
-            },
+              "type": "string"
+              },
             "transaction": {
               "type": "array",
               "items": {
                 "type": "object",
                 "properties": {
                   "id": {
-                    "type": "integer",
-                    "example": 303
-                  },
+                    "type": "integer"
+                    },
                   "payment_method_id": {
-                    "type": "integer",
-                    "example": 4
-                  },
+                    "type": "integer"
+                    },
                   "payment_status": {
-                    "type": "string",
-                    "example": "completed"
-                  },
+                    "type": "string"
+                    },
                   "pick_up_address": {
-                    "type": "string",
-                    "example": "456 Company Rd"
-                  },
+                    "type": "string"
+                    },
                   "drop_of_address": {
-                    "type": "string",
-                    "example": "654 Distribution Center"
-                  },
+                    "type": "string"
+                    },
                   "total_price": {
-                    "type": "string",
-                    "example": "2500.00"
-                  },
+                    "type": "string"
+                    },
                   "order_status": {
-                    "type": "string",
-                    "example": "delivered"
-                  },
+                    "type": "string"
+                    },
                   "created_at": {
                     "type": "string",
-                    "format": "date-time",
-                    "example": "2025-04-13 09:13:22"
-                  }
+                    "format": "date-time"
+                    }
                 }
               }
             }
@@ -1739,9 +1636,8 @@
         "in": "path",
         "description": "ID of the user (company) who sent the invites.",
         "required": true,
-        "type": "integer",
-        "example": 27
-      }
+        "type": "integer"
+        }
     ],
     "responses": {
       "200": {
@@ -1750,20 +1646,19 @@
           "type": "object",
           "properties": {
             "message": {
-              "type": "string",
-              "example": "Orders invites retrieved successfully."
-            },
+              "type": "string"
+              },
             "data": {
               "type": "array",
               "items": {
                 "type": "object",
                 "properties": {
-                  "id": { "type": "integer", "example": 1 },
-                  "order_id": { "type": "integer", "example": 1 },
-                  "user_id": { "type": "integer", "example": 27 },
-                  "driver_id": { "type": "integer", "example": 76 },
-                  "created_at": { "type": "string", "format": "date-time", "example": "2023-01-30 12:22:46" },
-                  "updated_at": { "type": "string", "format": "date-time", "example": "2023-01-30 12:22:46" },
+                  "id": { "type": "integer" },
+                  "order_id": { "type": "integer" },
+                  "user_id": { "type": "integer" },
+                  "driver_id": { "type": "integer" },
+                  "created_at": { "type": "string", "format": "date-time" },
+                  "updated_at": { "type": "string", "format": "date-time" },
                   "order": {
                     "type": ["object", "null"],
                     "example": null
@@ -1909,9 +1804,8 @@
           "type": "object",
           "properties": {
             "order_id": {
-              "type": "integer",
-              "example": 123
-            },
+              "type": "integer"
+              },
             "drivers_id": {
               "type": "array",
               "items": {
@@ -1965,9 +1859,8 @@
         "in": "path",
         "description": "User ID to fetch orders for",
         "required": true,
-        "type": "integer",
-        "example": 5
-      }
+        "type": "integer"
+        }
     ],
     "responses": {
       "200": {
@@ -1976,9 +1869,8 @@
           "type": "object",
           "properties": {
             "count": {
-              "type": "integer",
-              "example": 2
-            },
+              "type": "integer"
+              },
             "orders": {
               "type": "array",
               "items": {
@@ -2011,9 +1903,8 @@
         "in": "path",
         "description": "Driver ID to fetch orders for",
         "required": true,
-        "type": "integer",
-        "example": 76
-      }
+        "type": "integer"
+        }
     ],
     "responses": {
       "200": {
@@ -2022,9 +1913,8 @@
           "type": "object",
           "properties": {
             "count": {
-              "type": "integer",
-              "example": 3
-            },
+              "type": "integer"
+              },
             "orders": {
               "type": "array",
               "items": {
@@ -2057,9 +1947,8 @@
         "in": "path",
         "description": "Driver ID to fetch invites for",
         "required": true,
-        "type": "integer",
-        "example": 77
-      }
+        "type": "integer"
+        }
     ],
     "responses": {
       "200": {
@@ -2068,9 +1957,8 @@
           "type": "object",
           "properties": {
             "message": {
-              "type": "string",
-              "example": "Orders invites retrieved successfully."
-            },
+              "type": "string"
+              },
             "data": {
               "type": "array",
               "items": {
@@ -2100,13 +1988,12 @@
     ],
     "parameters": [
       {
-        "name": "order",
+        "name": "order_id",
         "in": "path",
         "description": "Order ID to track",
         "required": true,
-        "type": "integer",
-        "example": 1
-      }
+        "type": "integer"
+        }
     ],
     "responses": {
       "200": {
@@ -2114,12 +2001,12 @@
         "schema": {
           "type": "object",
           "properties": {
-            "pick_up_address": { "type": "string", "example": "Jeddah Warehouse" },
-            "pick_up_late": { "type": "string", "example": "21.5433" },
-            "pick_up_long": { "type": "string", "example": "39.1728" },
-            "drop_of_address": { "type": "string", "example": "Riyadh Central" },
-            "drop_of_late": { "type": "string", "example": "24.7136" },
-            "drop_of_long": { "type": "string", "example": "46.6753" }
+            "pick_up_address": { "type": "string" },
+            "pick_up_late": { "type": "string" },
+            "pick_up_long": { "type": "string" },
+            "drop_of_address": { "type": "string" },
+            "drop_of_late": { "type": "string" },
+            "drop_of_long": { "type": "string" }
           }
         }
       },
@@ -2146,25 +2033,22 @@
         "in": "query",
         "description": "Starting index for pagination",
         "required": false,
-        "type": "integer",
-        "example": 0
-      },
+        "type": "integer"
+        },
       {
         "name": "limit",
         "in": "query",
         "description": "Number of orders to return",
         "required": false,
-        "type": "integer",
-        "example": 10
-      },
+        "type": "integer"
+        },
       {
         "name": "status",
         "in": "query",
         "description": "Filter orders by status (e.g., pending, complete)",
         "required": false,
-        "type": "string",
-        "example": "pending"
-      }
+        "type": "string"
+        }
     ],
     "responses": {
       "200": {
@@ -2172,7 +2056,7 @@
         "schema": {
           "type": "object",
           "properties": {
-            "count": { "type": "integer", "example": 2 },
+            "count": { "type": "integer" },
             "orders": {
               "type": "array",
               "items": {
@@ -2405,41 +2289,32 @@
           "type": "object",
           "properties": {
             "user_id": {
-              "type": "integer",
-              "example": 1
-            },
+              "type": "integer"
+              },
             "name": {
-              "type": "string",
-              "example": "John Doe"
-            },
+              "type": "string"
+              },
             "email": {
-              "type": "string",
-              "example": "johndoe@example.com"
-            },
+              "type": "string"
+              },
             "phone": {
-              "type": "string",
-              "example": "0234567890"
-            },
+              "type": "string"
+              },
             "phone_code": {
-              "type": "string",
-              "example": "+20"
-            },
+              "type": "string"
+              },
             "title": {
-              "type": "string",
-              "example": "Issue with Order #123"
-            },
+              "type": "string"
+              },
             "message": {
-              "type": "string",
-              "example": "The order has not been delivered yet."
-            },
+              "type": "string"
+              },
             "desc": {
-              "type": "string",
-              "example": "Order placed on May 10th."
-            },
+              "type": "string"
+              },
             "notes": {
-              "type": "string",
-              "example": "Urgent assistance required."
-            }
+              "type": "string"
+              }
           },
           "required": ["user_id", "title", "message"]
         }
@@ -2588,9 +2463,8 @@
             "in": "path",
             "description": "User ID",
             "required": true,
-            "type": "integer",
-            "example": 90
-          },
+            "type": "integer"
+            },
           {
             "name": "lang",
             "in": "query",
@@ -2610,55 +2484,55 @@
                 "data": {
                   "type": "object",
                   "properties": {
-                    "count": { "type": "integer", "example": 5 },
+                    "count": { "type": "integer" },
                     "notifications": {
                       "type": "array",
                       "items": {
                         "type": "object",
                         "properties": {
-                          "id": { "type": "string", "example": "861caafa-fb73-4543-ab44-8bf88d376dd1" },
-                          "title": { "type": "string", "example": "New order" },
+                          "id": { "type": "string" },
+                          "title": { "type": "string" },
                           "title_i18n": {
                             "type": "object",
                             "properties": {
-                              "ar": { "type": "string", "example": "طلب جديد" },
-                              "en": { "type": "string", "example": "New order" }
+                              "ar": { "type": "string" },
+                              "en": { "type": "string" }
                             }
                           },
                           "body_i18n": {
                             "type": "object",
                             "properties": {
-                              "ar": { "type": "string", "example": "تم إضافة طلب جديد بالرقم" },
-                              "en": { "type": "string", "example": "New order number" }
+                              "ar": { "type": "string" },
+                              "en": { "type": "string" }
                             }
                           },
-                          "message": { "type": "string", "example": "New order number 678" },
+                          "message": { "type": "string" },
                           "message_i18n": {
                             "type": "object",
                             "properties": {
-                              "ar": { "type": "string", "example": "تم إضافة طلب جديد بالرقم 678" },
-                              "en": { "type": "string", "example": "New order number 678" }
+                              "ar": { "type": "string" },
+                              "en": { "type": "string" }
                             }
                           },
-                          "by": { "type": "string", "example": "Mariam" },
-                          "link": { "type": "string", "example": "https://nawloan.net/admin/orders?number=678" },
+                          "by": { "type": "string" },
+                          "link": { "type": "string" },
                           "object": {
                             "type": "object",
                             "properties": {
-                              "order_id": { "type": "integer", "example": 678 },
-                              "user_id": { "type": "integer", "example": 90 },
+                              "order_id": { "type": "integer" },
+                              "user_id": { "type": "integer" },
                               "offer_id": { "type": ["integer", "null"], "example": null },
-                              "status": { "type": "string", "example": "pending" }
+                              "status": { "type": "string" }
                             }
                           },
-                          "target_id": { "type": "integer", "example": 678 },
-                          "target": { "type": "string", "example": "order" }
+                          "target_id": { "type": "integer" },
+                          "target": { "type": "string" }
                         }
                       }
                     }
                   }
                 },
-                "message": { "type": "string", "example": "User Notification." }
+                "message": { "type": "string" }
               }
             }
           },
@@ -3162,6 +3036,8 @@
     "summary": "Register Driver Info",
     "description": "Registers or updates driver information.",
     "operationId": "registerDriverInfo",
+    "consumes": ["application/json"],
+    "produces": ["application/json"],
     "parameters": [
       {
         "name": "id",
@@ -3169,54 +3045,44 @@
         "required": true,
         "type": "integer",
         "description": "Driver's user ID"
-      }
-    ],
-    "requestBody": {
-      "required": true,
-      "content": {
-        "application/json": {
-          "schema": {
-            "type": "object",
-            "properties": {
-              "location": { "type": "string" },
-              "national_id": { "type": "string" },
-              "track_type": { "type": "integer" },
-              "driving_license_number": { "type": "string" },
-              "track_license_number": { "type": "string" },
-              "track_number": { "type": "string" },
-              "company_id": { "type": "integer" },
-              "longitude": { "type": "string" },
-              "latitude": { "type": "string" }
-            },
-            "required": [
-              "location",
-              "national_id",
-              "track_type",
-              "driving_license_number",
-              "track_license_number",
-              "track_number",
-              "company_id",
-              "longitude",
-              "latitude"
-            ]
-          }
+      },
+      {
+        "in": "body",
+        "name": "body",
+        "required": true,
+        "schema": {
+          "type": "object",
+          "properties": {
+            "location": { "type": "string" },
+            "national_id": { "type": "string" },
+            "track_type": { "type": "integer" },
+            "driving_license_number": { "type": "string" },
+            "track_license_number": { "type": "string" },
+            "track_number": { "type": "string" },
+            "company_id": { "type": "integer" },
+            "longitude": { "type": "string" },
+            "latitude": { "type": "string" }
+          },
+          "required": [
+            "location",
+            "national_id",
+            "track_type",
+            "driving_license_number",
+            "track_license_number",
+            "track_number",
+            "company_id",
+            "longitude",
+            "latitude"
+          ]
         }
       }
-    },
+    ],
     "responses": {
       "200": {
         "description": "Driver info registered successfully.",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/SuccessResponse"
-            }
-          }
-        }
+        "schema": { "$ref": "#/definitions/ApiResponse" }
       },
-      "400": {
-        "description": "Validation error or missing fields"
-      }
+      "400": { "description": "Validation error or missing fields" }
     }
   }
 },
@@ -3687,37 +3553,25 @@
           "name": "name",
           "in": "query",
           "required": true,
-          "schema": {
-            "type": "string"
-          },
-          "example": "Factory Co."
+          "type": "string"
         },
         {
           "name": "phone",
           "in": "query",
           "required": true,
-          "schema": {
-            "type": "string"
-          },
-          "example": "01012345678"
+          "type": "string"
         },
         {
           "name": "password",
           "in": "query",
           "required": true,
-          "schema": {
-            "type": "string"
-          },
-          "example": "password123"
+          "type": "string"
         },
         {
           "name": "c_password",
           "in": "query",
           "required": true,
-          "schema": {
-            "type": "string"
-          },
-          "example": "password123"
+          "type": "string"
         }
       ],
       "responses": {
@@ -3765,49 +3619,38 @@
           ],
           "properties": {
             "commercial_record": {
-              "type": "string",
-              "example": "CRM12345678"
-            },
+              "type": "string"
+              },
             "tax_card": {
-              "type": "string",
-              "example": "TAX987654321"
-            },
+              "type": "string"
+              },
             "location": {
-              "type": "string",
-              "example": "Jeddah, Saudi Arabia"
-            },
+              "type": "string"
+              },
             "longitude": {
-              "type": "string",
-              "example": "39.19797"
-            },
+              "type": "string"
+              },
             "latitude": {
-              "type": "string",
-              "example": "21.48581"
-            },
+              "type": "string"
+              },
             "bank_name": {
-              "type": "string",
-              "example": "National Commercial Bank"
-            },
+              "type": "string"
+              },
             "branch_name": {
-              "type": "string",
-              "example": "Main Branch"
-            },
+              "type": "string"
+              },
             "account_holder_name": {
-              "type": "string",
-              "example": "Driver Company LLC"
-            },
+              "type": "string"
+              },
             "account_number": {
-              "type": "string",
-              "example": "12345678901234"
-            },
+              "type": "string"
+              },
             "soft_code": {
-              "type": "string",
-              "example": "NCB123"
-            },
+              "type": "string"
+              },
             "iban": {
-              "type": "string",
-              "example": "SA0380000000608010167519"
-            }
+              "type": "string"
+              }
           }
         }
       }
@@ -3823,16 +3666,14 @@
               "example": true
             },
             "message": {
-              "type": "string",
-              "example": "Driver company information added successfully."
-            },
+              "type": "string"
+              },
             "data": {
               "type": "object",
               "properties": {
                 "token": {
-                  "type": "string",
-                  "example": "eyJ0eXAiOiJKV1QiLCJhb..."
-                },
+                  "type": "string"
+                  },
                 "user": {
                   "$ref": "#/definitions/User"
                 }
