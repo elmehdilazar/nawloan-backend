@@ -218,6 +218,24 @@ class CarController extends Controller
         return redirect()->route('admin.trucks.index');
     }
 
+    public function destroySelected(Request $request)
+    {
+        $ids = $request->input('ids', $request->query('ids', []));
+        if (is_string($ids)) {
+            $ids = array_filter(explode(',', $ids));
+        }
+        $ids = array_values(array_unique(array_map('intval', (array)$ids)));
+        $ids = array_values(array_filter($ids, fn($id) => $id > 0));
+
+        if (empty($ids)) {
+            return back()->with('error', __('site.no_items_selected'));
+        }
+
+        // For safety (FK in orders), treat as bulk deactivate
+        \App\Models\Car::whereIn('id', $ids)->update(['active' => 0]);
+        return back()->with('success', __('site.deleted_success'));
+    }
+
     /**
      * Remove the specified resource from storage.
      *

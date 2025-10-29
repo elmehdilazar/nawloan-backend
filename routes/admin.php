@@ -237,6 +237,8 @@ Route::group(
                     Route::post('/shipment/{id}/changeStatus', [\App\Http\Controllers\Admin\ShipmentTypeController::class, 'changeStatus'])->name('shipment.changeStatus');
 
                 Route::get('/trucks/export', [\App\Http\Controllers\Admin\CarController::class, 'export'])->name('trucks.export');
+                    // bulk destroy-selected before resource to avoid capture
+                    Route::get('/trucks/destroy-selected', [\App\Http\Controllers\Admin\CarController::class, 'destroySelected'])->name('trucks.destroy-selected');
                     Route::resource('/trucks', '\App\Http\Controllers\Admin\CarController');
                     Route::post('/trucks/{id}/changeStatus', [\App\Http\Controllers\Admin\CarController::class, 'changeStatus'])->name('trucks.changeStatus');
                 Route::get('/trucks/getById', [\App\Http\Controllers\Admin\CarController::class, 'getById'])->name('trucks.getById');

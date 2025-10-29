@@ -12,7 +12,7 @@
     <div class="row">
         <div class="col-xl-6 col-lg-8 co-12">
             <div class="dropzone-field">
-                <label for="">Truck picture</label>
+                <label for="image">@lang('site.truck_picture')</label>
                 <input type="file" class="" name="image" id="image">
                 <div class="drag-drop-area" id="drag-drop-area"></div>
                 @error('image')

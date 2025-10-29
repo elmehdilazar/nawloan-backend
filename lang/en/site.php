@@ -374,6 +374,7 @@ return [
     'car'                       =>      'Truck Type',
     'the_car'                   =>      'Truck Type',
     'car_not_found'             =>      'Truck Type not found',
+    'truck_picture'             =>      'Truck picture',
     'number'                    =>      'Number',
     'cars_shipments'            =>      'Trucks & Shipments',
     'shipping_contact'          =>      'Shipping & Contact',

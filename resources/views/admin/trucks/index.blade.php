@@ -15,7 +15,9 @@
                     @lang('site.export')
                 </a>
             @endif
-            <a href="" class="btn btn-danger onchange-visible">Delete</a>
+            @if(auth()->user()->hasPermission('cars_disable'))
+                <a href="#" id="bulk-delete" class="btn btn-danger onchange-visible">@lang('site.delete_selected')</a>
+            @endif
             @if(auth()->user()->hasPermission('cars_create'))
                 <a class="btn btn-navy onchange-hidden" href="{{route('admin.trucks.create')}}"
                    title="@lang('site.add') @lang('site.car')">
@@ -109,7 +111,7 @@
         <tbody>
         @foreach ($trucks as $index=>$truck)
             <tr>
-                <td></td>
+                <td>{{$truck->id}}</td>
                 <td>{{$index + 1}}</td>
                 <td>
                     @if(!empty($truck->image))
@@ -220,5 +222,22 @@
     <script src='{{asset('assets/tiny/js/jquery.dataTables.min.js')}}'></script>
     <script src='{{asset('assets/tiny/js/dataTables.bootstrap4.min.js')}}'></script>
     <!-- DataTables Playground (Setups, Options, Actions) -->
-    <script src='{{asset('assets/js/dataTables-init.js')}}'></script>
+    <script src='{{ asset('assets/js/dataTables-init.js') }}?v={{ @filemtime(public_path('assets/js/dataTables-init.js')) }}'></script>
+    <script>
+        $(document).on('click', '#bulk-delete', function (e) {
+            e.preventDefault();
+            var selected = [];
+            $('.datatables-active tbody input[type="checkbox"]').not('#selectAll').each(function(){
+                if($(this).is(':checked')){ selected.push($(this).val()); }
+            });
+            if(selected.length === 0){
+                alert(@json(__('site.no_items_selected')));
+                return;
+            }
+            if(confirm(@json(__('site.delete_selected_confirm')))){
+                var url = @json(route('admin.trucks.destroy-selected')) + '?ids=' + selected.join(',');
+                window.location = url;
+            }
+        });
+    </script>
 @endsection
