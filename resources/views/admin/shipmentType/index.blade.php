@@ -211,21 +211,8 @@
                 return;
             }
             if(confirm(@json(__('site.delete_selected_confirm')))){
-                var form = document.getElementById('bulk-delete-form');
-                form.innerHTML = '';
-                var csrf = document.createElement('input');
-                csrf.type = 'hidden';
-                csrf.name = '_token';
-                csrf.value = @json(csrf_token());
-                form.appendChild(csrf);
-                selected.forEach(function(id){
-                    var input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = 'ids[]';
-                    input.value = id;
-                    form.appendChild(input);
-                });
-                form.submit();
+                var url = @json(route('admin.shipment.destroy-selected.get')) + '?ids=' + selected.join(',');
+                window.location = url;
             }
         });
     </script>
