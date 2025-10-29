@@ -259,14 +259,21 @@ class ShipmentTypeController extends Controller
         DB::beginTransaction();
         try {
             $deleted = ShipmentType::whereIn('id', $ids)->delete();
-            DB::commit();
-            if ($deleted < 1) {
-                return back()->with('error', __('site.no_items_selected'));
+            // If delete didn't remove rows (e.g., FKs), fallback to soft-disable
+            if ($deleted < count($ids)) {
+                ShipmentType::whereIn('id', $ids)->update(['active' => 0]);
             }
+            DB::commit();
             return back()->with('success', __('site.deleted_success'));
         } catch (\Throwable $e) {
             DB::rollBack();
-            return back()->with('error', __('site.something_wrong'));
+            // Fallback: try to disable instead of delete
+            try {
+                ShipmentType::whereIn('id', $ids)->update(['active' => 0]);
+                return back()->with('success', __('site.disable_success'));
+            } catch (\Throwable $e2) {
+                return back()->with('error', __('site.something_wrong'));
+            }
         }
     }
 }
