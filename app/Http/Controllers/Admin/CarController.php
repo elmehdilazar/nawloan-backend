@@ -89,10 +89,9 @@ class CarController extends Controller
         $request->validate([
             'name_en' => 'required|string|unique:cars,name_en',
             'name_ar' => 'required|string|unique:cars,name_ar',
-            'frames'=>'required|num',
-            'weight' => 'required',
-            'image' => 'nullable|image|mimes:image/jpeg,jpeg,image/jpg,jpg,image/png,png,image/gif,gif|
-            mimetypes:image/jpeg,jpeg,image/jpg,jpg,image/png,png,image/gif,gif|max:10240',
+            'frames'  => 'required|integer|min:4',
+            'weight'  => 'required|numeric|min:0',
+            'image'   => 'nullable|image|mimes:jpeg,jpg,png,gif|max:10240',
         ]);
         if (!$request->has('active')) {
             $request->request->add(['active' => 0]);
@@ -107,12 +106,12 @@ class CarController extends Controller
             $request_data['image'] = 'uploads/cars/' . $request->image->hashName();
         }
         $truck = Car::create([
-            'name_en'      =>  $request_data['name_en'],
-            'name_ar'   =>  $request_data['name_ar'],
-            'frames'        =>  $request_data['frames'],
-            'weight'      =>  $request_data['weight'],
-            'image'     =>  $request_data['image'],
-            'activee'     =>  $request_data['activee'],
+            'name_en' => $request_data['name_en'],
+            'name_ar' => $request_data['name_ar'],
+            'frames'  => (int) $request_data['frames'],
+            'weight'  => $request_data['weight'],
+            'image'   => $request_data['image'],
+            'active'  => (int) $request_data['active'],
         ]);
             $data = [
             'title' => 'add',
@@ -172,14 +171,11 @@ class CarController extends Controller
             return redirect()->route('admin.trucks.index');
         }
         $request->validate([
-            'name_en'   =>       'string',
-            'name_en'   =>       ['required', Rule::unique('cars')->ignore($truck->id),],
-            'name_ar'   =>       'string',
-            'name_ar'   =>       ['required', Rule::unique('cars')->ignore($truck->id),],
-            'frames'    =>      'required',
-            'weight'    =>      'required',
-            'image'     =>      'nullable|image|mimes:image/jpeg,jpeg,image/jpg,jpg,image/png,png,image/gif,gif|
-            mimetypes:image/jpeg,jpeg,image/jpg,jpg,image/png,png,image/gif,gif|max:10240',
+            'name_en' => ['required','string', Rule::unique('cars')->ignore($truck->id)],
+            'name_ar' => ['required','string', Rule::unique('cars')->ignore($truck->id)],
+            'frames'  => 'required|integer|min:4',
+            'weight'  => 'required|numeric|min:0',
+            'image'   => 'nullable|image|mimes:jpeg,jpg,png,gif|max:10240',
         ]);
         if (!$request->has('active')) {
             $request->request->add(['active' => 0]);
@@ -292,4 +288,3 @@ class CarController extends Controller
         return Excel::download(new CarsExport,  Lang::get('site.cars') . '-' . Carbon::now()->format('Y-m-d_H-i-s') . '.xlsx');
     }
 }
-
