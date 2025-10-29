@@ -530,4 +530,22 @@ class FactoryController extends Controller
     {
         return Excel::download(new EnterprisesExport,  Lang::get('site.factories') . '-' . Carbon::now()->format('Y-m-d_H-i-s') . '.xlsx');
     }
+
+    public function destroySelected(Request $request)
+    {
+        $ids = $request->input('ids', $request->query('ids', []));
+        if (is_string($ids)) {
+            $ids = array_filter(explode(',', $ids));
+        }
+        $ids = array_values(array_unique(array_map('intval', (array)$ids)));
+        $ids = array_values(array_filter($ids, fn($id) => $id > 0));
+
+        if (empty($ids)) {
+            return back()->with('error', __('site.no_items_selected'));
+        }
+
+        // Deactivate selected factories to avoid FK issues; mirrors single changeStatus
+        User::whereIn('id', $ids)->update(['active' => 0]);
+        return back()->with('success', __('site.deleted_success'));
+    }
 }
