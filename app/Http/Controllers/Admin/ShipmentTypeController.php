@@ -27,6 +27,7 @@ class ShipmentTypeController extends Controller
         $this->middleware(['permission:shipments_types_enable'])->only('changeStatus');
         $this->middleware(['permission:shipments_types_disable'])->only('changeStatus');
         $this->middleware(['permission:shipments_types_export'])->only('export');
+        $this->middleware(['permission:shipments_types_disable'])->only('destroySelected');
     }
     /**
      * Display a listing of the resource.
@@ -239,5 +240,32 @@ class ShipmentTypeController extends Controller
     public function export()
     {
         return Excel::download(new ShipmentsExport,  Lang::get('site.shipments_types') . '-' . Carbon::now()->format('Y-m-d_H-i-s') . '.xlsx');
+    }
+
+    public function destroySelected(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        if (is_string($ids)) {
+            $ids = array_filter(explode(',', $ids));
+        }
+        $ids = array_values(array_unique(array_map('intval', (array)$ids)));
+        $ids = array_values(array_filter($ids, function ($id) { return $id > 0; }));
+
+        if (empty($ids)) {
+            return back()->with('error', __('site.no_items_selected'));
+        }
+
+        DB::beginTransaction();
+        try {
+            $deleted = ShipmentType::whereIn('id', $ids)->delete();
+            DB::commit();
+            if ($deleted < 1) {
+                return back()->with('error', __('site.no_items_selected'));
+            }
+            return back()->with('success', __('site.deleted_success'));
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return back()->with('error', __('site.something_wrong'));
+        }
     }
 }
