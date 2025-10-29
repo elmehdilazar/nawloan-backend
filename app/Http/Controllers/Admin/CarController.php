@@ -231,8 +231,8 @@ class CarController extends Controller
             return back()->with('error', __('site.no_items_selected'));
         }
 
-        // For safety (FK in orders), treat as bulk deactivate
-        \App\Models\Car::whereIn('id', $ids)->update(['active' => 0]);
+        // Soft delete selected trucks (removes from listing without breaking FKs)
+        \App\Models\Car::whereIn('id', $ids)->delete();
         return back()->with('success', __('site.deleted_success'));
     }
 
