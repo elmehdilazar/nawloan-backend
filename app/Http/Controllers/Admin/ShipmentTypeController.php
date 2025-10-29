@@ -244,7 +244,8 @@ class ShipmentTypeController extends Controller
 
     public function destroySelected(Request $request)
     {
-        $ids = $request->input('ids', []);
+        // Accept ids[] from POST, or id[] (from DataTables) or comma string in query
+        $ids = $request->input('ids', $request->input('id', $request->query('ids', [])));
         if (is_string($ids)) {
             $ids = array_filter(explode(',', $ids));
         }
