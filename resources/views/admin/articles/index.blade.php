@@ -76,7 +76,7 @@
                             <a href="" class="text-red">Trash</a>
                         </div>--}}
                     </td>
-                    <td>{{$article->category->category_en}}</td>
+                    <td>{{ optional($article->category)->category_en ?? '-' }}</td>
                     <td>{{$article->article_date}}</td>
                     <td>
                          <span class="badge badge-pill {{$article->active==1 ? 'badge-primary ': 'badge-danger'}}">
