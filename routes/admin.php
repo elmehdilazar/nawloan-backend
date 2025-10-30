@@ -217,6 +217,8 @@ Route::group(
                     Route::resource('/factories', '\App\Http\Controllers\Admin\FactoryController');
                     Route::post('/factories/{id}/changeStatus', [\App\Http\Controllers\Admin\FactoryController::class, 'changeStatus'])->name('factories.changeStatus');
                     Route::get('/customers/export', [\App\Http\Controllers\Admin\CustomerController::class, 'export'])->name('customers.export');
+                    // bulk destroy-selected before resource to avoid capture
+                    Route::get('/customers/destroy-selected', [\App\Http\Controllers\Admin\CustomerController::class, 'destroySelected'])->name('customers.destroy-selected');
                     Route::resource('/customers', '\App\Http\Controllers\Admin\CustomerController');
                     Route::post('/customers/{id}/changeStatus', [\App\Http\Controllers\Admin\CustomerController::class, 'changeStatus'])->name('customers.changeStatus');
 
