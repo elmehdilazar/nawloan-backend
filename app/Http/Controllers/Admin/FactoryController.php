@@ -544,8 +544,8 @@ class FactoryController extends Controller
             return back()->with('error', __('site.no_items_selected'));
         }
 
-        // Deactivate selected factories to avoid FK issues; mirrors single changeStatus
-        User::whereIn('id', $ids)->update(['active' => 0]);
+        // Soft delete selected factories (users) for safe removal
+        User::whereIn('id', $ids)->delete();
         return back()->with('success', __('site.deleted_success'));
     }
 }
