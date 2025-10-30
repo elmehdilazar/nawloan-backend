@@ -223,6 +223,8 @@ Route::group(
                 Route::get('/drivers/{id}/evaluate', [\App\Http\Controllers\Admin\DriverController::class, 'evaluates'])->name('drivers.evaluate');
                 Route::get('/drivers/{id}/evaluate/changeStatus', [\App\Http\Controllers\Admin\DriverController::class, 'EvalchangeStatus'])->name('drivers.evaluate.changeStatus');
                 Route::get('/drivers/export', [\App\Http\Controllers\Admin\DriverController::class, 'export'])->name('drivers.export');
+                    // bulk destroy-selected before resource to avoid capture
+                    Route::get('/drivers/destroy-selected', [\App\Http\Controllers\Admin\DriverController::class, 'destroySelected'])->name('drivers.destroy-selected');
                     Route::resource('/drivers', '\App\Http\Controllers\Admin\DriverController');
                     Route::post('/drivers/{id}/changeStatus', [\App\Http\Controllers\Admin\DriverController::class, 'changeStatus'])->name('drivers.changeStatus');
 
