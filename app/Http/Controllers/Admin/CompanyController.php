@@ -554,4 +554,22 @@ class CompanyController extends Controller
     {
         return Excel::download(new CompaniesExport,  Lang::get('site.shipping_companies') . '-' . Carbon::now()->format('Y-m-d_H-i-s') . '.xlsx');
     }
+
+    public function destroySelected(Request $request)
+    {
+        $ids = $request->input('ids', $request->input('id', $request->query('ids', [])));
+        if (is_string($ids)) {
+            $ids = array_filter(explode(',', $ids));
+        }
+        $ids = array_values(array_unique(array_map('intval', (array)$ids)));
+        $ids = array_values(array_filter($ids, fn($id) => $id > 0));
+
+        if (empty($ids)) {
+            return back()->with('error', __('site.no_items_selected'));
+        }
+
+        // Soft delete selected company users (safe removal)
+        User::whereIn('id', $ids)->delete();
+        return back()->with('success', __('site.deleted_success'));
+    }
 }
