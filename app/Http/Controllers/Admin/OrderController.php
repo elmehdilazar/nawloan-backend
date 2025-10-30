@@ -74,7 +74,7 @@ class OrderController extends Controller
         if (session('success')) {
             toast(session('success'), 'success');
         }
-        $orders = Order::with(['car', 'user', 'shipmentType',  'evaluate'])->where('status','pending')->select()->latest()->orderBy('id', 'desc')->paginate(10);
+        $orders = Order::with(['car', 'user', 'shipmentType',  'evaluate'])->where('status','pending')->orwhere('status','pending')->select()->latest()->orderBy('id', 'desc')->paginate(10);
         return view('admin.orders.pend', ['orders' => $orders]);
     }
     public function progress(){
