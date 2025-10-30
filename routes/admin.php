@@ -192,6 +192,8 @@ Route::group(
                     Route::resource('/gateway', '\App\Http\Controllers\Admin\GatewayController');
                     Route::post('/gateway/{id}/changeStatus', [\App\Http\Controllers\Admin\GatewayController::class, 'changeStatus'])->name('gateway.changeStatus');
 
+                    // bulk destroy-selected before resource to avoid capture
+                    Route::get('/transactions/destroy-selected', [\App\Http\Controllers\Admin\TransactionController::class, 'destroySelected'])->name('transactions.destroy-selected');
                     Route::resource('/transactions', '\App\Http\Controllers\Admin\TransactionController')->except(['create','store','edit','show','update','destroy']);
                     Route::get('/transactions/export', [\App\Http\Controllers\Admin\TransactionController::class, 'export'])->name('transactions.export');
                     Route::get('/users/export', [\App\Http\Controllers\Admin\UserController::class, 'export'])->name('users.export');

@@ -25,6 +25,7 @@ class TransactionController extends Controller
         $this->middleware(['permission:transactions_update'])->only('edit');
         $this->middleware(['permission:transactions_enable'])->only('changeStatus');
         $this->middleware(['permission:transactions_disable'])->only('changeStatus');
+        $this->middleware(['permission:transactions_disable'])->only('destroySelected');
     }
     public function index(Request $request)
     {
@@ -100,5 +101,22 @@ class TransactionController extends Controller
     }
     public function export(){
       return Excel::download(new TransactionsExport,  Lang::get('site.transactions').'-'.Carbon::now()->format('Y-m-d_H-i-s').'.xlsx');
+    }
+
+    public function destroySelected(Request $request)
+    {
+        $ids = $request->input('ids', $request->input('id', $request->query('ids', [])));
+        if (is_string($ids)) {
+            $ids = array_filter(explode(',', $ids));
+        }
+        $ids = array_values(array_unique(array_map('intval', (array)$ids)));
+        $ids = array_values(array_filter($ids, fn($id) => $id > 0));
+
+        if (empty($ids)) {
+            return back()->with('error', __('site.no_items_selected'));
+        }
+
+        Transaction::whereIn('id', $ids)->delete();
+        return back()->with('success', __('site.deleted_success'));
     }
 }

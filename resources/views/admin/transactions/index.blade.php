@@ -14,7 +14,9 @@
             <span id="checks-count" class="onchange-visible"></span>
             <a href="{{route('admin.transactions.export')}}" title="@lang('site.export') @lang('site.transactions')"
                class="btn btn-transparent navy">@lang('site.export')</a>
-            <a href="#" class="btn btn-danger onchange-visible">Delete</a>
+            @if(auth()->user()->hasPermission('transactions_disable'))
+                <a href="#" id="bulk-delete" class="btn btn-danger onchange-visible">@lang('site.delete_selected')</a>
+            @endif
         </div>
         <div class="quick-search">
             <div class="input-group mb-0">
@@ -161,7 +163,7 @@
     <tbody>
         @foreach ($trans as $index=>$tran)
         <tr>
-            <td></td>
+            <td>{{$tran->id}}</td>
             <td>{{$index + 1}}</td>
             <td>
                 <div class="user-col">
@@ -225,7 +227,24 @@
     <script src='{{asset('assets/tiny/js/jquery.dataTables.min.js')}}'></script>
     <script src='{{asset('assets/tiny/js/dataTables.bootstrap4.min.js')}}'></script>
     <!-- DataTables Playground (Setups, Options, Actions) -->
-    <script src='{{asset('assets/js/dataTables-init.js')}}'></script>
+    <script src='{{ asset('assets/js/dataTables-init.js') }}?v={{ @filemtime(public_path('assets/js/dataTables-init.js')) }}'></script>
+    <script>
+        $(document).on('click', '#bulk-delete', function (e) {
+            e.preventDefault();
+            var selected = [];
+            $('.datatables-active tbody input[type="checkbox"]').not('#selectAll').each(function(){
+                if($(this).is(':checked')){ selected.push($(this).val()); }
+            });
+            if(selected.length === 0){
+                alert(@json(__('site.no_items_selected')));
+                return;
+            }
+            if(confirm(@json(__('site.delete_selected_confirm')))){
+                var url = @json(route('admin.transactions.destroy-selected')) + '?ids=' + selected.join(',');
+                window.location = url;
+            }
+        });
+    </script>
     <!-- DateRangePicker JS -->
     <script src="{{asset('assets/tiny/js/daterangepicker.js')}}"></script>
     <script>
