@@ -43,14 +43,14 @@
                 <td>
                     <div class="user-col">
                         <img
-                            src="{{$order->user->userData->image !='' ? asset($order->user->userData->image) : asset('uploads/users/default.png')}}"
-                            alt="{{$order->user->name}}">
-                        <span class="name">{{$order->user->name}}</span>
+                            src="{{ asset($order->user?->userData?->image ?: 'uploads/users/default.png') }}"
+                            alt="{{ $order->user?->name }}">
+                        <span class="name">{{ $order->user?->name }}</span>
                     </div>
                 </td>
                 <td>
                     <a href="#" data-toggle="modal" data-target="#truckModal_{{$index}}">
-                        {{$order->car->name_en}}
+                        {{$order->car?->name_en}}
                     </a>
                 </td>
                 <td>{{number_format( ( $order->ton_price * $order->weight_ton),2, ".", "")}}{{' '. setting('currency_atr')}}</td>
@@ -141,7 +141,7 @@
                         @if(auth()->user()->hasPermission('orders_read'))
                             <li>
                                 <a href="#" class="show" title="@lang('site.order_track')"
-                                   onclick="showModal({{$order->pick_up_late}},{{$order->pick_up_long}},{{$order->drop_of_late}},{{$order->drop_of_long}},{{$order->serviceProvider->userData->latitude ?? '0'}},{{$order->serviceProvider->userData->longitude ?? '0'}},{{$order}});">
+                                   onclick="showModal({{$order->pick_up_late}},{{$order->pick_up_long}},{{$order->drop_of_late}},{{$order->drop_of_long}},{{$order->serviceProvider?->userData?->latitude ?? '0'}},{{$order->serviceProvider?->userData?->longitude ?? '0'}},{{$order}});">
                                     <i class="fad fa-map-marked-alt"></i>
                                 </a>
                             </li>
@@ -229,34 +229,43 @@
                                             <div class="flex-align-center">
                                                 <a href="" class="flex-col-center">
                                                     <img
-                                                        src="{{$offer->user->userData->image !='' ? asset($offer->user->userData->image) : asset('uploads/users/default.png')}}"
+                                                        src="{{ asset($offer->user?->userData?->image ?: 'uploads/users/default.png') }}"
                                                         class="avatar">
                                                     <span class="rate flex-col-center">
                                             <span class="total">
-                                                @for($i = 0; $i < floor($offer->user->evaluates->avg('rate')); $i++)
+                                                @php
+                                                    $avgValue = (float) ($offer->user?->evaluates?->avg('rate') ?? 0);
+                                                    $avgRate = (int) floor($avgValue);
+                                                    $emptyStars = 5 - $avgRate;
+                                                    if ($emptyStars < 0) { $emptyStars = 0; }
+                                                    $ratingsCount = (int) ($offer->user?->evaluates?->count() ?? 0);
+                                                    $driverData = $offer->driver?->userData;
+                                                    $car = $driverData?->car;
+                                                @endphp
+                                                @for($i = 0; $i < $avgRate; $i++)
                                                     <img src="{{asset('assets/images/svgs/star-fill.svg')}}" alt="">
                                                 @endfor
-                                                @for($i = 0; $i < 5 - ($offer->user->evaluates->avg('rate')); $i++)
+                                                @for($i = 0; $i < $emptyStars; $i++)
                                                     <img src="{{asset('assets/images/svgs/star.svg')}}" alt="">
                                                 @endfor
                                             </span>
                                             <span class="brief">
-                                                {{$offer->user->evaluates->avg('rate')}}
-                                                <span>({{$offer->user->evaluates->count()}})</span>
+                                                {{$avgValue}}
+                                                <span>({{$ratingsCount}})</span>
                                             </span>
                                         </span>
                                                 </a>
-                                                @if(!empty($offer->driver->userData->car))
+                                                @if($car)
                                                     <div class="flex-space">
                                                         <div class="flex-column">
-                                                            <span class="name">{{$offer->user->name}}</span>
+                                                            <span class="name">{{$offer->user?->name}}</span>
                                                             <ul>
                                                                 <li>
                                                                     <img
                                                                         src="{{asset('assets/images/svgs/map-marker.svg')}}"
                                                                         alt="">
                                                                     <span class="val">
-                                                        {{$offer->driver->userData->location}}
+                                                        {{$driverData?->location}}
                                                     </span>
                                                                 </li>
                                                                 <li>
@@ -264,9 +273,9 @@
                                                                         src="{{asset('assets/images/svgs/truck-fill.svg')}}"
                                                                         alt="">
                                                                     @if(app()->getLocale()=='ar' )
-                                                                        {{$offer->driver->userData->car->name_ar}}
+                                                                        {{$car->name_ar}}
                                                                     @else
-                                                                        {{$offer->driver->userData->car->name_en}}
+                                                                        {{$car->name_en}}
                                                                     @endif
                                                                 </li>
                                                             </ul>
