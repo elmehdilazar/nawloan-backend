@@ -315,12 +315,12 @@
                     <div class="modal-body">
                         <div class="max-width-70">
                             <div class="truck-box driver">
-                                <img src="{{$order->car->image !='' ? asset($order->car->image) : asset('uploads/cars/default.png')}}">
+                                <img src="{{ ($order->car && $order->car->image != '') ? asset($order->car->image) : asset('uploads/cars/default.png') }}">
                                 <span class="name">
                                 @if(app()->getLocale()=='ar')
-                                        {{$order->car->name_ar}}
+                                        {{$order->car?->name_ar}}
                                     @else
-                                        {{$order->car->name_en}}
+                                        {{$order->car?->name_en}}
                                     @endif
                             </span>
                             </div>
@@ -500,20 +500,20 @@
                                             </li>
                                             <li>
                                                 <img src="{{asset('assets/images/svgs/dumbbells.svg')}}" alt="">
-                                                {{$order->car->frames}} @lang('site.axes')
+                                                {{$order->car?->frames}} @lang('site.axes')
                                             </li>
                                             <li>
                                                 <img src="{{asset('assets/images/svgs/weight-solid.svg')}}" alt="">
-                                                {{$order->car->weight}} @lang('site.weight')
+                                                {{$order->car?->weight}} @lang('site.weight')
                                             </li>
                                             <li>
-                                                {{app()->getLocale()=='ar' ? $order->car->name_ar : $order->car->name_en}}
+                                                {{app()->getLocale()=='ar' ? ($order->car?->name_ar) : ($order->car?->name_en)}}
                                             </li>
                                         </ul>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="flex-center h-100">
-                                            <img src="{{$order->car->image !='' ? asset($order->car->image) : asset('uploads/cars/default.png')}}"
+                                            <img src="{{ ($order->car && $order->car->image != '') ? asset($order->car->image) : asset('uploads/cars/default.png') }}"
                                                  alt="@lang('site.order')" class="truck-preview">
                                         </div>
                                     </div>
@@ -531,20 +531,20 @@
                                             </li>
                                             <li>
                                                 <img src="{{asset('assets/images/svgs/dumbbells.svg')}}" alt="">
-                                                {{$order->car->frames}} @lang('site.axes')
+                                                {{$order->car?->frames}} @lang('site.axes')
                                             </li>
                                             <li>
                                                 <img src="{{asset('assets/images/svgs/weight-solid.svg')}}" alt="">
-                                                {{$order->car->weight}} @lang('site.weight')
+                                                {{$order->car?->weight}} @lang('site.weight')
                                             </li>
                                             <li>
-                                                {{app()->getLocale()=='ar' ? $order->car->name_ar : $order->car->name_en}}
+                                                {{app()->getLocale()=='ar' ? ($order->car?->name_ar) : ($order->car?->name_en)}}
                                             </li>
                                         </ul>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="flex-center h-100">
-                                            <img src="{{$order->car->image !='' ? asset($order->car->image) : asset('uploads/cars/default.png')}}"
+                                            <img src="{{ ($order->car && $order->car->image != '') ? asset($order->car->image) : asset('uploads/cars/default.png') }}"
                                                  alt="" class="truck-preview">
                                         </div>
                                     </div>
@@ -688,7 +688,7 @@
                             <ul class="shipment-details">
                                 <li class="flex-space">
                                     <span class="title">@lang('site.shipment_type')</span>
-                                    <span>{{app()->getLocale()=='ar' ? $order->shipmentType->name_ar : $order->shipmentType->name_en }}</span>
+                                    <span>{{ app()->getLocale()=='ar' ? ($order->shipmentType?->name_ar ?? '-') : ($order->shipmentType?->name_en ?? '-') }}</span>
                                 </li>
                             </ul>
                             @if(!empty($order->shipment_details))
@@ -734,7 +734,7 @@
                                 @endif
                                 <li class="flex-space">
                                     <span class="title">@lang('site.payment_method')</span>
-                                    <span>{{$order->paymentType->name}}</span>
+                                    <span>{{$order->paymentType?->name ?? '-'}}</span>
                                 </li>
                             </ul>
                         </div>
