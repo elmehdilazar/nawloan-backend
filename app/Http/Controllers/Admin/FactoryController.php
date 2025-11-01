@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Exports\EnterprisesExport;
 use App\Http\Controllers\Controller;
 use App\Models\Car;
+use App\Models\Evaluate;
 use App\Models\User;
 use App\Models\BankInfo;
 use App\Models\UserData;
@@ -26,11 +27,11 @@ class FactoryController extends Controller
     {
         $this->middleware('auth');
         //create read update delete
-        $this->middleware(['permission:factories_read'])->only('index');
+        $this->middleware(['permission:factories_read'])->only(['index', 'evaluates']);
         $this->middleware(['permission:factories_create'])->only('create');
         $this->middleware(['permission:factories_update'])->only('edit');
-        $this->middleware(['permission:factories_enable'])->only('changeStatus');
-        $this->middleware(['permission:factories_disable'])->only('changeStatus');
+        $this->middleware(['permission:factories_enable'])->only(['changeStatus', 'EvalchangeStatus']);
+        $this->middleware(['permission:factories_disable'])->only(['changeStatus', 'EvalchangeStatus']);
         $this->middleware(['permission:factories_export'])->only('export');
     }
     /**
@@ -263,6 +264,27 @@ class FactoryController extends Controller
             return redirect()->route('admin.factories.index');
         }
         return view('admin.factories.show', ['user' => $user]);
+    }
+
+    public function evaluates($id)
+    {
+        $user = User::with('userData')->where('type', 'factory')->find($id);
+        if (!$user) {
+            session()->flash('errors', __('site.user_not_found'));
+            return redirect()->route('admin.factories.index');
+        }
+
+        $evaluates = Evaluate::with(['user.userData'])
+            ->where('user_id', $user->id)
+            ->latest('created_at')
+            ->paginate(10);
+        $avg = round((float) Evaluate::where('user_id', $user->id)->avg('rate'), 1);
+
+        return view('admin.factories.evaluate', [
+            'user' => $user,
+            'evaluates' => $evaluates,
+            'avg' => $avg,
+        ]);
     }
 
     /**
@@ -526,6 +548,32 @@ class FactoryController extends Controller
             return redirect()->route('admin.factories.index');
         }
     }
+
+    public function EvalchangeStatus($id)
+    {
+        $evaluate = Evaluate::find($id);
+        if (!$evaluate) {
+            session()->flash('errors', __('site.evaluate_not_found'));
+            return redirect()->back();
+        }
+
+        $factory = User::find($evaluate->user_id);
+        if (!$factory || $factory->type !== 'factory') {
+            session()->flash('errors', __('site.user_not_found'));
+            return redirect()->route('admin.factories.index');
+        }
+
+        if ((int) $evaluate->active === 1) {
+            $evaluate->update(['active' => 0]);
+            session()->flash('success', __('site.disable_success'));
+        } else {
+            $evaluate->update(['active' => 1]);
+            session()->flash('success', __('site.enable_success'));
+        }
+
+        return redirect()->route('admin.factories.evaluate', ['id' => $evaluate->user_id]);
+    }
+
     public function export()
     {
         return Excel::download(new EnterprisesExport,  Lang::get('site.factories') . '-' . Carbon::now()->format('Y-m-d_H-i-s') . '.xlsx');

@@ -81,7 +81,7 @@
                             </li>
                         @endif
                         <li>
-                            <a href="#" class="show">
+                            <a href="{{ route('admin.factories.evaluate', $user->id) }}" class="show" title="@lang('site.evaluates')">
                                 <i class="fad fa-star-half"></i>
                             </a>
                         </li>
