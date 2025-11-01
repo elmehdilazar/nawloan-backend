@@ -182,73 +182,70 @@ public function generalStore(Request $request)
     }
     public function seoStore(Request $request)
     {
-        $requestData = []; // $requestData = $request->except(['_token', '_method']);
-        if ($request->has('title')) {
-            $requestData['title'] = $request->title;
-        }
-        if ($request->has('canonical')) {
-            $requestData['canonical'] = $request->canonical;
-        }
-        if ($request->has('keywords_ar')) {
-            $requestData['keywords_ar'] = $request->keywords_ar;
-        }
-        if ($request->has('keywords_en')) {
-            $requestData['keywords_en'] = $request->keywords_en;
-        }
-        if ($request->has('description_ar')) {
-            $requestData['description_ar'] = $request->description_ar;
-        }
-        if ($request->has('description_en')) {
-            $requestData['description_en'] = $request->description_en;
-        }
-        if ($request->has('og_site_name')) {
-            $requestData['og_site_name'] = $request->og_site_name;
-        }
-        if ($request->has('og_title')) {
-            $requestData['og_title'] = $request->og_title;
-        }
-        if ($request->has('og_type')) {
-            $requestData['og_type'] = $request->og_type;
-        }
-        if ($request->has('og_url')) {
-            $requestData['og_url'] = $request->og_url;
-        }
-        if ($request->has('og_description_ar')) {
-            $requestData['og_description_ar'] = $request->og_description_ar;
-        }
-        if ($request->has('og_description_en')) {
-            $requestData['og_description_en'] = $request->og_description_en;
-        }
-        if ($request->has('twitter_title')) {
-            $requestData['twitter_title'] = $request->twitter_title;
-        }
-        if ($request->has('twitter_domain')) {
-            $requestData['twitter_domain'] = $request->twitter_domain;
-        }
-        if ($request->has('twitter_card_ar')) {
-            $requestData['twitter_card_ar'] = $request->twitter_card_ar;
-        }
-        if ($request->has('twitter_card_en')) {
-            $requestData['twitter_card_en'] = $request->twitter_card_en;
-        }
-        if ($request->has('twitter_description_ar')) {
-            $requestData['twitter_description_ar'] = $request->twitter_description_ar;
-        }
-        if ($request->has('twitter_description_en')) {
-            $requestData['twitter_description_en'] = $request->twitter_description_en;
-        }
-        if ($request->og_image) {
-            if (Setting('og_image') != 'uploads/logo.jpg' && Setting('logo') != 'uploads/logo.png') {
-                if (file_exists(public_path(Setting('og_image')))) {
-                    unlink(public_path(Setting('og_image')));
+        // 1) Validate inputs (nullable allowed, proper types)
+        $request->validate([
+            'title'                 => 'sometimes|nullable|string',
+            'canonical'             => 'sometimes|nullable|url',
+            'keywords_ar'           => 'sometimes|nullable|string',
+            'keywords_en'           => 'sometimes|nullable|string',
+            'description_ar'        => 'sometimes|nullable|string',
+            'description_en'        => 'sometimes|nullable|string',
+            'og_site_name'          => 'sometimes|nullable|string',
+            'og_title'              => 'sometimes|nullable|string',
+            'og_type'               => 'sometimes|nullable|string',
+            'og_url'                => 'sometimes|nullable|url',
+            'og_description_ar'     => 'sometimes|nullable|string',
+            'og_description_en'     => 'sometimes|nullable|string',
+            'twitter_title'         => 'sometimes|nullable|string',
+            'twitter_domain'        => 'sometimes|nullable|string',
+            'twitter_card_ar'       => 'sometimes|nullable|string',
+            'twitter_card_en'       => 'sometimes|nullable|string',
+            'twitter_description_ar'=> 'sometimes|nullable|string',
+            'twitter_description_en'=> 'sometimes|nullable|string',
+            'og_image'              => 'sometimes|file|image|mimes:png,jpg,jpeg,svg,webp|max:4096',
+        ]);
+
+        // 2) Collect, normalize (trim, convert 'null' to null) and drop empties
+        $keys = [
+            'title','canonical','keywords_ar','keywords_en','description_ar','description_en',
+            'og_site_name','og_title','og_type','og_url','og_description_ar','og_description_en',
+            'twitter_title','twitter_domain','twitter_card_ar','twitter_card_en',
+            'twitter_description_ar','twitter_description_en',
+        ];
+
+        $raw = $request->only($keys);
+
+        $normalized = array_map(function ($v) {
+            if (is_string($v)) {
+                $v = trim($v);
+                if ($v === 'null') {
+                    $v = null; // treat literal "null" as null
                 }
             }
-            $request->og_image->store('', ['disk' => 'public_uploads']);
-            $requestData['og_image'] = 'uploads/' . $request->og_image->hashName();
+            return $v;
+        }, $raw);
+
+        // Remove nulls and empty strings so we don't insert null values
+        $requestData = array_filter($normalized, fn ($v) => !is_null($v) && $v !== '');
+
+        // 3) Handle OG image upload
+        if ($request->hasFile('og_image')) {
+            $current = Setting('og_image');
+            if ($current && !in_array($current, ['uploads/logo.jpg', 'uploads/logo.png'])) {
+                if (file_exists(public_path($current))) {
+                    @unlink(public_path($current));
+                }
+            }
+            $path = $request->file('og_image')->store('', ['disk' => 'public_uploads']);
+            $requestData['og_image'] = 'uploads/' . basename($path);
         }
-        Setting($requestData)->save();
-        session()->flash('success', __('site.saved_success'));
-        return redirect()->back();
+
+        // 4) Save filtered settings (no null values)
+        if (!empty($requestData)) {
+            Setting($requestData)->save();
+        }
+
+        return redirect()->back()->with('success', __('site.saved_success'));
     }
     public function social()
     {
