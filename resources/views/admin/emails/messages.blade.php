@@ -53,12 +53,12 @@
             @foreach ($messages as $index=>$message)
                 <tr>
                     <td>{{$index + 1}}</td>
-                    <td>{{$message->user->phone}}</td>
+                    <td>{{$message->user?->phone ?? '--'}}</td>
                     <td>{{$message->title}}</td>
                     <td>
                         <p class="lines-cap-2">{{$message->message}}</p>
                     </td>
-                    <td>{{$message->user->name}}</td>
+                    <td>{{$message->user?->name ?? '--'}}</td>
                     <td>{{$message->created_at}}</td>
                     <td>
                         <ul class="actions">
@@ -163,7 +163,7 @@
                                 @lang('site.user')
                             </div>
                             <div class="col-md-7 text-capitalize">
-                                {{$message->user->name}}
+                                {{$message->user?->name ?? '--'}}
                             </div>
                         </div>
                         <div class="row mt-2">
@@ -314,7 +314,7 @@
                         <p class="lines-cap-2">{{strip_tags($message->message)}}</p>
                     </td>
                     <td>{{$message->type}}</td>
-                    <td>{{$message->sender_id !='' ? $message->sender->name : '--'}}</td>
+                    <td>{{$message->sender?->name ?? '--'}}</td>
                     <td>{{$message->to}}</td>
                     <td>{{$message->created_at}}</td>
                 </tr>
@@ -395,13 +395,13 @@
             @foreach ($sms as $index=>$message)
                 <tr>
                     <td>{{$index + 1}}</td>
-                    <td>{{$message->receiver!= '' ? $message->receiver->phone : $message->notes}}</td>
+                    <td>{{$message->receiver?->phone ?? $message->notes}}</td>
                     <td>
                         <p class="lines-cap-2">{{$message->message}}</p>
                     </td>
                     <td>{{$message->type}}</td>
-                    <td>{{$message->sender_id !='' ? $message->sender->name : '--'}}</td>
-                    <td>{{$message->receiver_id !='' ? $message->receiver->name : '--'}}</td>
+                    <td>{{$message->sender?->name ?? '--'}}</td>
+                    <td>{{$message->receiver?->name ?? '--'}}</td>
                     <td>{{$message->created_at}}</td>
                     <td>
                         <span class="badge badge-pill @if($message->status =='wait') badge-primary @elseif ($message->status=='complete') badge-success
@@ -548,4 +548,3 @@
         });
     </script>
 @endsection
-
