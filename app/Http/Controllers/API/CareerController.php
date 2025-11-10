@@ -23,7 +23,8 @@ class CareerController extends BaseController
 {
     public function __construct()
     {
-        $this->middleware('auth')->except(['index', 'show']);
+        // Allow public access to listing, details, categories, and applying
+        $this->middleware('auth')->except(['index', 'show', 'getcategories', 'apply']);
         // create read update delete
     }
     /**
@@ -53,6 +54,56 @@ class CareerController extends BaseController
     public function getcategories(){
        $categories = Career_category::select('id','category_ar','category_en')->get();
          return response()->json($categories);
+    }
+
+    /**
+     * Apply to a career (public endpoint).
+     * Accepts basic applicant info and optional CV file.
+     */
+    public function apply(Request $request, $id)
+    {
+        $career = Career::find($id);
+        if (!$career) {
+            return response()->json(['message' => 'Career not found'], 404);
+        }
+
+        $validated = $request->validate([
+            'name'    => 'required|string|max:255',
+            'email'   => 'required|email|max:255',
+            'phone'   => 'nullable|string|max:50',
+            'message' => 'nullable|string',
+            'cv'      => 'nullable|file|mimes:pdf,doc,docx,txt|max:5120',
+        ]);
+
+        $cvPath = null;
+        if ($request->hasFile('cv')) {
+            // Store CV under public disk so it can be retrieved if needed later
+            $cvPath = $request->file('cv')->store('career_applications', 'public');
+        }
+
+        // Optionally notify admins about new application (without persistence)
+        try {
+            $data = [
+                'title' => 'Career Application',
+                'body'  => ($validated['name'] ?? 'Unknown') . ' applied to #' . $career->id,
+                'target' => 'career',
+                'link'  => route('admin.careers.index', ['name_en' => $career->name_en]),
+                'target_id' => $career->id,
+                'sender' => $validated['email'] ?? 'applicant',
+            ];
+            $admins = User::whereIn('type', ['admin','superadministrator','emp'])->get();
+            foreach ($admins as $admin) {
+                Notification::send($admin, new LocalNotification($data));
+            }
+        } catch (\Throwable $e) {
+            // Swallow notification errors to not block applicant
+        }
+
+        return response()->json([
+            'message' => 'Application submitted successfully',
+            'career_id' => $career->id,
+            'cv_path' => $cvPath,
+        ], 200);
     }
 
     public function store(CareerRequest $request)
@@ -202,4 +253,3 @@ class CareerController extends BaseController
 
 
 }
-

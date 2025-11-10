@@ -341,7 +341,10 @@ Route::get('/processQRCode', [App\Http\Controllers\Clients\QRController::class,'
     Route::prefix('careers')->name('careers.')->group(
     function () {
         Route::get('/index', [\App\Http\Controllers\API\CareerController::class, 'index'])->name('index');
-        Route::get('/show/{id}', [\App\Http\Controllers\API\CareerController::class, 'show'])->name('show');});
+        Route::get('/show/{id}', [\App\Http\Controllers\API\CareerController::class, 'show'])->name('show');
+        // Public apply endpoint for career applications
+        Route::post('/apply/{id}', [\App\Http\Controllers\API\CareerController::class, 'apply'])->name('apply');
+    });
 
 
 use App\Notifications\FcmPushNotification;
