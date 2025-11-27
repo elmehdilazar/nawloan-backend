@@ -396,7 +396,7 @@
                                                     <ul>
                                                         <li>
                                                             <img src="{{asset('assets/images/svgs/map-marker.svg')}}" alt="">
-                                                            <span class="val">{{$driverData?->location ?? __('site.not_available')}}</span>
+                                                            <span class="val">{{$driverData?->location ?? '-'}}</span>
                                                         </li>
                                                         <li>
                                                             <img src="{{asset('assets/images/svgs/truck-fill.svg')}}" alt="">
@@ -407,7 +407,7 @@
                                                                     {{$car->name_en}}
                                                                 @endif
                                                             @else
-                                                                {{__('site.not_available')}}
+                                                                -
                                                             @endif
                                                         </li>
                                                     </ul>
