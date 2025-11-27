@@ -390,33 +390,33 @@
                                                 </span>
                                             </span>
                                             </a>
-                                            @if($car)
-                                                <div class="flex-space">
-                                                    <div class="flex-column">
-                                                        <span class="name">{{$offer->user?->name}}</span>
-                                                        <ul>
-                                                            <li>
-                                                                <img src="{{asset('assets/images/svgs/map-marker.svg')}}" alt="">
-                                                                <span class="val">
-                                                            {{$driverData?->location}}
-                                                        </span>
-                                                            </li>
-                                                            <li>
-                                                                <img src="{{asset('assets/images/svgs/truck-fill.svg')}}" alt="">
+                                            <div class="flex-space">
+                                                <div class="flex-column">
+                                                    <span class="name">{{$offer->user?->name}}</span>
+                                                    <ul>
+                                                        <li>
+                                                            <img src="{{asset('assets/images/svgs/map-marker.svg')}}" alt="">
+                                                            <span class="val">{{$driverData?->location ?? __('site.not_available')}}</span>
+                                                        </li>
+                                                        <li>
+                                                            <img src="{{asset('assets/images/svgs/truck-fill.svg')}}" alt="">
+                                                            @if($car)
                                                                 @if(app()->getLocale()=='ar' )
                                                                     {{$car->name_ar}}
                                                                 @else
                                                                     {{$car->name_en}}
                                                                 @endif
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <h4 class="offer-cost special mb-0">
-                                                        {{$offer->price}}
-                                                        {{setting('currency_atr') != '' ? ' '. setting('currency_atr') : ''}}
-                                                    </h4>
+                                                            @else
+                                                                {{__('site.not_available')}}
+                                                            @endif
+                                                        </li>
+                                                    </ul>
                                                 </div>
-                                            @endif
+                                                <h4 class="offer-cost special mb-0">
+                                                    {{$offer->price}}
+                                                    {{setting('currency_atr') != '' ? ' '. setting('currency_atr') : ''}}
+                                                </h4>
+                                            </div>
                                         </div>
                                     </li>
                                 @endforeach
