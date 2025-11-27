@@ -426,7 +426,6 @@
                                                     <input type="hidden" name="offers_user_name"
                                                            value="{{$offers->user->id}}">
                                                     @if($order->status == 'pend')
-                                                        @dd('pend')
                                                         <input type="hidden" name="status" value="approve">
                                                     @elseif($order->status == 'approve')
                                                         <input type="hidden" name="status" value="complete">
