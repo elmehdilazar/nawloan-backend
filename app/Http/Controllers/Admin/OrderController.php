@@ -67,7 +67,14 @@ class OrderController extends Controller
                 return $query->where('weight_ton', $request->weight_ton);
             })->when($request->status, function ($query) use ($request) {
                 return $query->where('status', $request->status);
-            })->with(['car', 'user', 'shipmentType',  'evaluate'])->select()->latest()->orderBy('id', 'desc')->paginate(10);
+            })->with([
+                'car',
+                'user.userData',
+                'shipmentType',
+                'evaluate',
+                'offers.user.userData.car',
+                'offers.driver.userData.car'
+            ])->select()->latest()->orderBy('id', 'desc')->paginate(10);
             return view('admin.orders.index', ['orders' => $orders,'users'=>$users,'cars'=>$cars, 'shipments'=> $shipments]);
     }
     public function pend(){

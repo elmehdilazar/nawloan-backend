@@ -374,7 +374,7 @@
                                                         $emptyStars = 5 - $avgRate;
                                                         if ($emptyStars < 0) { $emptyStars = 0; }
                                                         $ratingsCount = (int) ($offer->user?->evaluates?->count() ?? 0);
-                                                        $driverData = $offer->user?->userData;
+                                                        $driverData = $offer->driver?->userData ?? $offer->user?->userData;
                                                         $car = $driverData?->car;
                                                     @endphp
                                                     @for($i = 0; $i < $avgRate; $i++)
