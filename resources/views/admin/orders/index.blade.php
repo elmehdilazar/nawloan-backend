@@ -369,13 +369,14 @@
                                                 <span class="rate flex-col-center">
                                                 <span class="total">
                                                     @php
-                                                        $avgValue = (float) ($offer->user?->evaluates?->avg('rate') ?? 0);
+                                                        $driver = $offer->driver ?? $offer->user;
+                                                        $driverData = $driver?->userData;
+                                                        $car = $driverData?->car;
+                                                        $avgValue = (float) ($driver?->evaluates?->avg('rate') ?? 0);
                                                         $avgRate = (int) floor($avgValue);
                                                         $emptyStars = 5 - $avgRate;
                                                         if ($emptyStars < 0) { $emptyStars = 0; }
-                                                        $ratingsCount = (int) ($offer->user?->evaluates?->count() ?? 0);
-                                                        $driverData = $offer->driver?->userData ?? $offer->user?->userData;
-                                                        $car = $driverData?->car;
+                                                        $ratingsCount = (int) ($driver?->evaluates?->count() ?? 0);
                                                     @endphp
                                                     @for($i = 0; $i < $avgRate; $i++)
                                                         <img src="{{asset('assets/images/svgs/star-fill.svg')}}" alt="">
