@@ -87,6 +87,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Evaluate::class, 'user_id');
     }
+    public function evaluationsReceived()
+    {
+        return $this->hasMany(Evaluate::class, 'user2_id');
+    }
     // public function evaluates2()
     // {
     //     return $this->hasMany(Evaluate::class, 'user2_id');
