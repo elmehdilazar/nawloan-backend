@@ -625,90 +625,87 @@
                             <div class="col-lg-6 col-12">
                                 <div class="order-history">
                                     <h4>@lang('site.history')</h4>
+                                    @php
+                                        $statusTimes = [];
+                                        foreach ($order->statuses?->sortBy('created_at') ?? [] as $stat) {
+                                            $key = strtolower($stat->status);
+                                            if (!isset($statusTimes[$key])) {
+                                                $statusTimes[$key] = $stat->created_at;
+                                            }
+                                        }
+                                        $currentStatus = strtolower($order->status ?? '');
+                                        $reached = function (array $aliases) use ($currentStatus) {
+                                            return in_array($currentStatus, array_map('strtolower', $aliases), true);
+                                        };
+                                        $firstTime = function (array $aliases) use ($statusTimes) {
+                                            foreach ($aliases as $alias) {
+                                                $key = strtolower($alias);
+                                                if (isset($statusTimes[$key])) {
+                                                    return $statusTimes[$key];
+                                                }
+                                            }
+                                            return null;
+                                        };
+                                    @endphp
                                     <ul>
                                         <li class="step completed">
                                             <span class="title">@lang('site.Create Order')</span>
                                             <span class="time">{{ date('h:i A', strtotime($order->created_at)) }}</span>
                                             <span class="checkmark"></span>
                                         </li>
-                                        <li class="step @if (
-                                            $order->status == 'approve' ||
-                                                $order->status == 'pick_up' ||
-                                                $order->status == 'delivered' ||
-                                                $order->status == 'complete' ||
-                                                $order->status == 'cancel') completed @endif">
+                                        <li class="step @if ($reached(['approve','approved','pick_up','pickup','delivered','complete','completed','cancel'])) completed @endif">
                                             <span class="title">@lang('site.Accept Offer')</span>
                                             <span class="time">
-                                                @php $counter =1 @endphp
-                                                @forelse ($order->statuses as $stat)
-                                                    @if ($stat->status == 'approve' && $counter == 1)
-                                                        {{ date('h:i A', strtotime($stat->created_at)) }}
-                                                        @php $counter +=1 @endphp
-                                                    @endif
-                                                @empty
+                                                @if ($time = $firstTime(['approve','approved']))
+                                                    {{ date('h:i A', strtotime($time)) }}
+                                                @else
                                                     --
-                                                @endforelse
+                                                @endif
                                             </span>
                                             <span class="checkmark"></span>
                                         </li>
-                                        <li class="step @if ($order->status == 'pick_up' || $order->status == 'delivered' || $order->status == 'complete') completed @endif">
+                                        <li class="step @if ($reached(['pick_up','pickup','delivered','complete','completed'])) completed @endif">
                                             <span class="title">@lang('site.Driver Pick Up')</span>
                                             <span class="time">
-                                                @php $counter =1 @endphp
-                                                @forelse ($order->statuses as $stat)
-                                                    @if ($stat->status == 'pick_up' && $counter == 1)
-                                                        {{ date('h:i A', strtotime($stat->created_at)) }}
-                                                        @php $counter +=1 @endphp
-                                                    @endif
-                                                @empty
+                                                @if ($time = $firstTime(['pick_up','pickup']))
+                                                    {{ date('h:i A', strtotime($time)) }}
+                                                @else
                                                     --
-                                                @endforelse
+                                                @endif
                                             </span>
                                             <span class="checkmark"></span>
                                         </li>
-                                        <li class="step @if ($order->status == 'delivered' || $order->status == 'complete') completed @endif">
+                                        <li class="step @if ($reached(['delivered','complete','completed'])) completed @endif">
                                             <span class="title">@lang('site.Driver Delivered')</span>
                                             <span class="time">
-                                                @php $counter =1 @endphp
-                                                @forelse ($order->statuses as $stat)
-                                                    @if ($stat->status == 'delivered' && $counter == 1)
-                                                        {{ date('h:i A', strtotime($stat->created_at)) }}
-                                                        @php $counter +=1 @endphp
-                                                    @endif
-                                                @empty
+                                                @if ($time = $firstTime(['delivered']))
+                                                    {{ date('h:i A', strtotime($time)) }}
+                                                @else
                                                     --
-                                                @endforelse
+                                                @endif
                                             </span>
                                             <span class="checkmark"></span>
                                         </li>
-                                        <li class="step @if ($order->status == 'complete') completed @endif">
+                                        <li class="step @if ($reached(['complete','completed'])) completed @endif">
                                             <span class="title">@lang('site.Order Completed')</span>
                                             <span class="time">
-                                                @php $counter =1 @endphp
-                                                @forelse ($order->statuses as $stat)
-                                                    @if ($stat->status == 'complete' && $counter == 1)
-                                                        {{ date('h:i A', strtotime($stat->created_at)) }}
-                                                        @php $counter +=1 @endphp
-                                                    @endif
-                                                @empty
+                                                @if ($time = $firstTime(['complete','completed']))
+                                                    {{ date('h:i A', strtotime($time)) }}
+                                                @else
                                                     --
-                                                @endforelse
+                                                @endif
                                             </span>
                                             <span class="checkmark"></span>
                                         </li>
                                         @if ($order->status == 'cancel')
-                                            <li class="step @if ($order->status == 'cancel') completed @endif">
+                                            <li class="step @if ($reached(['cancel'])) completed @endif">
                                                 <span class="title">@lang('site.Order Cancel')</span>
                                                 <span class="time">
-                                                    @php $counter =1 @endphp
-                                                    @forelse ($order->statuses as $index=>$stat)
-                                                        @if ($stat->status == 'cancel' && $index < 1 && $counter == 1)
-                                                            {{ date(' h:i A', strtotime($stat->created_at)) }}
-                                                            @php $counter +=1 @endphp
-                                                        @endif
-                                                    @empty
+                                                    @if ($time = $firstTime(['cancel']))
+                                                        {{ date('h:i A', strtotime($time)) }}
+                                                    @else
                                                         --
-                                                    @endforelse
+                                                    @endif
                                                 </span>
                                                 <span class="checkmark"></span>
                                             </li>

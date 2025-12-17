@@ -74,7 +74,8 @@ class OrderController extends Controller
                 'evaluate',
                 'offers.user.userData.car',
                 'offers.driver.userData.car',
-                'serviceProvider.userData'
+                'serviceProvider.userData',
+                'statuses'
             ])->select()->latest()->orderBy('id', 'desc')->paginate(10);
             return view('admin.orders.index', ['orders' => $orders,'users'=>$users,'cars'=>$cars, 'shipments'=> $shipments]);
     }
