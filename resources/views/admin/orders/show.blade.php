@@ -370,14 +370,14 @@
 
         </div>
     </div>
-    @if($order->status != 'cancel')
+    @php
+        $isPendingOrder = in_array($order->status, ['pend', 'pending'], true);
+    @endphp
+    @if($isPendingOrder)
         <div class="flex-center flex-wrap mt-5 gap-20">
-            @if($order->status != 'complete')
-
-                <button class="btn btn-navy shadow-none min-width-230" data-toggle="modal"
-                        data-target="#driversOffers">Offers
-                </button>
-            @endif
+            <button class="btn btn-navy shadow-none min-width-230" data-toggle="modal"
+                    data-target="#driversOffers">Offers
+            </button>
             <button class="btn btn-danger shadow-none min-width-230">Cancel</button>
         </div>
     @endif
