@@ -341,24 +341,24 @@
             <tbody>
                 @foreach ($offers as $index=>$offer )
                 <tr>
-                    <td>{{$offer->id}}</td>
+                    <td>{{ $offer->id }}</td>
                     <td>
                         <div class="user-col">
-                            <img src="{{$offer->user->userData->image !='' ? asset($offer->user->userData->image) : asset('uploads/users/default.png')}}"
-                                 alt="{{$offer->user->name}}">
-                            <span class="name">{{$offer->user->name}}</span>
+                            <img src="{{ $offer->user?->userData?->image != '' ? asset($offer->user?->userData?->image) : asset('uploads/users/default.png') }}"
+                                alt="{{ $offer->user?->name }}">
+                            <span class="name">{{ $offer->user?->name }}</span>
                         </div>
                     </td>
-                    <td><a href="{{route('admin.orders.index',['number'=>$offer->order_id])}}">{{$offer->order_id}}</a></td>
-                    <td>{{$offer->price .' '.setting('currency_atr')}}</td>
-                    <td>{{$offer->created_at}}</td>
+                    <td><a href="{{ route('admin.orders.index', ['number' => $offer->order_id]) }}">{{ $offer->order_id }}</a></td>
+                    <td>{{ $offer->price . ' ' . setting('currency_atr') }}</td>
+                    <td>{{ $offer->created_at }}</td>
                     <td>
                         <span class="badge badge-pill
-                        @if($offer->status =='pending') badge-warning
+                        @if($offer->status =='pending' || $offer->status =='pend') badge-warning
                         @elseif($offer->status=='approve' || $offer->status=='pick_up' || $offer->status=='delivered') badge-primary
-                        @elseif ($offer->status=='complete') badge-success
-                        @elseif ($offer->status=='cancel') badge-danger @endif">
-                            @if($offer->status=='pending')
+                        @elseif ($offer->status=='complete' ||  $offer->status=='completed') badge-success
+                        @elseif ($offer->status=='cancel' || $offer->status=='cancelled') badge-danger @endif">
+                            @if($offer->status=='pending' || $offer->status =='pend')
                                 @lang('site.pend')
                             @elseif($offer->status=='approve')
                                 @lang('site.approval')
@@ -366,9 +366,9 @@
                                 @lang('site.Pick Up')
                             @elseif($offer->status=='delivered')
                                 @lang('site.Delivered')
-                            @elseif($offer->status=='complete')
+                            @elseif($offer->status=='complete' ||  $offer->status=='completed')
                                 @lang('site.completed')
-                            @elseif($offer->status=='cancel')
+                            @elseif($offer->status=='cancel' || $offer->status=='cancelled')
                                 @lang('site.canceled')
                             @endif
                         </span>
@@ -377,8 +377,7 @@
                         <ul class="actions">
                             @if(auth()->user()->hasPermission('offers_read'))
                             <li>
-                                <a href="#" title="@lang('site.show')" class="show"
-                                   data-toggle="modal" data-target="#orderModal_{{$index}}">
+                                <a href="{{ route('admin.offers.show', ['id' => $offer->id]) }}" title="@lang('site.show')" class="show">
                                     <i class="fad fa-eye"></i>
                                 </a>
                             </li>
