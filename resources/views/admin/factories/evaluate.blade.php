@@ -61,7 +61,7 @@
                                 <div>
                                     @if((int) $eval->active === 1)
                                     <a href="{{ route('admin.factories.evaluate.changeStatus',$eval->id) }}" class="btn btn-danger">
-                                        <i class="fas fa-remove"></i>
+                                    <i class="fas fa-times"></i>
                                     </a>
                                     @else
                                     <a href="{{ route('admin.factories.evaluate.changeStatus',$eval->id) }}" class="btn btn-success">

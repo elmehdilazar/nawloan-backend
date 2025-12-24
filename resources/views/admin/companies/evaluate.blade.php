@@ -53,7 +53,7 @@
                             <div>
                                 @if($eval->active==1)
                                 <a href="{{route('admin.drivers.evaluate.changeStatus',$eval->id)}}" class="btn btn-danger"><i
-                                        class="fas fa-remove"></i></a>
+                                        class="fas fa-times"></i></a>
                                 @else
                                 <a href="{{route('admin.drivers.evaluate.changeStatus',$eval->id)}}" class="btn btn-success"><i
                                         class="fas fa-check"></i></a>
