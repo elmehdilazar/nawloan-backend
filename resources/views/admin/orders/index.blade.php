@@ -657,6 +657,7 @@
                                             }
                                             return null;
                                         };
+                                        $isCanceled = $reached(['cancel', 'cancelled']);
                                     @endphp
                                     <ul>
                                         <li class="step completed">
@@ -664,7 +665,7 @@
                                             <span class="time">{{ date('h:i A', strtotime($order->created_at)) }}</span>
                                             <span class="checkmark"></span>
                                         </li>
-                                        <li class="step @if ($reached(['approve','approved','pick_up','pickup','delivered','complete','completed','cancel'])) completed @endif">
+                                        <li class="step @if ($reached(['approve','approved','pick_up','pickup','delivered','complete','completed','cancel','cancelled'])) completed @endif">
                                             <span class="title">@lang('site.Accept Offer')</span>
                                             <span class="time">
                                                 @if ($time = $firstTime(['approve','approved']))
@@ -708,11 +709,11 @@
                                             </span>
                                             <span class="checkmark"></span>
                                         </li>
-                                        @if ($order->status == 'cancel')
-                                            <li class="step @if ($reached(['cancel'])) completed @endif">
+                                        @if ($isCanceled)
+                                            <li class="step @if ($isCanceled) completed @endif">
                                                 <span class="title">@lang('site.Order Cancel')</span>
                                                 <span class="time">
-                                                    @if ($time = $firstTime(['cancel']))
+                                                    @if ($time = $firstTime(['cancel','cancelled']))
                                                         {{ date('h:i A', strtotime($time)) }}
                                                     @else
                                                         --
