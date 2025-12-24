@@ -428,112 +428,125 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($orders as $index=>$order )
-            <tr>
-                <td>{{$order->id}}</td>
-                <td>
-                    <div class="user-col">
-                        @if ($order->user && $order->user->userData && $order->user->userData->image)
-                            <img src="{{ asset($order->user->userData->image) }}"
-                                 alt="{{ $order->user->name }}">
-                        @else
-                            <img src="{{ asset('uploads/users/default.png') }}"
-                                 alt="Default Image">
-                        @endif
-                        <span class="name">{{ $order->user ? $order->user->name : 'Unknown User' }}</span>
-                    </div>
-                </td>
-                <td>
-                    <a href="#" data-toggle="modal" data-target="#truckModal_{{$index}}">
-                        {{$order->car->name_en}}
-                    </a>
-                </td>
-                <td>
-                    @if(!empty($order->offers))
-                    <a href="#" class="act-btn" data-toggle="modal" data-target="#offersModal_{{$index}}">
-                        <i class="fad fa-paper-plane"></i>
-                    </a>
-                    @endif
-                </td>
-                <td>{{number_format( ( $order->ton_price * $order->weight_ton),2, ".", "")}}{{' '. setting('currency_atr')}}</td>
-                <td>{{$order->transaction!='' ? $order->transaction->status : __('site.Delayed Payment')}}</td>
-                <td>
-                    <span class="badge badge-pill
-                        @if($order->status =='pending') badge-warning
-                        @elseif($order->status=='approve' || $order->status=='pick_up' || $order->status=='delivered') badge-primary
-                        @elseif ($order->status=='complete') badge-success
-                        @elseif ($order->status=='cancel') badge-danger @endif">
-                        @if($order->status=='pending')
-                            @lang('site.pend')
-                        @elseif($order->status=='approve')
-                            @lang('site.approval')
-                        @elseif($order->status=='pick_up')
-                            @lang('site.Pick Up')
-                        @elseif( $order->status=='delivered')
-                            @lang('site.Delivered')
-                        @elseif($order->status=='complete')
-                            @lang('site.completed')
-                        @elseif($order->status=='cancel')
-                            @lang('site.canceled')
-                        @endif
-                    </span>
-                </td>
-                <td>
-                    <ul class="actions">
-                        @if(auth()->user()->hasPermission('orders_read') )
-                        <li>
-                            <a href="#" data-toggle="modal" data-target="#orderModal_{{$index}}"
-                               title="@lang('site.show')" class="show">
-                                <i class="fad fa-eye"></i>
+            @foreach ($orders as $index => $order)
+                <tr>
+                    <td>{{ $order->id }}</td>
+                    <td>
+                        <div class="user-col">
+                            <img src="{{ asset($order->user?->userData?->image ?: 'uploads/users/default.png') }}"
+                                alt="{{ $order->user?->name }}">
+                            <span class="name">{{ $order->user?->name }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <a href="#" data-toggle="modal" data-target="#truckModal_{{ $index }}">
+                            {{ $order->car?->name_en }}
+                        </a>
+                    </td>
+                    <td>
+                        @if (!empty($order->offers))
+                            <a href="#" class="act-btn" data-toggle="modal"
+                                data-target="#offersModal_{{ $index }}">
+                                <i class="fad fa-paper-plane"></i>
                             </a>
-                            {{--<a href="{{route('admin.orders.show',$order->id)}}"--}}
-                            {{--title="@lang('site.show')" class="show">--}}
-                            {{--<i class="fad fa-eye"></i>--}}
-                            {{--</a>--}}
-                        </li>
                         @endif
-                        @if(auth()->user()->hasPermission('orders_update'))
-                            <li><a href="{{route('admin.orders.edit',$order->id)}}" title="@lang('site.edit')" class="show"><i class="fad fa-edit"></i></a></li>
-                            @if($order->status=='cancel')
+                    </td>
+                    <td>{{ number_format($order->ton_price * $order->weight_ton, 2, '.', '') }}{{ ' ' . setting('currency_atr') }}
+                    </td>
+                    <td>{{ $order->transaction != '' ? $order->transaction->status : __('site.Delayed Payment') }}</td>
+                    <td>
+                        <span
+                            class="badge badge-pill
+                            @if ($order->status == 'pend' || $order->status == 'pending') badge-warning
+                            @elseif($order->status == 'approve' || $order->status == 'pick_up' || $order->status == 'delivered') badge-primary
+                            @elseif ($order->status == 'complete' || $order->status == 'completed') badge-success
+                            @elseif ($order->status == 'cancel' || $order->status == 'cancelled') badge-danger @endif">
+                            @if ($order->status == 'pend' || $order->status == 'pending')
+                                @lang('site.pend')
+                            @elseif($order->status == 'approve')
+                                @lang('site.approval')
+                            @elseif($order->status == 'pick_up')
+                                @lang('site.Pick Up')
+                            @elseif($order->status == 'delivered')
+                                @lang('site.Delivered')
+                            @elseif($order->status == 'complete' || $order->status == 'completed')
+                                @lang('site.completed')
+                            @elseif($order->status == 'cancel' || $order->status == 'cancelled')
+                                @lang('site.canceled')
+                            @endif
+                        </span>
+                    </td>
+                    <td>
+                        <ul class="actions">
+                            @if (auth()->user()->hasPermission('orders_read'))
                                 <li>
-                                    <a href="#" class="check"
-                                       onclick="event.preventDefault();document.getElementById('pend-form_{{$index}}').submit();">
-                                        <i class="fad fa-check-double"></i>
+                                    <a href="#" data-toggle="modal" data-target="#orderModal_{{ $index }}"
+                                        title="@lang('site.show')" class="show">
+                                        <i class="fad fa-eye"></i>
+                                    </a>
+                                    {{-- <a href="{{route('admin.orders.show',$order->id)}}" --}}
+                                    {{-- title="@lang('site.show')" class="show"> --}}
+                                    {{-- <i class="fad fa-eye"></i> --}}
+                                    {{-- </a> --}}
+                                </li>
+                            @endif
+                            @if (auth()->user()->hasPermission('orders_update'))
+                                <li><a href="{{ route('admin.orders.edit', $order->id) }}" title="@lang('site.edit')"
+                                        class="show"><i class="fad fa-edit"></i></a></li>
+                                @if ($order->status == 'cancel')
+                                    <li>
+                                        <a href="#" class="check"
+                                            onclick="event.preventDefault();document.getElementById('pend-form_{{ $index }}').submit();">
+                                            <i class="fad fa-check-double"></i>
+                                        </a>
+                                    </li>
+                                    <form action="{{ route('admin.orders.changeStatus', $order->id) }}" method="POST"
+                                        id="pend-form_{{ $index }}">
+                                        @csrf
+                                        @method('put')
+                                        <input type="hidden" id="status" name="status" value="pend">
+                                    </form>
+                                @endif
+                                @if ($order->status != 'complete' && $order->status != 'cancel' && $order->status != 'pend')
+                                    <li>
+                                        <a href="#" class="success"
+                                            onclick="event.preventDefault();document.getElementById('complete-form_{{ $index }}').submit();">
+                                            <i class="fad fa-clipboard-check"></i>
+                                        </a>
+                                    </li>
+                                    <form action="{{ route('admin.orders.changeStatus', $order->id) }}" method="POST"
+                                        id="complete-form_{{ $index }}">
+                                        @csrf
+                                        @method('put')
+                                        <input type="hidden" id="status" name="status" value="complete">
+                                    </form>
+                                @endif
+                                @if ($order->status != 'complete' && $order->status != 'cancel')
+                                    <li>
+                                        <a href="#" class="cancel"
+                                            onclick="event.preventDefault();document.getElementById('cancel-form_{{ $index }}').submit();">
+                                            <i class="fad fa-times"></i>
+                                        </a>
+                                    </li>
+                                    <form action="{{ route('admin.orders.changeStatus', $order->id) }}" method="POST"
+                                        id="cancel-form_{{ $index }}">
+                                        @csrf
+                                        @method('put')
+                                        <input type="hidden" id="status" name="status" value="cancel">
+                                    </form>
+                                @endif
+                            @endif
+                            @if (auth()->user()->hasPermission('orders_read'))
+                                <li>
+                                    <a href="#" class="show" title="@lang('site.order_track')"
+                                        onclick="showModal({{ $order->pick_up_late }},{{ $order->pick_up_long }},{{ $order->drop_of_late }},{{ $order->drop_of_long }},{{ $order->serviceProvider?->userData?->latitude ?? '0' }},{{ $order->serviceProvider?->userData?->longitude ?? '0' }},{{ $order }});">
+                                        <i class="fad fa-map-marked-alt"></i>
                                     </a>
                                 </li>
-                                <form action="{{route('admin.orders.changeStatus',$order->id)}}" method="POST"
-                                      id="pend-form_{{$index}}">
-                                    @csrf
-                                    @method('put')
-                                    <input type="hidden" id="status" name="status" value="pend">
-                                </form>
                             @endif
-                            @if($order->status!='complete' && $order->status!='cancel')
-                            <li>
-                                <a href="#" class="cancel"
-                                   onclick="event.preventDefault();document.getElementById('cancel-form_{{$index}}').submit();">
-                                    <i class="fad fa-times"></i>
-                                </a>
-                            </li>
-                            <form action="{{route('admin.orders.changeStatus',$order->id)}}" method="POST"
-                                  id="cancel-form_{{$index}}">
-                                @csrf
-                                @method('put')
-                                <input type="hidden" id="status" name="status" value="cancel">
-                            </form>
-                            @endif
-                        @endif
-                        @if(auth()->user()->hasPermission('orders_read'))
-                        <li>
-                            <a href="#" class="show" title="@lang('site.order_track')"
-                               onclick="showModal({{$order->pick_up_late}},{{$order->pick_up_long}},{{$order->drop_of_late}},{{$order->drop_of_long}},{{$order->serviceProvider->userData->latitude ?? '0'}},{{$order->serviceProvider->userData->longitude ?? '0'}},{{$order}});">
-                                <i class="fad fa-map-marked-alt"></i>
-                            </a>
-                        </li>
-                        @endif
-                    </ul>
-                </td>
-            </tr>
+                        </ul>
+                    </td>
+                </tr>
             @endforeach
         </tbody>
     </table>
