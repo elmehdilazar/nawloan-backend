@@ -336,6 +336,14 @@
                 @endif
             @endif
            @if($order->status != 'pend')
+    @php
+        $driver = $order->serviceProvider;
+        $driverStats = $driver?->evaluationsReceived()
+            ->selectRaw('COALESCE(AVG(rate),0) as avg_rate, COUNT(*) as total_rates')
+            ->first();
+        $driverRating = round($driverStats?->avg_rate ?? 0, 2);
+        $driverRatingCount = $driverStats?->total_rates ?? 0;
+    @endphp
     <div class="driver-card">
         <div class="flex-align-center">
             <img src="{{ optional(optional($order->serviceProvider)->userData)->image != '' ? asset(optional($order->serviceProvider->userData)->image) : asset('uploads/users/default.png') }}" alt="">
@@ -344,14 +352,12 @@
                 <span class="name">{{ optional($order->serviceProvider)->name }}</span>
                 <span class="rate">
                     <div class="flex-align-center">
-                        <img src="{{asset('assets/images/svgs/star-fill.svg')}}" alt="">
-                        <img src="{{asset('assets/images/svgs/star-fill.svg')}}" alt="">
-                        <img src="{{asset('assets/images/svgs/star-fill.svg')}}" alt="">
-                        <img src="{{asset('assets/images/svgs/star-fill.svg')}}" alt="">
-                        <img src="{{asset('assets/images/svgs/star.svg')}}" alt="">
+                        @for ($star = 1; $star <= 5; $star++)
+                            <img src="{{ asset($star <= round($driverRating) ? 'assets/images/svgs/star-fill.svg' : 'assets/images/svgs/star.svg') }}" alt="">
+                        @endfor
                     </div>
-                    <span class="value">5.00</span>
-                    <span class="count">(340)</span>
+                    <span class="value">{{ number_format($driverRating, 2) }}</span>
+                    <span class="count">({{ $driverRatingCount }})</span>
                 </span>
             </div>
         </div>
