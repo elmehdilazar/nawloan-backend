@@ -59,7 +59,7 @@ class AdminController extends Controller
             })
         ->when($request->end_date, function ($query) use ($request) {
                 return $query->where('created_at','<=', $request->end_date);
-            })->latest()->take(10)->get();
+            })->latest()->take(5)->get();
         $offers_price=$offers->where('status','=','complete')->sum('price');
         $offers_total=$offers->where('status','=','complete')->sum('subtotal');
         $total_tax=$offers_total-$offers_price;
