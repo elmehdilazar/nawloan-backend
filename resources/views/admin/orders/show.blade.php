@@ -343,6 +343,14 @@
             ->first();
         $driverRating = round($driverStats?->avg_rate ?? 0, 2);
         $driverRatingCount = $driverStats?->total_rates ?? 0;
+        $driverRateRoute = null;
+        if ($driver && Route::has('admin.drivers.evaluate') && $driver->type == 'driver') {
+            $driverRateRoute = route('admin.drivers.evaluate', $driver->id);
+        } elseif ($driver && Route::has('admin.companies.evaluate') && $driver->type == 'driversCompany') {
+            $driverRateRoute = route('admin.companies.evaluate', $driver->id);
+        } elseif ($driver && Route::has('admin.factories.evaluate') && $driver->type == 'factory') {
+            $driverRateRoute = route('admin.factories.evaluate', $driver->id);
+        }
     @endphp
     <div class="driver-card">
         <div class="flex-align-center">
@@ -350,15 +358,27 @@
 
             <div class="flex-column">
                 <span class="name">{{ optional($order->serviceProvider)->name }}</span>
-                <span class="rate">
-                    <div class="flex-align-center">
-                        @for ($star = 1; $star <= 5; $star++)
-                            <img src="{{ asset($star <= round($driverRating) ? 'assets/images/svgs/star-fill.svg' : 'assets/images/svgs/star.svg') }}" alt="">
-                        @endfor
-                    </div>
-                    <span class="value">{{ number_format($driverRating, 2) }}</span>
-                    <span class="count">({{ $driverRatingCount }})</span>
-                </span>
+                @if ($driverRateRoute)
+                    <a href="{{ $driverRateRoute }}" class="rate">
+                        <div class="flex-align-center">
+                            @for ($star = 1; $star <= 5; $star++)
+                                <img src="{{ asset($star <= round($driverRating) ? 'assets/images/svgs/star-fill.svg' : 'assets/images/svgs/star.svg') }}" alt="">
+                            @endfor
+                        </div>
+                        <span class="value">{{ number_format($driverRating, 2) }}</span>
+                        <span class="count">({{ $driverRatingCount }})</span>
+                    </a>
+                @else
+                    <span class="rate">
+                        <div class="flex-align-center">
+                            @for ($star = 1; $star <= 5; $star++)
+                                <img src="{{ asset($star <= round($driverRating) ? 'assets/images/svgs/star-fill.svg' : 'assets/images/svgs/star.svg') }}" alt="">
+                            @endfor
+                        </div>
+                        <span class="value">{{ number_format($driverRating, 2) }}</span>
+                        <span class="count">({{ $driverRatingCount }})</span>
+                    </span>
+                @endif
             </div>
         </div>
         <div class="driver-actions">
