@@ -33,13 +33,27 @@ class AdminController extends Controller
         if (session('success')) {
             toast(session('success'), 'success');
         }
-        $orders=Order::select() ->when($request->start_date, function ($query) use ($request) {
-                return $query->where('created_at','>=', $request->start_date);
+        $ordersQuery = Order::when($request->start_date, function ($query) use ($request) {
+                return $query->where('created_at', '>=', $request->start_date);
             })
-        ->when($request->end_date, function ($query) use ($request) {
-                return $query->where('created_at','<=', $request->end_date);
-            })->latest()->take(10)->get();
-            $ordersConut=$orders->count();
+            ->when($request->end_date, function ($query) use ($request) {
+                return $query->where('created_at', '<=', $request->end_date);
+            });
+        $ordersConut = (clone $ordersQuery)->count();
+        $orders = $ordersQuery->with([
+                'car',
+                'user.userData',
+                'shipmentType',
+                'evaluate',
+                'paymentType',
+                'transaction',
+                'accountant',
+                'offer.user.userData',
+                'offers.user.userData.car',
+                'offers.driver.userData.car',
+                'serviceProvider.userData',
+                'statuses',
+            ])->latest()->take(5)->get();
         $offers = Offer::select() ->when($request->start_date, function ($query) use ($request) {
                 return $query->where('created_at','>=', $request->start_date);
             })
