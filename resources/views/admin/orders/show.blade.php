@@ -409,6 +409,10 @@
     @endif
     @if($order->status == 'approve')
         <div class="flex-center flex-wrap mt-5 gap-20">
+            <button type="button" class="btn btn-navy shadow-none min-width-230" data-toggle="modal"
+                    data-target="#PickUpQrModal">
+                Pick Up Code
+            </button>
             <button class="btn btn-navy shadow-none min-width-230"
                     onclick="event.preventDefault(); showTrackingModal();">
                 Follow Order
@@ -556,13 +560,65 @@
         </div>
     </div>
     <!-- End OrderTracking Modal -->
+    <!-- Start PickUp QR Modal -->
+    <div class="modal fade" id="PickUpQrModal" tabindex="-1" role="dialog" aria-labelledby="PickUpQrModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered zoom-animation">
+            <div class="modal-content fog-background">
+                <div class="bring-to-front">
+                    <div class="modal-header flex-center">
+                        <h4 class="modal-title text-navy mb-0">Pick Up Confirmation</h4>
+                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 38 38">
+                                <path id="Exclusion_23" data-name="Exclusion 23"
+                                      d="M26.384,37.578h-14a12,12,0,0,1-12-12v-14a12,12,0,0,1,12-12h14a12,12,0,0,1,12,12v14a12,12,0,0,1-12,12Zm-7-16.4h0L26,27.793l2.6-2.6-6.617-6.617L28.6,11.961,26,9.363,19.384,15.98,12.767,9.363l-2.6,2.6,6.617,6.617-6.617,6.617,2.6,2.6,6.616-6.616Z"
+                                      transform="translate(-0.384 0.422)" fill="#d27979"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="flex-column flex-center text-center">
+                            <p class="mb-4">
+                                Please share this code with the person receiving the shipment so the driver can confirm
+                                pickup.
+                            </p>
+                            <div id="pickup-qr" class="mb-4"></div>
+                            <div id="pickup-qr-message" class="mb-3"></div>
+                            <div class="flex-center flex-wrap gap-20">
+                                <button type="button" id="pickup-qr-share" class="btn btn-transparent navy min-width-230">
+                                    Share Link
+                                </button>
+                                <button type="button" class="btn btn-navy min-width-230" data-dismiss="modal">
+                                    Manual Pickup
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End PickUp QR Modal -->
 @endsection
 
 
 @section('scripts')
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCWsYnE6Jsdi4SGqw50cYLDcSYI8eAYL7k&callback=initMap"
             async></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
+        const pickUpQrEndpoint = "{{ url('/api/orders/' . $order->id . '/generate-qr') }}";
+        let pickUpQrPayload = '';
+        let pickUpQrInstance = null;
+
+        $('#PickUpQrModal').on('shown.bs.modal', function () {
+            generatePickUpQr();
+        });
+        $('#pickup-qr-share').on('click', function (e) {
+            e.preventDefault();
+            sharePickUpQr();
+        });
+
         const trackingOrder = {!! json_encode([
             'id' => $order->id,
             'pickup_lat' => $order->pick_up_late,
@@ -588,6 +644,81 @@
         });
         let map, map1, map2, activeInfoWindow, markers = [];
         var directionsService, directionsDisplay;
+
+        function renderPickUpQr(payload) {
+            const container = document.getElementById('pickup-qr');
+            if (!container) {
+                return;
+            }
+            container.innerHTML = '';
+            pickUpQrPayload = payload;
+            if (window.QRCode) {
+                pickUpQrInstance = new QRCode(container, {
+                    text: payload,
+                    width: 220,
+                    height: 220
+                });
+            }
+        }
+
+        function setPickUpQrMessage(message) {
+            const messageEl = document.getElementById('pickup-qr-message');
+            if (messageEl) {
+                messageEl.textContent = message || '';
+            }
+        }
+
+        function generatePickUpQr() {
+            setPickUpQrMessage('Loading...');
+            fetch(pickUpQrEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ type: 'pick_up' })
+            })
+                .then(function (response) {
+                    return response.json().then(function (data) {
+                        return { ok: response.ok, data: data };
+                    });
+                })
+                .then(function (result) {
+                    if (!result.ok) {
+                        throw new Error(result.data.error || 'Failed to generate QR code.');
+                    }
+                    renderPickUpQr(result.data.qr_payload);
+                    setPickUpQrMessage('');
+                })
+                .catch(function (error) {
+                    setPickUpQrMessage(error.message || 'Failed to generate QR code.');
+                });
+        }
+
+        function sharePickUpQr() {
+            if (!pickUpQrPayload) {
+                setPickUpQrMessage('Generate the QR code first.');
+                return;
+            }
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Pick Up Code',
+                    text: pickUpQrPayload
+                }).catch(function () {
+                    setPickUpQrMessage('Share canceled.');
+                });
+                return;
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(pickUpQrPayload).then(function () {
+                    setPickUpQrMessage('Link copied to clipboard.');
+                }).catch(function () {
+                    setPickUpQrMessage('Copy failed.');
+                });
+                return;
+            }
+            setPickUpQrMessage('Copy not supported in this browser.');
+        }
 
         function drawPath(directionsService, directionsDisplay, start, end) {
             directionsService.route({
@@ -641,6 +772,8 @@
         function showModal(plat, plng, dlat, dlng, drlat, drlng, order) {
             let order1 = order;
             $('#TrackingModal').modal('show');
+            $('#distance').html('');
+            $('#duration').html('');
 
             if (directionsDisplay != null) {
                 directionsDisplay.setMap(null);
@@ -653,6 +786,15 @@
                 polylineOptions: {
                     strokeColor: 'red'
                 }
+            });
+            directionsDisplay.addListener('directions_changed', function () {
+                const current = directionsDisplay.getDirections();
+                if (!current || !current.routes || !current.routes[0] || !current.routes[0].legs || !current.routes[0].legs[0]) {
+                    return;
+                }
+                const leg = current.routes[0].legs[0];
+                $('#distance').html(leg.distance ? leg.distance.text : '');
+                $('#duration').html(leg.duration ? leg.duration.text : '');
             });
             let mylatelng = {
                 lat: parseFloat(plat),
@@ -700,8 +842,10 @@
                 bounds.extend(myLatlng2);
             }
             map.fitBounds(bounds);
-            $('#from').html(order.pickup_address || '-');
-            $('#to').html(order.dropoff_address || '-');
+            const fromLabel = order.pickup_address || (Number.isFinite(mylatelng.lat) ? (mylatelng.lat + ', ' + mylatelng.lng) : '-');
+            const toLabel = order.dropoff_address || (Number.isFinite(myLatlng1.lat) ? (myLatlng1.lat + ', ' + myLatlng1.lng) : '-');
+            $('#from').html(fromLabel);
+            $('#to').html(toLabel);
             getDisAndDur({
                 'lat': parseFloat(plat),
                 'long': parseFloat(plng)
