@@ -425,7 +425,7 @@
             </form>
         </div>
     @endif
-    @if($order->status == 'delivered')
+    @if($order->status == 'pick_up')
         <div class="flex-center flex-wrap mt-5 gap-20">
             <button type="button" class="btn btn-navy shadow-none min-width-230" data-toggle="modal"
                     data-target="#ReceiveQrModal">
