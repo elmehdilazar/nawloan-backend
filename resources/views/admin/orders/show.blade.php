@@ -598,6 +598,11 @@
             }, function (response, status) {
                 if (status === 'OK') {
                     directionsDisplay.setDirections(response);
+                    var leg = response.routes?.[0]?.legs?.[0];
+                    if (leg) {
+                        $('#distance').html(leg.distance?.text || '');
+                        $('#duration').html(leg.duration?.text || '');
+                    }
                     var infowindow = new window.google.maps.InfoWindow({
                         content: "@lang('site.drop_of_address')<br>" + " " + response.routes[0].legs[0].distance.text
                     });
