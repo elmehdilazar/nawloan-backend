@@ -695,14 +695,14 @@
                 bounds.extend(myLatlng2);
             }
             map.fitBounds(bounds);
-            $('#from').html(order.pick_up_address);
-            $('#to').html(order.drop_of_address);
+            $('#from').html(order.pickup_address || '-');
+            $('#to').html(order.dropoff_address || '-');
             getDisAndDur({
-                'lat': plat,
-                'long': plng
+                'lat': parseFloat(plat),
+                'long': parseFloat(plng)
             }, {
-                'lat': dlat,
-                'long': dlng
+                'lat': parseFloat(dlat),
+                'long': parseFloat(dlng)
             });
         }
 
