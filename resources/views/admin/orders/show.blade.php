@@ -588,9 +588,15 @@
                                 <button type="button" id="pickup-qr-share" class="btn btn-transparent navy min-width-230">
                                     Share Link
                                 </button>
-                                <button type="button" class="btn btn-navy min-width-230" data-dismiss="modal">
-                                    Manual Pickup
-                                </button>
+                                <form action="{{ route('admin.orders.changeStatus', $order->id) }}" method="POST" style="margin:0;">
+                                    @csrf
+                                    @method('put')
+                                    <input type="hidden" name="status" value="pick_up">
+                                    <input type="hidden" name="service_provider" value="{{ $order->service_provider }}">
+                                    <button type="submit" class="btn btn-navy min-width-230">
+                                        Manual Pickup
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
