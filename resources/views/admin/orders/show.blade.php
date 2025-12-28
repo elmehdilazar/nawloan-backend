@@ -407,6 +407,20 @@
             <button class="btn btn-danger shadow-none min-width-230">Cancel</button>
         </div>
     @endif
+    @if($order->status == 'approve')
+        <div class="flex-center flex-wrap mt-5 gap-20">
+            <button class="btn btn-navy shadow-none min-width-230"
+                    onclick="event.preventDefault(); showModal({{ $order->pick_up_late }},{{ $order->pick_up_long }},{{ $order->drop_of_late }},{{ $order->drop_of_long }},{{ $order->serviceProvider?->userData?->latitude ?? '0' }},{{ $order->serviceProvider?->userData?->longitude ?? '0' }}, @json($order));">
+                Follow Order
+            </button>
+            <form action="{{ route('admin.orders.changeStatus', $order->id) }}" method="POST">
+                @csrf
+                @method('put')
+                <input type="hidden" name="status" value="cancel">
+                <button type="submit" class="btn btn-danger shadow-none min-width-230">Delete</button>
+            </form>
+        </div>
+    @endif
     <!-- Start DriversOffers Modal -->
     <div class="modal fade" id="driversOffers" tabindex="-1" role="dialog" aria-labelledby="driversOffersLabel"
          aria-hidden="true">
@@ -490,6 +504,58 @@
         </div>
     </div>
     <!-- End DriversOffers Modal -->
+    <!-- Start OrderTracking Modal -->
+    <div class="modal fade" id="TrackingModal" tabindex="-1" role="dialog" aria-labelledby="TrackingModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered zoom-animation">
+            <div class="modal-content fog-background">
+                <div class="bring-to-front">
+                    <div class="modal-header flex-center">
+                        <h4 class="modal-title text-navy mb-0">@lang('site.order_tracking')</h4>
+                        <button type="button" id="TrackingModalClose" class="btn-close" data-dismiss="modal"
+                                aria-label="Close">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 38 38">
+                                <path id="Exclusion_23" data-name="Exclusion 23"
+                                      d="M26.384,37.578h-14a12,12,0,0,1-12-12v-14a12,12,0,0,1,12-12h14a12,12,0,0,1,12,12v14a12,12,0,0,1-12,12Zm-7-16.4h0L26,27.793l2.6-2.6-6.617-6.617L28.6,11.961,26,9.363,19.384,15.98,12.767,9.363l-2.6,2.6,6.617,6.617-6.617,6.617,2.6,2.6,6.616-6.616Z"
+                                      transform="translate(-0.384 0.422)" fill="#d27979"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="modal-body position-relative px-0 pb-0">
+                        <div class="flex-column max-width-60 px-md-0 px-3 mb-4">
+                            <div class="tracking-path">
+                                <img src="{{ asset('assets/images/track-path.png') }}" alt="">
+                                <span class="flex-column">
+                                    <span class="from">
+                                        <span id="from">-</span>
+                                    </span>
+                                    <span class="to">
+                                        <span id="to">-</span>
+                                    </span>
+                                </span>
+                            </div>
+                            <ul class="tracking-informations">
+                                <li>
+                                    <img src="{{ asset('assets/images/svgs/time-check.svg') }}" alt="">
+                                    Estimated Time:&nbsp;<span id="duration"></span>
+                                </li>
+                                <li>
+                                    <img src="{{ asset('assets/images/svgs/road.svg') }}" alt="">
+                                    Road Distance:&nbsp;<span id="distance"></span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div id="map" class="map" style="height: 460px; width: 100%;"></div>
+                        <div class="flex-center">
+                            <a href="#" class="btn btn-navy shadow-none" data-dismiss="modal"
+                               aria-label="Close">Back To Order</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End OrderTracking Modal -->
 @endsection
 
 
@@ -497,80 +563,133 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCWsYnE6Jsdi4SGqw50cYLDcSYI8eAYL7k&callback=initMap"
             async></script>
     <script>
-        let map, activeInfoWindow, markers = [];
+        $('#TrackingModalClose, a[data-dismiss="modal"][aria-label="Close"]').on('click', function (e) {
+            e.preventDefault();
+            $('#TrackingModal').modal('hide');
+        });
+        let map, map1, map2, activeInfoWindow, markers = [];
+        var directionsService, directionsDisplay;
 
-        /* ----------------------------- Initialize Map ----------------------------- */
+        function drawPath(directionsService, directionsDisplay, start, end) {
+            directionsService.route({
+                origin: start,
+                destination: end,
+                optimizeWaypoints: true,
+                travelMode: window.google.maps.DirectionsTravelMode.WALKING
+            }, function (response, status) {
+                if (status === 'OK') {
+                    directionsDisplay.setDirections(response);
+                    var infowindow = new window.google.maps.InfoWindow({
+                        content: "@lang('site.drop_of_address')<br>" + " " + response.routes[0].legs[0].distance.text
+                    });
+                } else {
+                    alert('Problem in showing direction due to ' + status);
+                }
+            });
+        }
+
         function initMap() {
             map = new google.maps.Map(document.getElementById("map"), {
                 center: {
-                    lat: 28.626137,
-                    lng: 79.821603,
+                    lat: 30.036053390817127,
+                    lng: 31.236625493518176,
                 },
-                zoom: 15
+                zoom: 16,
+                disableDefaultUI: true,
+                mapTypeId: 'terrain'
             });
-
-            map.addListener("click", function (event) {
-                mapClicked(event);
-            });
-
-            initMarkers();
         }
 
-        /* --------------------------- Initialize Markers --------------------------- */
-        function initMarkers() {
-            const initialMarkers = <?php echo json_encode($initialMarkers); ?>;
+        var previousMarker;
 
-            for (let index = 0; index < initialMarkers.length; index++) {
+        function showModal(plat, plng, dlat, dlng, drlat, drlng, order) {
+            let order1 = order;
+            $('#TrackingModal').modal('show');
 
-                const markerData = initialMarkers[index];
-                const marker = new google.maps.Marker({
-                    position: markerData.position,
-                    label: markerData.label,
-                    draggable: markerData.draggable,
-                    map
+            if (directionsDisplay != null) {
+                directionsDisplay.setMap(null);
+                directionsDisplay = null;
+            }
+            directionsService = new google.maps.DirectionsService;
+            directionsDisplay = new google.maps.DirectionsRenderer;
+            directionsDisplay.setMap(map);
+            directionsDisplay.setOptions({
+                polylineOptions: {
+                    strokeColor: 'red'
+                }
+            });
+            let mylatelng = {
+                lat: parseFloat(plat),
+                lng: parseFloat(plng)
+            };
+            let myLatlng1 = {
+                lat: parseFloat(dlat),
+                lng: parseFloat(dlng)
+            };
+
+            drawPath(directionsService, directionsDisplay, mylatelng, myLatlng1);
+            if (drlat != 0 && drlng != 0) {
+                let myLatlng2 = {
+                    lat: parseFloat(drlat),
+                    lng: parseFloat(drlng)
+                };
+                if (previousMarker && previousMarker.setMap) {
+                    previousMarker.setMap(null);
+                }
+                previousMarker = new google.maps.Marker({
+                    position: myLatlng2,
+                    map,
+                    title: "@lang('site.driver')",
+                    animation: google.maps.Animation.BOUNCE,
+                    draggable: true,
+
                 });
-                markers.push(marker);
-
-                const infowindow = new google.maps.InfoWindow({
-                    content: `<b>${markerData.position.lat}, ${markerData.position.lng}</b>`,
+                var infowindow = new google.maps.InfoWindow({
+                    content: "<h5>{{ __('site.order_number') }} : <span style='color:red;'>" + order1.id +
+                        "</span></h5>" +
+                        "<h5>{{ __('site.customer') }} : <span style='color:red;'>" + order1.user.name +
+                        "</span></h5>" +
+                        "<h5>{{ __('site.driver') }} : <span style='color:red;'>" + order1.service_provider
+                        .name + "</span></h5>" + ""
                 });
-                marker.addListener("click", (event) => {
-                    if (activeInfoWindow) {
-                        activeInfoWindow.close();
-                    }
-                    infowindow.pend({
-                        anchor: marker,
-                        shouldFocus: false,
-                        map
-                    });
-                    activeInfoWindow = infowindow;
-                    markerClicked(marker, index);
-                });
-
-                marker.addListener("dragend", (event) => {
-                    markerDragEnd(event, index);
+                infowindow.open(map, previousMarker);
+                map.addListener("center_changed", () => {
+                    window.setTimeout(() => {
+                        map.panTo(previousMarker.getPosition());
+                    }, 3000);
                 });
             }
+            $('#from').html(order.pick_up_address);
+            $('#to').html(order.drop_of_address);
+            getDisAndDur({
+                'lat': plat,
+                'long': plng
+            }, {
+                'lat': dlat,
+                'long': dlng
+            });
         }
 
-        /* ------------------------- Handle Map Click Event ------------------------- */
-        function mapClicked(event) {
-            console.log(map);
-            console.log(event.latLng.lat(), event.latLng.lng());
-        }
-
-        /* ------------------------ Handle Marker Click Event ----------------------- */
-        function markerClicked(marker, index) {
-            console.log(map);
-            console.log(marker.position.lat());
-            console.log(marker.position.lng());
-        }
-
-        /* ----------------------- Handle Marker DragEnd Event ---------------------- */
-        function markerDragEnd(event, index) {
-            console.log(map);
-            console.log(event.latLng.lat());
-            console.log(event.latLng.lng());
+        function getDisAndDur(ori, dest) {
+            var origin = new google.maps.LatLng(ori.lat, ori.long);
+            var destination = new google.maps.LatLng(dest.lat, dest.long);
+            var options = {
+                origins: [origin],
+                destinations: [destination],
+                travelMode: 'DRIVING',
+                unitSystem: google.maps.UnitSystem.METRIC
+            };
+            var service = new google.maps.DistanceMatrixService();
+            service.getDistanceMatrix(options, function (response, status) {
+                if (status == 'OK') {
+                    var distance = response.rows[0].elements[0].distance.text;
+                    var duration = response.rows[0].elements[0].duration.text;
+                    $("#distance").html(distance);
+                    $("#duration").html(duration);
+                } else {
+                    console.log('Error: ' + ori + ' ' + dest + ' ' + status);
+                }
+            });
         }
     </script>
 @endsection
