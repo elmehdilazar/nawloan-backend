@@ -563,7 +563,7 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCWsYnE6Jsdi4SGqw50cYLDcSYI8eAYL7k&callback=initMap"
             async></script>
     <script>
-        const trackingOrder = @json([
+        const trackingOrder = {!! json_encode([
             'id' => $order->id,
             'pickup_lat' => $order->pick_up_late,
             'pickup_lng' => $order->pick_up_long,
@@ -575,7 +575,7 @@
             'dropoff_address' => $order->drop_of_address,
             'customer_name' => $order->user?->name,
             'driver_name' => $order->serviceProvider?->name
-        ]);
+        ]) !!};
 
         $('#TrackingModalClose, a[data-dismiss="modal"][aria-label="Close"]').on('click', function (e) {
             e.preventDefault();
