@@ -656,7 +656,9 @@
                 pickUpQrInstance = new QRCode(container, {
                     text: payload,
                     width: 220,
-                    height: 220
+                    height: 220,
+                    typeNumber: -1,
+                    correctLevel: QRCode.CorrectLevel.L
                 });
             }
         }
