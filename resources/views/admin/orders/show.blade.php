@@ -425,6 +425,24 @@
             </form>
         </div>
     @endif
+    @if($order->status == 'delivered')
+        <div class="flex-center flex-wrap mt-5 gap-20">
+            <button type="button" class="btn btn-navy shadow-none min-width-230" data-toggle="modal"
+                    data-target="#ReceiveQrModal">
+                Receiving Code
+            </button>
+            <button class="btn btn-navy shadow-none min-width-230"
+                    onclick="event.preventDefault(); showTrackingModal();">
+                Follow Order
+            </button>
+            <form action="{{ route('admin.orders.changeStatus', $order->id) }}" method="POST">
+                @csrf
+                @method('put')
+                <input type="hidden" name="status" value="cancel">
+                <button type="submit" class="btn btn-danger shadow-none min-width-230">Delete</button>
+            </form>
+        </div>
+    @endif
     <!-- Start DriversOffers Modal -->
     <div class="modal fade" id="driversOffers" tabindex="-1" role="dialog" aria-labelledby="driversOffersLabel"
          aria-hidden="true">
@@ -605,6 +623,50 @@
         </div>
     </div>
     <!-- End PickUp QR Modal -->
+    <!-- Start Receive QR Modal -->
+    <div class="modal fade" id="ReceiveQrModal" tabindex="-1" role="dialog" aria-labelledby="ReceiveQrModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered zoom-animation">
+            <div class="modal-content fog-background">
+                <div class="bring-to-front">
+                    <div class="modal-header flex-center">
+                        <h4 class="modal-title text-navy mb-0">QR Code To Receive</h4>
+                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 38 38">
+                                <path id="Exclusion_23" data-name="Exclusion 23"
+                                      d="M26.384,37.578h-14a12,12,0,0,1-12-12v-14a12,12,0,0,1,12-12h14a12,12,0,0,1,12,12v14a12,12,0,0,1-12,12Zm-7-16.4h0L26,27.793l2.6-2.6-6.617-6.617L28.6,11.961,26,9.363,19.384,15.98,12.767,9.363l-2.6,2.6,6.617,6.617-6.617,6.617,2.6,2.6,6.616-6.616Z"
+                                      transform="translate(-0.384 0.422)" fill="#d27979"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="flex-column flex-center text-center">
+                            <p class="mb-4">
+                                Please have the driver scan the code or share the link to confirm delivery.
+                            </p>
+                            <div id="receive-qr" class="mb-4"></div>
+                            <div id="receive-qr-message" class="mb-3"></div>
+                            <div class="flex-center flex-wrap gap-20">
+                                <button type="button" id="receive-qr-share" class="btn btn-transparent navy min-width-230">
+                                    Share Link
+                                </button>
+                                <form action="{{ route('admin.orders.changeStatus', $order->id) }}" method="POST" style="margin:0;">
+                                    @csrf
+                                    @method('put')
+                                    <input type="hidden" name="status" value="delivered">
+                                    <input type="hidden" name="service_provider" value="{{ $order->service_provider }}">
+                                    <button type="submit" class="btn btn-navy min-width-230">
+                                        Manual Delivery
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Receive QR Modal -->
 @endsection
 
 
@@ -614,8 +676,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
         const pickUpQrEndpoint = "{{ url('/api/orders/' . $order->id . '/generate-qr') }}";
+        const receiveQrEndpoint = "{{ url('/api/orders/' . $order->id . '/generate-qr') }}";
         let pickUpQrPayload = '';
+        let receiveQrPayload = '';
         let pickUpQrInstance = null;
+        let receiveQrInstance = null;
 
         $('#PickUpQrModal').on('shown.bs.modal', function () {
             generatePickUpQr();
@@ -623,6 +688,13 @@
         $('#pickup-qr-share').on('click', function (e) {
             e.preventDefault();
             sharePickUpQr();
+        });
+        $('#ReceiveQrModal').on('shown.bs.modal', function () {
+            generateReceiveQr();
+        });
+        $('#receive-qr-share').on('click', function (e) {
+            e.preventDefault();
+            shareReceiveQr();
         });
 
         const trackingOrder = {!! json_encode([
@@ -669,8 +741,33 @@
             }
         }
 
+        function renderReceiveQr(payload) {
+            const container = document.getElementById('receive-qr');
+            if (!container) {
+                return;
+            }
+            container.innerHTML = '';
+            receiveQrPayload = payload;
+            if (window.QRCode) {
+                receiveQrInstance = new QRCode(container, {
+                    text: payload,
+                    width: 220,
+                    height: 220,
+                    typeNumber: -1,
+                    correctLevel: QRCode.CorrectLevel.L
+                });
+            }
+        }
+
         function setPickUpQrMessage(message) {
             const messageEl = document.getElementById('pickup-qr-message');
+            if (messageEl) {
+                messageEl.textContent = message || '';
+            }
+        }
+
+        function setReceiveQrMessage(message) {
+            const messageEl = document.getElementById('receive-qr-message');
             if (messageEl) {
                 messageEl.textContent = message || '';
             }
@@ -703,6 +800,33 @@
                 });
         }
 
+        function generateReceiveQr() {
+            setReceiveQrMessage('Loading...');
+            fetch(receiveQrEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ type: 'receive' })
+            })
+                .then(function (response) {
+                    return response.json().then(function (data) {
+                        return { ok: response.ok, data: data };
+                    });
+                })
+                .then(function (result) {
+                    if (!result.ok) {
+                        throw new Error(result.data.error || 'Failed to generate QR code.');
+                    }
+                    renderReceiveQr(result.data.qr_payload);
+                    setReceiveQrMessage('');
+                })
+                .catch(function (error) {
+                    setReceiveQrMessage(error.message || 'Failed to generate QR code.');
+                });
+        }
+
         function sharePickUpQr() {
             if (!pickUpQrPayload) {
                 setPickUpQrMessage('Generate the QR code first.');
@@ -726,6 +850,31 @@
                 return;
             }
             setPickUpQrMessage('Copy not supported in this browser.');
+        }
+
+        function shareReceiveQr() {
+            if (!receiveQrPayload) {
+                setReceiveQrMessage('Generate the QR code first.');
+                return;
+            }
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Receiving Code',
+                    text: receiveQrPayload
+                }).catch(function () {
+                    setReceiveQrMessage('Share canceled.');
+                });
+                return;
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(receiveQrPayload).then(function () {
+                    setReceiveQrMessage('Link copied to clipboard.');
+                }).catch(function () {
+                    setReceiveQrMessage('Copy failed.');
+                });
+                return;
+            }
+            setReceiveQrMessage('Copy not supported in this browser.');
         }
 
         function drawPath(directionsService, directionsDisplay, start, end) {
