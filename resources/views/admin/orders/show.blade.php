@@ -567,6 +567,11 @@
             e.preventDefault();
             $('#TrackingModal').modal('hide');
         });
+        $('#TrackingModal').on('shown.bs.modal', function () {
+            if (map) {
+                google.maps.event.trigger(map, 'resize');
+            }
+        });
         let map, map1, map2, activeInfoWindow, markers = [];
         var directionsService, directionsDisplay;
 
@@ -575,7 +580,7 @@
                 origin: start,
                 destination: end,
                 optimizeWaypoints: true,
-                travelMode: window.google.maps.DirectionsTravelMode.WALKING
+                travelMode: window.google.maps.DirectionsTravelMode.DRIVING
             }, function (response, status) {
                 if (status === 'OK') {
                     directionsDisplay.setDirections(response);
@@ -628,6 +633,9 @@
             };
 
             drawPath(directionsService, directionsDisplay, mylatelng, myLatlng1);
+            var bounds = new google.maps.LatLngBounds();
+            bounds.extend(mylatelng);
+            bounds.extend(myLatlng1);
             if (drlat != 0 && drlng != 0) {
                 let myLatlng2 = {
                     lat: parseFloat(drlat),
@@ -658,7 +666,9 @@
                         map.panTo(previousMarker.getPosition());
                     }, 3000);
                 });
+                bounds.extend(myLatlng2);
             }
+            map.fitBounds(bounds);
             $('#from').html(order.pick_up_address);
             $('#to').html(order.drop_of_address);
             getDisAndDur({
