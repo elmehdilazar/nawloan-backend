@@ -410,7 +410,7 @@
     @if($order->status == 'approve')
         <div class="flex-center flex-wrap mt-5 gap-20">
             <button class="btn btn-navy shadow-none min-width-230"
-                    onclick="event.preventDefault(); showModal({{ $order->pick_up_late }},{{ $order->pick_up_long }},{{ $order->drop_of_late }},{{ $order->drop_of_long }},{{ $order->serviceProvider?->userData?->latitude ?? '0' }},{{ $order->serviceProvider?->userData?->longitude ?? '0' }}, @json($order));">
+                    onclick="event.preventDefault(); showTrackingModal();">
                 Follow Order
             </button>
             <form action="{{ route('admin.orders.changeStatus', $order->id) }}" method="POST">
@@ -563,6 +563,20 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCWsYnE6Jsdi4SGqw50cYLDcSYI8eAYL7k&callback=initMap"
             async></script>
     <script>
+        const trackingOrder = @json([
+            'id' => $order->id,
+            'pickup_lat' => $order->pick_up_late,
+            'pickup_lng' => $order->pick_up_long,
+            'dropoff_lat' => $order->drop_of_late,
+            'dropoff_lng' => $order->drop_of_long,
+            'driver_lat' => $order->serviceProvider?->userData?->latitude ?? '0',
+            'driver_lng' => $order->serviceProvider?->userData?->longitude ?? '0',
+            'pickup_address' => $order->pick_up_address,
+            'dropoff_address' => $order->drop_of_address,
+            'customer_name' => $order->user?->name,
+            'driver_name' => $order->serviceProvider?->name
+        ]);
+
         $('#TrackingModalClose, a[data-dismiss="modal"][aria-label="Close"]').on('click', function (e) {
             e.preventDefault();
             $('#TrackingModal').modal('hide');
@@ -606,6 +620,18 @@
         }
 
         var previousMarker;
+
+        function showTrackingModal() {
+            showModal(
+                trackingOrder.pickup_lat,
+                trackingOrder.pickup_lng,
+                trackingOrder.dropoff_lat,
+                trackingOrder.dropoff_lng,
+                trackingOrder.driver_lat,
+                trackingOrder.driver_lng,
+                trackingOrder
+            );
+        }
 
         function showModal(plat, plng, dlat, dlng, drlat, drlng, order) {
             let order1 = order;
@@ -655,10 +681,10 @@
                 var infowindow = new google.maps.InfoWindow({
                     content: "<h5>{{ __('site.order_number') }} : <span style='color:red;'>" + order1.id +
                         "</span></h5>" +
-                        "<h5>{{ __('site.customer') }} : <span style='color:red;'>" + order1.user.name +
+                        "<h5>{{ __('site.customer') }} : <span style='color:red;'>" + (order1.customer_name || '-') +
                         "</span></h5>" +
-                        "<h5>{{ __('site.driver') }} : <span style='color:red;'>" + order1.service_provider
-                        .name + "</span></h5>" + ""
+                        "<h5>{{ __('site.driver') }} : <span style='color:red;'>" + (order1.driver_name || '-') +
+                        "</span></h5>"
                 });
                 infowindow.open(map, previousMarker);
                 map.addListener("center_changed", () => {
