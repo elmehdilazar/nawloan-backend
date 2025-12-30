@@ -148,8 +148,8 @@
 @section('scripts')
 {{-- <script src="{{asset('assets/js/ckeditor.js')}}"></script>
 <script src="{{asset('assets/js/ckeditor5-translations/ar.js')}}"></script> --}}
-<script src="https://cdn.ckeditor.com/4.17.1/full/ckeditor.js"></script>
-<script src="https://cdn.ckeditor.com/4.17.1/full/lang/ar.js"></script>
+<script src="https://cdn.ckeditor.com/4.25.1-lts/full/ckeditor.js"></script>
+<script src="https://cdn.ckeditor.com/4.25.1-lts/full/lang/ar.js"></script>
 
     <script>
     CKEDITOR.replace( 'editor' ,{ language: '{{app()->getLocale()}}',});
@@ -175,3 +175,4 @@
             // });
     </script>
 @endsection
+

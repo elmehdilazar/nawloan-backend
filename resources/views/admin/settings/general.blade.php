@@ -332,7 +332,7 @@
     <!-- IntlTelInput -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/8.4.7/js/intlTelInput.js"></script>
-    <script src="https://cdn.ckeditor.com/4.17.2/standard/ckeditor.js"></script>
+    <script src="https://cdn.ckeditor.com/4.25.1-lts/standard/ckeditor.js"></script>
    <!-- <script>
         if (document.getElementById('policy'))
             CKEDITOR.replace('policy', {
@@ -436,3 +436,4 @@
         });
     </script>
 @endsection
+
