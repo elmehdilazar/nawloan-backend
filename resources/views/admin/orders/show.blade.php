@@ -398,11 +398,11 @@
         <div class="driver-actions">
             <a href="tel:{{ optional($order->serviceProvider)->phone }}">
                 <img src="{{asset('assets/images/svgs/call.svg')}}" alt="">
-                Call
+                @lang('site.call')
             </a>
-            <a href="sms:{{ optional($order->serviceProvider)->phone }}?body=Hello%20there!">
+            <a href="sms:{{ optional($order->serviceProvider)->phone }}?body={{ rawurlencode(__('site.sms_greeting')) }}">
                 <img src="{{asset('assets/images/svgs/message.svg')}}" alt="">
-                Message
+                @lang('site.message')
             </a>
         </div>
     </div>
@@ -416,26 +416,26 @@
     @if($isPendingOrder)
         <div class="flex-center flex-wrap mt-5 gap-20">
             <button class="btn btn-navy shadow-none min-width-230" data-toggle="modal"
-                    data-target="#driversOffers">Offers
+                    data-target="#driversOffers">@lang('site.offers')
             </button>
-            <button class="btn btn-danger shadow-none min-width-230">Cancel Order</button>
+            <button class="btn btn-danger shadow-none min-width-230">@lang('site.cancel_order')</button>
         </div>
     @endif
     @if($order->status == 'approve')
         <div class="flex-center flex-wrap mt-5 gap-20">
             <button type="button" class="btn btn-navy shadow-none min-width-230" data-toggle="modal"
                     data-target="#PickUpQrModal">
-                Pick Up Code
+                @lang('site.pick_up_code')
             </button>
             <button class="btn btn-navy shadow-none min-width-230"
                     onclick="event.preventDefault(); showTrackingModal();">
-                Follow Order
+                @lang('site.follow_order')
             </button>
             <form action="{{ route('admin.orders.changeStatus', $order->id) }}" method="POST">
                 @csrf
                 @method('put')
                 <input type="hidden" name="status" value="cancel">
-                <button type="submit" class="btn btn-danger shadow-none min-width-230">Cancel Order</button>
+                <button type="submit" class="btn btn-danger shadow-none min-width-230">@lang('site.cancel_order')</button>
             </form>
         </div>
     @endif
@@ -443,17 +443,17 @@
         <div class="flex-center flex-wrap mt-5 gap-20">
             <button type="button" class="btn btn-navy shadow-none min-width-230" data-toggle="modal"
                     data-target="#ReceiveQrModal">
-                Receiving Code
+                @lang('site.receiving_code')
             </button>
             <button class="btn btn-navy shadow-none min-width-230"
                     onclick="event.preventDefault(); showTrackingModal();">
-                Follow Order
+                @lang('site.follow_order')
             </button>
             <form action="{{ route('admin.orders.changeStatus', $order->id) }}" method="POST">
                 @csrf
                 @method('put')
                 <input type="hidden" name="status" value="cancel">
-                <button type="submit" class="btn btn-danger shadow-none min-width-230">Cancel Order</button>
+                <button type="submit" class="btn btn-danger shadow-none min-width-230">@lang('site.cancel_order')</button>
             </form>
         </div>
     @endif
@@ -464,14 +464,14 @@
                 @method('put')
                 <input type="hidden" name="status" value="complete">
                 <input type="hidden" name="service_provider" value="{{ $order->service_provider }}">
-                <button type="submit" class="btn btn-navy shadow-none min-width-230">Complete Order</button>
+                <button type="submit" class="btn btn-navy shadow-none min-width-230">@lang('site.complete_order')</button>
             </form>
             <form action="{{ route('admin.orders.changeStatus', $order->id) }}" method="POST">
                 @csrf
                 @method('put')
                 <input type="hidden" name="status" value="cancel">
                 <input type="hidden" name="service_provider" value="{{ $order->service_provider }}">
-                <button type="submit" class="btn btn-danger shadow-none min-width-230">Cancel Order</button>
+                <button type="submit" class="btn btn-danger shadow-none min-width-230">@lang('site.cancel_order')</button>
             </form>
         </div>
     @endif
@@ -482,7 +482,7 @@
                 @method('put')
                 <input type="hidden" name="status" value="cancel">
                 <input type="hidden" name="service_provider" value="{{ $order->service_provider }}">
-                <button type="submit" class="btn btn-danger shadow-none min-width-230">Cancel Order</button>
+                <button type="submit" class="btn btn-danger shadow-none min-width-230">@lang('site.cancel_order')</button>
             </form>
         </div>
     @endif
@@ -498,7 +498,7 @@
             <div class="modal-content fog-background">
                 <div class="bring-to-front">
                     <div class="modal-header flex-center">
-                        <h4 class="modal-title text-navy mb-0">Drivers Offers</h4>
+                        <h4 class="modal-title text-navy mb-0">@lang('site.drivers_offers')</h4>
                         <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
                             <svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 38 38">
                                 <path id="Exclusion_23" data-name="Exclusion 23"
@@ -607,18 +607,18 @@
                             <ul class="tracking-informations">
                                 <li>
                                     <img src="{{ asset('assets/images/svgs/time-check.svg') }}" alt="">
-                                    Estimated Time:&nbsp;<span id="duration"></span>
+                                    @lang('site.estimated_time'):&nbsp;<span id="duration"></span>
                                 </li>
                                 <li>
                                     <img src="{{ asset('assets/images/svgs/road.svg') }}" alt="">
-                                    Road Distance:&nbsp;<span id="distance"></span>
+                                    @lang('site.road_distance'):&nbsp;<span id="distance"></span>
                                 </li>
                             </ul>
                         </div>
                         <div id="map" class="map" style="height: 460px; width: 100%;"></div>
                         <div class="flex-center">
                             <a href="#" class="btn btn-navy shadow-none" data-dismiss="modal"
-                               aria-label="Close">Back To Order</a>
+                               aria-label="Close">@lang('site.back_to_order')</a>
                         </div>
                     </div>
                 </div>
@@ -633,7 +633,7 @@
             <div class="modal-content fog-background">
                 <div class="bring-to-front">
                     <div class="modal-header flex-center">
-                        <h4 class="modal-title text-navy mb-0">Pick Up Confirmation</h4>
+                        <h4 class="modal-title text-navy mb-0">@lang('site.pick_up_confirmation')</h4>
                         <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
                             <svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 38 38">
                                 <path id="Exclusion_23" data-name="Exclusion 23"
@@ -645,14 +645,13 @@
                     <div class="modal-body">
                         <div class="flex-column flex-center text-center">
                             <p class="mb-4">
-                                Please share this code with the person receiving the shipment so the driver can confirm
-                                pickup.
+                                @lang('site.pick_up_confirmation_text')
                             </p>
                             <div id="pickup-qr" class="mb-4"></div>
                             <div id="pickup-qr-message" class="mb-3"></div>
                             <div class="flex-center flex-wrap gap-20">
                                 <button type="button" id="pickup-qr-share" class="btn btn-transparent navy min-width-230">
-                                    Share Link
+                                    @lang('site.share_link')
                                 </button>
                                 <form action="{{ route('admin.orders.changeStatus', $order->id) }}" method="POST" style="margin:0;">
                                     @csrf
@@ -660,7 +659,7 @@
                                     <input type="hidden" name="status" value="pick_up">
                                     <input type="hidden" name="service_provider" value="{{ $order->service_provider }}">
                                     <button type="submit" class="btn btn-navy min-width-230">
-                                        Manual Pickup
+                                        @lang('site.manual_pickup')
                                     </button>
                                 </form>
                             </div>
@@ -678,7 +677,7 @@
             <div class="modal-content fog-background">
                 <div class="bring-to-front">
                     <div class="modal-header flex-center">
-                        <h4 class="modal-title text-navy mb-0">QR Code To Receive</h4>
+                        <h4 class="modal-title text-navy mb-0">@lang('site.receive_qr_title')</h4>
                         <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
                             <svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 38 38">
                                 <path id="Exclusion_23" data-name="Exclusion 23"
@@ -690,13 +689,13 @@
                     <div class="modal-body">
                         <div class="flex-column flex-center text-center">
                             <p class="mb-4">
-                                Please have the driver scan the code or share the link to confirm delivery.
+                                @lang('site.receive_qr_text')
                             </p>
                             <div id="receive-qr" class="mb-4"></div>
                             <div id="receive-qr-message" class="mb-3"></div>
                             <div class="flex-center flex-wrap gap-20">
                                 <button type="button" id="receive-qr-share" class="btn btn-transparent navy min-width-230">
-                                    Share Link
+                                    @lang('site.share_link')
                                 </button>
                                 <form action="{{ route('admin.orders.changeStatus', $order->id) }}" method="POST" style="margin:0;">
                                     @csrf
@@ -704,7 +703,7 @@
                                     <input type="hidden" name="status" value="delivered">
                                     <input type="hidden" name="service_provider" value="{{ $order->service_provider }}">
                                     <button type="submit" class="btn btn-navy min-width-230">
-                                        Manual Delivery
+                                        @lang('site.manual_delivery')
                                     </button>
                                 </form>
                             </div>
@@ -725,6 +724,18 @@
     <script>
         const pickUpQrEndpoint = "{{ url('/api/orders/' . $order->id . '/generate-qr') }}";
         const receiveQrEndpoint = "{{ url('/api/orders/' . $order->id . '/generate-qr') }}";
+        const pageMessages = @json([
+            'loading' => __('site.loading'),
+            'qr_generate_failed' => __('site.qr_generate_failed'),
+            'qr_generate_first' => __('site.qr_generate_first'),
+            'share_canceled' => __('site.share_canceled'),
+            'link_copied' => __('site.link_copied'),
+            'copy_failed' => __('site.copy_failed'),
+            'copy_not_supported' => __('site.copy_not_supported'),
+            'pick_up_code' => __('site.pick_up_code'),
+            'receiving_code' => __('site.receiving_code'),
+            'directions_error' => __('site.directions_error')
+        ]);
         let pickUpQrPayload = '';
         let receiveQrPayload = '';
         let pickUpQrInstance = null;
@@ -822,7 +833,7 @@
         }
 
         function generatePickUpQr() {
-            setPickUpQrMessage('Loading...');
+            setPickUpQrMessage(pageMessages.loading);
             fetch(pickUpQrEndpoint, {
                 method: 'POST',
                 headers: {
@@ -838,18 +849,18 @@
                 })
                 .then(function (result) {
                     if (!result.ok) {
-                        throw new Error(result.data.error || 'Failed to generate QR code.');
+                        throw new Error(result.data.error || pageMessages.qr_generate_failed);
                     }
                     renderPickUpQr(result.data.qr_payload);
                     setPickUpQrMessage('');
                 })
                 .catch(function (error) {
-                    setPickUpQrMessage(error.message || 'Failed to generate QR code.');
+                    setPickUpQrMessage(error.message || pageMessages.qr_generate_failed);
                 });
         }
 
         function generateReceiveQr() {
-            setReceiveQrMessage('Loading...');
+            setReceiveQrMessage(pageMessages.loading);
             fetch(receiveQrEndpoint, {
                 method: 'POST',
                 headers: {
@@ -865,64 +876,64 @@
                 })
                 .then(function (result) {
                     if (!result.ok) {
-                        throw new Error(result.data.error || 'Failed to generate QR code.');
+                        throw new Error(result.data.error || pageMessages.qr_generate_failed);
                     }
                     renderReceiveQr(result.data.qr_payload);
                     setReceiveQrMessage('');
                 })
                 .catch(function (error) {
-                    setReceiveQrMessage(error.message || 'Failed to generate QR code.');
+                    setReceiveQrMessage(error.message || pageMessages.qr_generate_failed);
                 });
         }
 
         function sharePickUpQr() {
             if (!pickUpQrPayload) {
-                setPickUpQrMessage('Generate the QR code first.');
+                setPickUpQrMessage(pageMessages.qr_generate_first);
                 return;
             }
             if (navigator.share) {
                 navigator.share({
-                    title: 'Pick Up Code',
+                    title: pageMessages.pick_up_code,
                     text: pickUpQrPayload
                 }).catch(function () {
-                    setPickUpQrMessage('Share canceled.');
+                    setPickUpQrMessage(pageMessages.share_canceled);
                 });
                 return;
             }
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(pickUpQrPayload).then(function () {
-                    setPickUpQrMessage('Link copied to clipboard.');
+                    setPickUpQrMessage(pageMessages.link_copied);
                 }).catch(function () {
-                    setPickUpQrMessage('Copy failed.');
+                    setPickUpQrMessage(pageMessages.copy_failed);
                 });
                 return;
             }
-            setPickUpQrMessage('Copy not supported in this browser.');
+            setPickUpQrMessage(pageMessages.copy_not_supported);
         }
 
         function shareReceiveQr() {
             if (!receiveQrPayload) {
-                setReceiveQrMessage('Generate the QR code first.');
+                setReceiveQrMessage(pageMessages.qr_generate_first);
                 return;
             }
             if (navigator.share) {
                 navigator.share({
-                    title: 'Receiving Code',
+                    title: pageMessages.receiving_code,
                     text: receiveQrPayload
                 }).catch(function () {
-                    setReceiveQrMessage('Share canceled.');
+                    setReceiveQrMessage(pageMessages.share_canceled);
                 });
                 return;
             }
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(receiveQrPayload).then(function () {
-                    setReceiveQrMessage('Link copied to clipboard.');
+                    setReceiveQrMessage(pageMessages.link_copied);
                 }).catch(function () {
-                    setReceiveQrMessage('Copy failed.');
+                    setReceiveQrMessage(pageMessages.copy_failed);
                 });
                 return;
             }
-            setReceiveQrMessage('Copy not supported in this browser.');
+            setReceiveQrMessage(pageMessages.copy_not_supported);
         }
 
         function drawPath(directionsService, directionsDisplay, start, end) {
@@ -943,7 +954,7 @@
                         content: "@lang('site.drop_of_address')<br>" + " " + response.routes[0].legs[0].distance.text
                     });
                 } else {
-                    alert('Problem in showing direction due to ' + status);
+                    alert(pageMessages.directions_error.replace(':status', status));
                 }
             });
         }
