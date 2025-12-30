@@ -718,13 +718,8 @@
 
 
 @section('scripts')
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCWsYnE6Jsdi4SGqw50cYLDcSYI8eAYL7k&callback=initMap"
-            async></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script>
-        const pickUpQrEndpoint = "{{ url('/api/orders/' . $order->id . '/generate-qr') }}";
-        const receiveQrEndpoint = "{{ url('/api/orders/' . $order->id . '/generate-qr') }}";
-        const pageMessages = @json([
+    @php
+        $pageMessages = [
             'loading' => __('site.loading'),
             'qr_generate_failed' => __('site.qr_generate_failed'),
             'qr_generate_first' => __('site.qr_generate_first'),
@@ -734,8 +729,16 @@
             'copy_not_supported' => __('site.copy_not_supported'),
             'pick_up_code' => __('site.pick_up_code'),
             'receiving_code' => __('site.receiving_code'),
-            'directions_error' => __('site.directions_error')
-        ]);
+            'directions_error' => __('site.directions_error'),
+        ];
+    @endphp
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCWsYnE6Jsdi4SGqw50cYLDcSYI8eAYL7k&callback=initMap"
+            async></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        const pickUpQrEndpoint = "{{ url('/api/orders/' . $order->id . '/generate-qr') }}";
+        const receiveQrEndpoint = "{{ url('/api/orders/' . $order->id . '/generate-qr') }}";
+        const pageMessages = @json($pageMessages);
         let pickUpQrPayload = '';
         let receiveQrPayload = '';
         let pickUpQrInstance = null;
