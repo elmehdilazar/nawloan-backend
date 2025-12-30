@@ -131,7 +131,7 @@
                                     <small class="">@lang('site.total_drivers')</small>
                                     <h3 class="card-title mb-0">{{$driversCount}}</h3>
                                     <p class="small text-muted mb-0">
-                                     <i class="far {{ $stats_change['factories'] >= 0 ? 'text-success fa-long-arrow-alt-up' : 'text-danger fa-long-arrow-alt-down' }}"></i>
+                                     <i class="far {{ $stats_change['drivers'] >= 0 ? 'text-success fa-long-arrow-alt-up' : 'text-danger fa-long-arrow-alt-down' }}"></i>
                                         <span class="{{ $stats_change['drivers'] >= 0 ? 'text-success' : 'text-danger' }}">
     {{ abs($stats_change['drivers']) }}%
 </span>

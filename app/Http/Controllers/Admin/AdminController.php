@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\DynamicEmail;
@@ -33,14 +34,18 @@ class AdminController extends Controller
         if (session('success')) {
             toast(session('success'), 'success');
         }
-        $ordersQuery = Order::when($request->start_date, function ($query) use ($request) {
-                return $query->where('created_at', '>=', $request->start_date);
-            })
-            ->when($request->end_date, function ($query) use ($request) {
-                return $query->where('created_at', '<=', $request->end_date);
-            });
+
+        $startDate = $request->start_date
+            ? Carbon::parse($request->start_date)->startOfDay()
+            : now()->subDays(29)->startOfDay();
+        $endDate = $request->end_date
+            ? Carbon::parse($request->end_date)->endOfDay()
+            : now()->endOfDay();
+        $dateRange = [$startDate, $endDate];
+
+        $ordersQuery = Order::whereBetween('created_at', $dateRange);
         $ordersConut = (clone $ordersQuery)->count();
-        $orders = $ordersQuery->with([
+        $orders = (clone $ordersQuery)->with([
                 'car',
                 'user.userData',
                 'shipmentType',
@@ -54,124 +59,113 @@ class AdminController extends Controller
                 'serviceProvider.userData',
                 'statuses',
             ])->latest()->take(5)->get();
-        $offers = Offer::select() ->when($request->start_date, function ($query) use ($request) {
-                return $query->where('created_at','>=', $request->start_date);
-            })
-        ->when($request->end_date, function ($query) use ($request) {
-                return $query->where('created_at','<=', $request->end_date);
-            })->latest()->take(5)->get();
-        $offers_price=$offers->where('status','=','complete')->sum('price');
-        $offers_total=$offers->where('status','=','complete')->sum('subtotal');
-        $total_tax=$offers_total-$offers_price;
-        $total_income = 0;
-        $income = 0;
-        $profit = 0;
-        $total_profit = 0;
-        $trans1 = Transaction::with(['user', 'order', 'payTransaction', 'payMethod'])
-        ->when($request->start_date, function ($query) use ($request) {
-                return $query->where('created_at','>=', $request->start_date);
-            })
-        ->when($request->end_date, function ($query) use ($request) {
-                return $query->where('created_at','<=', $request->end_date);
-            })
-        ->latest()->orderBy('id', 'desc')->get();
-        foreach ($trans1 as $tran) {
-            $total_income = $total_income + $tran->payTransaction->amount;
-            if($tran->order->serviceProvider && $tran->order->accountant){
-            if ($tran->order->serviceProvider->type == 'driver') {
-                $income = $income + ($tran->payTransaction->amount * $tran->order->accountant->service_provider_commission) / 100;
-            } elseif ($tran->order->serviceProvider->type == 'driverCompany') {
-                $income = $income + ($tran->payTransaction->amount * $tran->order->accountant->service_provider_commission) / 100;
+
+        $offersQuery = Offer::whereBetween('created_at', $dateRange);
+        $offers = (clone $offersQuery)->latest()->take(5)->get();
+        $completedOffersQuery = (clone $offersQuery)->where('status', 'complete');
+        $offers_price = (clone $completedOffersQuery)->sum('price');
+        $offers_total = (clone $completedOffersQuery)->sum('sub_total');
+        $total_tax = $offers_total - $offers_price;
+
+        $calculateEarnings = function (Carbon $rangeStart, Carbon $rangeEnd) {
+            $total_income = 0;
+            $income = 0;
+            $profit = 0;
+            $total_profit = 0;
+
+            $transactions = Transaction::with(['order.serviceProvider', 'order.accountant', 'payTransaction'])
+                ->whereBetween('created_at', [$rangeStart, $rangeEnd])
+                ->latest()
+                ->orderBy('id', 'desc')
+                ->get();
+
+            foreach ($transactions as $tran) {
+                if (!$tran->payTransaction) {
+                    continue;
+                }
+                $amount = (float) $tran->payTransaction->amount;
+                $total_income += $amount;
+
+                $accountant = $tran->order?->accountant;
+                $serviceProvider = $tran->order?->serviceProvider;
+                if (!$serviceProvider || !$accountant) {
+                    continue;
+                }
+
+                $commission = (float) ($accountant->service_provider_commission ?? 0);
+                $income += ($amount * $commission) / 100;
+
+                $serviceProviderAmount = (float) ($accountant->service_provider_amount ?? 0);
+                $total_profit += $amount - $serviceProviderAmount;
+
+                $fees = (float) ($accountant->service_seeker_fee ?? 0);
+                $expenses = (float) ($accountant->expenses ?? 0);
+                $operatingCosts = (float) ($accountant->operating_costs ?? 0);
+                $profit += ($amount - $serviceProviderAmount) - ($fees + $expenses + $operatingCosts);
             }
-            $total_profit = $tran->payTransaction->amount - $tran->order->accountant->service_provider_amount;
-            $profit
-                = $total_profit - ($tran->order->accountant->service_seeker_fee + $tran->order->accountant->expenses + $tran->order->accountant->operating_costs);
-        }}
-        $earn = [
-            'income' => $income, 'total_income' => $total_income, 'profit' => $profit, 'total_profit' => $total_profit
-        ];
-        $customersCount=User::when($request->start_date, function ($query) use ($request) {
-                return $query->where('created_at','>=', $request->start_date);
-            })
-        ->when($request->end_date, function ($query) use ($request) {
-                return $query->where('created_at','<=', $request->end_date);
-            })->where('type','user')->count();
-        $factoriesCount=User::when($request->start_date, function ($query) use ($request) {
-                return $query->where('created_at','>=', $request->start_date);
-            })
-        ->when($request->end_date, function ($query) use ($request) {
-                return $query->where('created_at','<=', $request->end_date);
-            })->where('type','factory')->count();
-        $driversCount=User::when($request->start_date, function ($query) use ($request) {
-                return $query->where('created_at','>=', $request->start_date);
-            })
-        ->when($request->end_date, function ($query) use ($request) {
-                return $query->where('created_at','<=', $request->end_date);
-            })->where('type','driver')->count();
-        $driversCompanyCount=User::when($request->start_date, function ($query) use ($request) {
-                return $query->where('created_at','>=', $request->start_date);
-            })
-        ->when($request->end_date, function ($query) use ($request) {
-                return $query->where('created_at','<=', $request->end_date);
-            })->where('type','driverCompany')->count();
-        $pendingOrdersCount=Order::select() ->when($request->start_date, function ($query) use ($request) {
-                return $query->where('created_at','>=', $request->start_date);
-            })
-        ->when($request->end_date, function ($query) use ($request) {
-                return $query->where('created_at','<=', $request->end_date);
-            })->where('status','pending')->count();
-        $approveOrdersCount=Order::select() ->when($request->start_date, function ($query) use ($request) {
-                return $query->where('created_at','>=', $request->start_date);
-            })
-        ->when($request->end_date, function ($query) use ($request) {
-                return $query->where('created_at','<=', $request->end_date);
-            })->where('status','approve')->orWhere('status','wait_accept')->count();
-        $completeOrderCount=Order::select() ->when($request->start_date, function ($query) use ($request) {
-                return $query->where('created_at','>=', $request->start_date);
-            })
-        ->when($request->end_date, function ($query) use ($request) {
-                return $query->where('created_at','<=', $request->end_date);
-            })->where('status','complete')->count();
-        $cancelOrderCount=Order::select() ->when($request->start_date, function ($query) use ($request) {
-                return $query->where('created_at','>=', $request->start_date);
-            })
-        ->when($request->end_date, function ($query) use ($request) {
-                return $query->where('created_at','<=', $request->end_date);
-            })->where('status','cancel')->count();
-        $online_drivers=User::where('type','driver')->where('online',1)->count();
+
+            return [
+                'income' => $income,
+                'total_income' => $total_income,
+                'profit' => $profit,
+                'total_profit' => $total_profit,
+            ];
+        };
+        $earn = $calculateEarnings($startDate, $endDate);
+
+        $customersCount = User::where('type', 'user')->whereBetween('created_at', $dateRange)->count();
+        $factoriesCount = User::where('type', 'factory')->whereBetween('created_at', $dateRange)->count();
+        $driversCount = User::where('type', 'driver')->whereBetween('created_at', $dateRange)->count();
+        $driversCompanyCount = User::where('type', 'driverCompany')->whereBetween('created_at', $dateRange)->count();
+        $pendingOrdersCount = Order::whereBetween('created_at', $dateRange)->where('status', 'pending')->count();
+        $approveOrdersCount = Order::whereBetween('created_at', $dateRange)->whereIn('status', ['approve', 'wait_accept'])->count();
+        $completeOrderCount = Order::whereBetween('created_at', $dateRange)->where('status', 'complete')->count();
+        $cancelOrderCount = Order::whereBetween('created_at', $dateRange)->where('status', 'cancel')->count();
+        $online_drivers = User::where('type', 'driver')->where('online', 1)->count();
         
         /*-------------------*/
         
-$previous_start = now()->subDays(14)->startOfDay();
-$previous_end = now()->subDays(7)->endOfDay();
+        $rangeDays = $startDate->diffInDays($endDate) + 1;
+        $previous_end = $startDate->copy()->subDay()->endOfDay();
+        $previous_start = $previous_end->copy()->subDays($rangeDays - 1)->startOfDay();
 
-$prev_customers = User::where('type', 'user')->whereBetween('created_at', [$previous_start, $previous_end])->count();
-$prev_factories = User::where('type', 'factory')->whereBetween('created_at', [$previous_start, $previous_end])->count();
-$prev_drivers = User::where('type', 'driver')->whereBetween('created_at', [$previous_start, $previous_end])->count();
-$prev_companies = User::where('type', 'driverCompany')->whereBetween('created_at', [$previous_start, $previous_end])->count();
-$prev_orders = Order::whereBetween('created_at', [$previous_start, $previous_end])->count();
-$prev_pending = Order::where('status', 'pending')->whereBetween('created_at', [$previous_start, $previous_end])->count();
-$prev_approve = Order::whereIn('status', ['approve', 'wait_accept'])->whereBetween('created_at', [$previous_start, $previous_end])->count();
-$prev_complete = Order::where('status', 'complete')->whereBetween('created_at', [$previous_start, $previous_end])->count();
-$prev_cancel = Order::where('status', 'cancel')->whereBetween('created_at', [$previous_start, $previous_end])->count();
-$prev_online = User::where('type', 'driver')->where('online', 1)->whereBetween('updated_at', [$previous_start, $previous_end])->count();
-    function getPercentageChange($current, $previous) {
-    if ($previous == 0) return $current > 0 ? 100 : 0;
-    return round((($current - $previous) / $previous) * 100, 2);
-}
+        $prev_customers = User::where('type', 'user')->whereBetween('created_at', [$previous_start, $previous_end])->count();
+        $prev_factories = User::where('type', 'factory')->whereBetween('created_at', [$previous_start, $previous_end])->count();
+        $prev_drivers = User::where('type', 'driver')->whereBetween('created_at', [$previous_start, $previous_end])->count();
+        $prev_companies = User::where('type', 'driverCompany')->whereBetween('created_at', [$previous_start, $previous_end])->count();
+        $prev_orders = Order::whereBetween('created_at', [$previous_start, $previous_end])->count();
+        $prev_pending = Order::where('status', 'pending')->whereBetween('created_at', [$previous_start, $previous_end])->count();
+        $prev_approve = Order::whereIn('status', ['approve', 'wait_accept'])->whereBetween('created_at', [$previous_start, $previous_end])->count();
+        $prev_complete = Order::where('status', 'complete')->whereBetween('created_at', [$previous_start, $previous_end])->count();
+        $prev_cancel = Order::where('status', 'cancel')->whereBetween('created_at', [$previous_start, $previous_end])->count();
+        $prev_online = User::where('type', 'driver')->where('online', 1)->whereBetween('updated_at', [$previous_start, $previous_end])->count();
+        $prev_earn = $calculateEarnings($previous_start, $previous_end);
+
+        $prev_completed_offers = Offer::whereBetween('created_at', [$previous_start, $previous_end])
+            ->where('status', 'complete');
+        $prev_offers_price = (clone $prev_completed_offers)->sum('price');
+        $prev_offers_total = (clone $prev_completed_offers)->sum('sub_total');
+        $prev_total_tax = $prev_offers_total - $prev_offers_price;
+
+        $getPercentageChange = static function ($current, $previous) {
+            if ($previous == 0) {
+                return $current > 0 ? 100 : 0;
+            }
+            return round((($current - $previous) / $previous) * 100, 2);
+        };
 $stats_change = [
-    'profit' => getPercentageChange($profit, $total_profit),
-    'tax' =>  getPercentageChange($total_tax, $offers_price),
-    'customers' =>  getPercentageChange($customersCount, $prev_customers),
-    'factories' =>getPercentageChange($factoriesCount, $prev_factories),
-    'drivers' =>  getPercentageChange($driversCount, $prev_drivers),
-    'companies' =>  getPercentageChange($driversCompanyCount, $prev_companies),
-    'orders' =>  getPercentageChange($ordersConut, $prev_orders),
-    'pendingOrders' =>  getPercentageChange($pendingOrdersCount, $prev_pending),
-    'approvedOrders' => getPercentageChange($approveOrdersCount, $prev_approve),
-    'completeOrders' => getPercentageChange($completeOrderCount, $prev_complete),
-    'cancelOrders' =>  getPercentageChange($cancelOrderCount, $prev_cancel),
-    'onlineDrivers' =>  getPercentageChange($online_drivers, $prev_online),
+    'profit' => $getPercentageChange($earn['profit'], $prev_earn['profit']),
+    'tax' =>  $getPercentageChange($total_tax, $prev_total_tax),
+    'customers' =>  $getPercentageChange($customersCount, $prev_customers),
+    'factories' => $getPercentageChange($factoriesCount, $prev_factories),
+    'drivers' =>  $getPercentageChange($driversCount, $prev_drivers),
+    'companies' =>  $getPercentageChange($driversCompanyCount, $prev_companies),
+    'orders' =>  $getPercentageChange($ordersConut, $prev_orders),
+    'pendingOrders' =>  $getPercentageChange($pendingOrdersCount, $prev_pending),
+    'approvedOrders' => $getPercentageChange($approveOrdersCount, $prev_approve),
+    'completeOrders' => $getPercentageChange($completeOrderCount, $prev_complete),
+    'cancelOrders' =>  $getPercentageChange($cancelOrderCount, $prev_cancel),
+    'onlineDrivers' =>  $getPercentageChange($online_drivers, $prev_online),
 ];
 
 /*-----------------------*/
