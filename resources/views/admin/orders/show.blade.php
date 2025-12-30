@@ -1,5 +1,19 @@
 @extends('layouts.admin.app')
 @section('title',' | ' . __('site.show') . ' '. __('site.the_order'))
+@section('styles')
+    <style>
+        .order-cancelled-banner {
+            background: #f2d447;
+            border-radius: 14px;
+            color: #d07c7c;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 20px 16px;
+            text-align: center;
+            width: 100%;
+        }
+    </style>
+@endsection
 @section('content')
     <h2 class="section-title mb-4">@lang('site.order') {{' # '.$order->id}}</h2>
     <div class="row col-gap-70 mb-4">
@@ -470,6 +484,11 @@
                 <input type="hidden" name="service_provider" value="{{ $order->service_provider }}">
                 <button type="submit" class="btn btn-danger shadow-none min-width-230">Cancel Order</button>
             </form>
+        </div>
+    @endif
+    @if($order->status == 'cancel' || $order->status == 'cancelled')
+        <div class="flex-center mt-5">
+            <div class="order-cancelled-banner">@lang('site.Order Cancel')</div>
         </div>
     @endif
     <!-- Start DriversOffers Modal -->
