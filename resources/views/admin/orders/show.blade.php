@@ -404,7 +404,7 @@
             <button class="btn btn-navy shadow-none min-width-230" data-toggle="modal"
                     data-target="#driversOffers">Offers
             </button>
-            <button class="btn btn-danger shadow-none min-width-230">Cancel</button>
+            <button class="btn btn-danger shadow-none min-width-230">Cancel Order</button>
         </div>
     @endif
     @if($order->status == 'approve')
@@ -421,7 +421,7 @@
                 @csrf
                 @method('put')
                 <input type="hidden" name="status" value="cancel">
-                <button type="submit" class="btn btn-danger shadow-none min-width-230">Delete</button>
+                <button type="submit" class="btn btn-danger shadow-none min-width-230">Cancel Order</button>
             </form>
         </div>
     @endif
@@ -439,7 +439,7 @@
                 @csrf
                 @method('put')
                 <input type="hidden" name="status" value="cancel">
-                <button type="submit" class="btn btn-danger shadow-none min-width-230">Delete</button>
+                <button type="submit" class="btn btn-danger shadow-none min-width-230">Cancel Order</button>
             </form>
         </div>
     @endif
@@ -451,6 +451,24 @@
                 <input type="hidden" name="status" value="complete">
                 <input type="hidden" name="service_provider" value="{{ $order->service_provider }}">
                 <button type="submit" class="btn btn-navy shadow-none min-width-230">Complete Order</button>
+            </form>
+            <form action="{{ route('admin.orders.changeStatus', $order->id) }}" method="POST">
+                @csrf
+                @method('put')
+                <input type="hidden" name="status" value="cancel">
+                <input type="hidden" name="service_provider" value="{{ $order->service_provider }}">
+                <button type="submit" class="btn btn-danger shadow-none min-width-230">Cancel Order</button>
+            </form>
+        </div>
+    @endif
+    @if($order->status == 'complete')
+        <div class="flex-center flex-wrap mt-5 gap-20">
+            <form action="{{ route('admin.orders.changeStatus', $order->id) }}" method="POST">
+                @csrf
+                @method('put')
+                <input type="hidden" name="status" value="cancel">
+                <input type="hidden" name="service_provider" value="{{ $order->service_provider }}">
+                <button type="submit" class="btn btn-danger shadow-none min-width-230">Cancel Order</button>
             </form>
         </div>
     @endif
