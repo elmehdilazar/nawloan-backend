@@ -443,6 +443,17 @@
             </form>
         </div>
     @endif
+    @if($order->status == 'delivered')
+        <div class="flex-center flex-wrap mt-5 gap-20">
+            <form action="{{ route('admin.orders.changeStatus', $order->id) }}" method="POST">
+                @csrf
+                @method('put')
+                <input type="hidden" name="status" value="complete">
+                <input type="hidden" name="service_provider" value="{{ $order->service_provider }}">
+                <button type="submit" class="btn btn-navy shadow-none min-width-230">Complete Order</button>
+            </form>
+        </div>
+    @endif
     <!-- Start DriversOffers Modal -->
     <div class="modal fade" id="driversOffers" tabindex="-1" role="dialog" aria-labelledby="driversOffersLabel"
          aria-hidden="true">
