@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\BankInfo;
 use App\Models\UserData;
+use App\Models\Evaluate;
 
 use App\Models\UList;
 use App\Notifications\LocalNotification;
@@ -208,6 +209,24 @@ class CustomerController extends Controller
         }
         return view('admin.customers.show',['user'=>$user]);
     }
+    public function evaluates($id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            session()->flash('errors', __('site.user_not_found'));
+            return redirect()->route('admin.customers.index');
+        }
+        $evaluates = Evaluate::with(['user.userData'])
+            ->where('user2_id', $user->id)
+            ->paginate(10);
+        $avg = round((float) Evaluate::where('user2_id', $user->id)->avg('rate'), 1);
+
+        return view('admin.customers.evaluate', [
+            'user' => $user,
+            'evaluates' => $evaluates,
+            'avg' => $avg,
+        ]);
+    }
 
     /**
      * Show the form for editing the specified resource.
@@ -360,6 +379,22 @@ class CustomerController extends Controller
             session()->flash('errors', __('site.error_ocurred'));
             return redirect()->route('admin.customers.index');
         }
+    }
+    public function EvalchangeStatus($id)
+    {
+        $evaluate = Evaluate::find($id);
+        if (!$evaluate) {
+            session()->flash('errors', __('site.evaluate_not_found'));
+            return redirect()->back();
+        }
+        if ((int) $evaluate->active === 1) {
+            $evaluate->update(['active' => 0]);
+            session()->flash('success', __('site.disable_success'));
+        } elseif ((int) $evaluate->active === 0) {
+            $evaluate->update(['active' => 1]);
+            session()->flash('success', __('site.enable_success'));
+        }
+        return redirect()->route('admin.customers.evaluate', ['id' => $evaluate->user2_id]);
     }
     public function export()
     {
