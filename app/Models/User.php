@@ -121,7 +121,7 @@ class User extends Authenticatable
     }
     public function ulists()
     {
-        return $this->hasMany(UListUser::class, 'room_users.id');
+        return $this->hasMany(UListUser::class, 'user_id');
     }
 
     /**
