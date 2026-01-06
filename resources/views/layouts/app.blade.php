@@ -21,7 +21,7 @@
         <link href="{{asset('assets/tiny/css/app-light.css')}}" rel="stylesheet" id="lightTheme">
         <link href="{{asset('assets/tiny/css/app-dark.css')}}" rel="stylesheet" id="darkTheme" disabled>
     @endif
-    <link href="{{asset('assets/css/custom.css')}}" rel="stylesheet">
+    <link href="{{asset('assets/css/custom.css')}}?v={{ filemtime(public_path('assets/css/custom.css')) }}" rel="stylesheet">
     <!-- Scripts -->
     {{--@vite(['resources/sass/app.scss', 'resources/js/app.js']) --}}
 </head>
@@ -152,7 +152,7 @@
 <script src="{{asset('assets/js/bootstrap.bundle.min.js')}}"></script>
 @if(app()->getLocale()!='ar')
 <script src="{{asset('assets/tiny/js/tinycolor-min.js')}}"></script>
-<script src="{{asset('assets/tiny/js/config.js')}}"></script>
+<script src="{{asset('assets/tiny/js/config.js')}}?v={{ filemtime(public_path('assets/tiny/js/config.js')) }}"></script>
 <script>
     $(function () {
         $("#modeSwitcher").on("click", function (e) {
@@ -168,5 +168,4 @@
 
 </body>
 </html>
-
 

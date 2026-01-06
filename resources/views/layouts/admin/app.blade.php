@@ -40,7 +40,7 @@
     <link rel="stylesheet" href="{{asset('assets/tiny/css/app-light.css')}}" id="lightTheme">
     <link rel="stylesheet" href="{{asset('assets/tiny/css/app-dark.css')}}" id="darkTheme" disabled>
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{asset('assets/css/custom.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/custom.css')}}?v={{ filemtime(public_path('assets/css/custom.css')) }}">
   <script src="https://nawloan.net/public/vendor/sweetalert/sweetalert.all.js"></script>
     {{--<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css">--}}
     {{--<link rel="stylesheet" href="{{asset('assets/css/flag-icon-css/flag-icon.min.css')}}">--}}
@@ -92,7 +92,7 @@
 {{--    <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>--}}
 <script src="{{asset('assets/tiny/js/jquery.stickOnScroll.js')}}"></script>
 <script src="{{asset('assets/tiny/js/tinycolor-min.js')}}"></script>
-<script src="{{asset('assets/tiny/js/config.js')}}"></script>
+<script src="{{asset('assets/tiny/js/config.js')}}?v={{ filemtime(public_path('assets/tiny/js/config.js')) }}"></script>
     
 <script src="{{asset('assets/tiny/js/d3.min.js')}}"></script>
 <script src="{{asset('assets/tiny/js/topojson.min.js')}}"></script>
