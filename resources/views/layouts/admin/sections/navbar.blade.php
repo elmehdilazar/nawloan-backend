@@ -30,7 +30,7 @@
             </div>
         </li>
         <li class="nav-item">
-            <a class="nav-link" id="" href="#">
+            <a class="nav-link" id="modeSwitcher" href="#" aria-label="@lang('site.dark_theme')" title="@lang('site.dark_theme')">
                 <svg xmlns="http://www.w3.org/2000/svg" width="13.319" height="13.32"
                      viewBox="0 0 13.319 13.32">
                     <path id="Path_209570" data-name="Path 209570"
@@ -211,7 +211,6 @@
         </li>
     </ul>
 </nav>
-
 
 
 

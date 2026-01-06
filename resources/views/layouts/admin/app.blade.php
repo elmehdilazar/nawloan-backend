@@ -92,7 +92,7 @@
 {{--    <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>--}}
 <script src="{{asset('assets/tiny/js/jquery.stickOnScroll.js')}}"></script>
 <script src="{{asset('assets/tiny/js/tinycolor-min.js')}}"></script>
-{{--<script src="{{asset('assets/tiny/js/config.js')}}"></script>--}}
+<script src="{{asset('assets/tiny/js/config.js')}}"></script>
 <script src="{{asset('assets/tiny/js/d3.min.js')}}"></script>
 <script src="{{asset('assets/tiny/js/topojson.min.js')}}"></script>
 <script src="{{asset('assets/tiny/js/datamaps.all.min.js')}}"></script>
