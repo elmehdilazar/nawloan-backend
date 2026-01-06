@@ -458,7 +458,7 @@
                             @else
                                 <div class="no-offer flex-col-center max-width-80">
                                     <img src="{{ asset('assets/images/no-data.png') }}" alt="">
-                                    <h4>There are no offers has been found for this order yet</h4>
+                                    <h4>{{ __('There are no offers has been found for this order yet') }}</h4>
                                 </div>
                             @endif
                         </div>
