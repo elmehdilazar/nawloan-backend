@@ -5307,6 +5307,21 @@ ul.extra-precautions li::before {
 /* جملة “من إلى” في مسار الطلب */
 .rtl .order-path span.from, .rtl .order-path span.to { gap: .5rem; }
 .rtl .order-path img { transform: scaleX(-1); } /* إن احتجت تعكس أسهم المسار */
+.rtl ul.order-details li {
+  padding: 12px 40px 12px 16px;
+}
+.rtl ul.order-details li img {
+  left: auto;
+  right: 0;
+}
+.rtl .order-path > img {
+  margin-right: 0;
+  margin-left: 15px;
+}
+.rtl .order-path .flex-column span span {
+  padding-right: 0;
+  padding-left: 15px;
+}
 
 /* SweetAlert/Dropzone/Select2 تحسينات بسيطة */
 .rtl .swal2-popup { direction: rtl; text-align: right; }
