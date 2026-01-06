@@ -25,7 +25,10 @@
     <!-- Scripts -->
     {{--@vite(['resources/sass/app.scss', 'resources/js/app.js']) --}}
 </head>
-<body>
+@php
+    $themeClass = request()->cookie('mode') === 'dark' ? 'theme-dark dark' : 'theme-light light';
+@endphp
+<body class="{{ $themeClass }} {{ app()->getLocale()=='ar' ? 'rtl' : 'ltr' }}">
 <div id="app">
     <nav class="navbar navbar-expand-md navbar-dark bg-primary shadow-lg">
         <div class="container">
@@ -168,4 +171,3 @@
 
 </body>
 </html>
-

@@ -59,7 +59,10 @@
     @vite(['resources/js/app.js'])
 </head>
 
-<body class="vertical  light {{ app()->isLocale('ar') ? 'rtl' : '' }} ">
+@php
+    $themeClass = request()->cookie('mode') === 'dark' ? 'theme-dark dark' : 'theme-light light';
+@endphp
+<body class="vertical {{ $themeClass }} {{ app()->isLocale('ar') ? 'rtl' : '' }}">
 <!--=== Start Wrapper ===-->
 <div class="wrapper">
     <!--=== Start TopNav ===-->

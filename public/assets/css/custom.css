@@ -5664,6 +5664,25 @@ body.theme-dark .select2-container--bootstrap4 .select2-selection {
     color: #d4d4d4;
     border-color: #3c3c3c;
 }
+body.theme-dark nav.topnav.navbar,
+body.theme-dark .topnav.navbar,
+body.theme-dark .navbar.navbar-light {
+    background-color: #252526 !important;
+    border-bottom: 1px solid #3c3c3c;
+}
+body.theme-dark .sidebar-left,
+body.theme-dark .sidebar-left .navbar,
+body.theme-dark .sidebar-left .navbar .sidebar-logo {
+    background-color: #252526 !important;
+}
+body.theme-dark .sidebar-left .nav-heading span {
+    color: #9da0a6;
+}
+body.theme-dark .sidebar-left .nav-link,
+body.theme-dark .sidebar-left .nav-link i,
+body.theme-dark .sidebar-left .nav-link .item-text {
+    color: #c5c5c5 !important;
+}
 body.theme-dark .navbar-light .navbar-nav .nav-link,
 body.theme-dark .nav-link,
 body.theme-dark .dropdown-item,

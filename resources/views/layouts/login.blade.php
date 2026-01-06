@@ -32,7 +32,10 @@
     @yield('styles')
 </head>
 
-<body class="vertical light {{app()->getLocale()=='ar' ? 'rtl' : 'ltr'}} ">
+@php
+    $themeClass = request()->cookie('mode') === 'dark' ? 'theme-dark dark' : 'theme-light light';
+@endphp
+<body class="vertical {{ $themeClass }} {{app()->getLocale()=='ar' ? 'rtl' : 'ltr'}}">
     @yield('content')
 
     <!--**********************************
