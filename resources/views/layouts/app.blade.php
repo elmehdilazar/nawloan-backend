@@ -18,8 +18,8 @@
     @else
         {{--<link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet">--}}
         {{--<link href="{{ asset('assets/css/font-awesome.min.css') }}" rel="stylesheet">--}}
-        <link href="{{asset('assets/tiny/css/app-light.css')}}" rel="stylesheet">
-        <link href="{{asset('assets/tiny/css/app-dark.css')}}" rel="stylesheet" disabled>
+        <link href="{{asset('assets/tiny/css/app-light.css')}}" rel="stylesheet" id="lightTheme">
+        <link href="{{asset('assets/tiny/css/app-dark.css')}}" rel="stylesheet" id="darkTheme" disabled>
     @endif
     <link href="{{asset('assets/css/custom.css')}}" rel="stylesheet">
     <!-- Scripts -->
@@ -150,9 +150,23 @@
 @include('sweetalert::alert')
 <script src="{{asset('assets/js/jquery.min.js')}}"></script>
 <script src="{{asset('assets/js/bootstrap.bundle.min.js')}}"></script>
+@if(app()->getLocale()!='ar')
+<script src="{{asset('assets/tiny/js/tinycolor-min.js')}}"></script>
+<script src="{{asset('assets/tiny/js/config.js')}}"></script>
+<script>
+    $(function () {
+        $("#modeSwitcher").on("click", function (e) {
+            e.preventDefault();
+            if (typeof modeSwitch === "function") {
+                modeSwitch();
+                location.reload();
+            }
+        });
+    });
+</script>
+@endif
 
 </body>
 </html>
-
 
 

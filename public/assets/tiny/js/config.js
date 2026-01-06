@@ -19,4 +19,4 @@ var base={
             localStorage.setItem("mode","dark")):(dark.disabled=!0,light.disabled=!1,localStorage.setItem("mode","light"))}
             console.log(curentTheme),curentTheme?("dark"==curentTheme?(dark.disabled=!1,light.disabled=!0,
             colors=darkColor):"light"==curentTheme&&(dark.disabled=!0,light.disabled=!1),
-            switcher.dataset.mode=curentTheme):$("body").hasClass("dark")?(colors=darkColor,localStorage.setItem("mode","dark")):localStorage.setItem("mode","light");
+            switcher && (switcher.dataset.mode=curentTheme)):$("body").hasClass("dark")?(colors=darkColor,localStorage.setItem("mode","dark")):localStorage.setItem("mode","light");

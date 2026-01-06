@@ -24,8 +24,8 @@
         {{--<link rel="stylesheet" href="{{asset('assets/css/bootstrap-rtl.min.css')}}">--}}
         {{--<link rel="stylesheet" href="{{asset('assets/css/font-awesome-rtl.min.css')}}">--}}
     @else
-        <link href="{{asset('assets/tiny/css/app-light.css')}}" rel="stylesheet">
-        <link href="{{asset('assets/tiny/css/app-dark.css')}}" rel="stylesheet" disabled>
+        <link href="{{asset('assets/tiny/css/app-light.css')}}" rel="stylesheet" id="lightTheme">
+        <link href="{{asset('assets/tiny/css/app-dark.css')}}" rel="stylesheet" id="darkTheme" disabled>
     @endif
     <!-- Custom CSS -->
     <link href="{{asset('assets/css/custom.css')}}" rel="stylesheet">
@@ -44,6 +44,21 @@
     <script src="{{asset('assets/tiny/js/popper.min.js')}}"></script>
     <script src="{{asset('assets/tiny/js/moment.min.js')}}"></script>
     <script src="{{asset('assets/tiny/js/bootstrap.min.js')}}"></script>
+    @if(app()->getLocale()!='ar')
+    <script src="{{asset('assets/tiny/js/tinycolor-min.js')}}"></script>
+    <script src="{{asset('assets/tiny/js/config.js')}}"></script>
+    <script>
+        $(function () {
+            $("#modeSwitcher").on("click", function (e) {
+                e.preventDefault();
+                if (typeof modeSwitch === "function") {
+                    modeSwitch();
+                    location.reload();
+                }
+            });
+        });
+    </script>
+    @endif
     {{-- <script src="{{asset('assets/tiny/js/apps.js')}}"></script> --}}
     <script>
         // show the alert
