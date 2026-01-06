@@ -11,12 +11,15 @@ var base={
     chartColors=[base.primaryColor,base.successColor,"#6f42c1",extend.primaryColorLighter],
     colors={bodyColor:"#6c757d",headingColor:"#495057",borderColor:"#e9ecef",backgroundColor:"#f8f9fa",mutedColor:"#adb5bd",chartTheme:"light"},
     darkColor={bodyColor:"#adb5bd",headingColor:"#e9ecef",borderColor:"#212529",backgroundColor:"#495057",mutedColor:"#adb5bd",chartTheme:"dark"},
+    lightColors=colors,
     curentTheme=localStorage.getItem("mode"),dark=document.querySelector("#darkTheme"),light=document.querySelector("#lightTheme"),
     switcher=document.querySelector("#modeSwitcher");
-    function modeSwitch(){console.log("abc");var o=localStorage.getItem("mode");o?"dark"==o?(dark.disabled=!0,light.disabled=!1,
-        localStorage.setItem("mode","light")):(dark.disabled=!1,light.disabled=!0,
-            localStorage.setItem("mode","dark")):$("body").hasClass("dark")?(dark.disabled=!1,light.disabled=!0,
-            localStorage.setItem("mode","dark")):(dark.disabled=!0,light.disabled=!1,localStorage.setItem("mode","light"))}
-            console.log(curentTheme),curentTheme?("dark"==curentTheme?(dark.disabled=!1,light.disabled=!0,
-            colors=darkColor):"light"==curentTheme&&(dark.disabled=!0,light.disabled=!1),
-            switcher && (switcher.dataset.mode=curentTheme)):$("body").hasClass("dark")?(colors=darkColor,localStorage.setItem("mode","dark")):localStorage.setItem("mode","light");
+    function applyTheme(mode){var isDark="dark"===mode;dark&&(dark.disabled=!isDark),light&&(light.disabled=isDark),colors=isDark?darkColor:lightColors,
+        document.body&&(document.body.classList.toggle("theme-dark",isDark),document.body.classList.toggle("theme-light",!isDark),
+            document.body.classList.toggle("dark",isDark),document.body.classList.toggle("light",!isDark),
+            document.body.dataset.mode=isDark?"dark":"light"),
+        document.documentElement&&document.documentElement.setAttribute("data-theme",isDark?"dark":"light"),
+        switcher&&(switcher.dataset.mode=isDark?"dark":"light")}
+    function resolveInitialTheme(){if("dark"===curentTheme||"light"===curentTheme)return curentTheme;return document.body&&document.body.classList.contains("dark")?"dark":"light"}
+    function modeSwitch(){var current=localStorage.getItem("mode"),next="dark"===current?"light":"dark";localStorage.setItem("mode",next),applyTheme(next)}
+    applyTheme(resolveInitialTheme());
