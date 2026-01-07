@@ -63,7 +63,7 @@
                         <ul class="order-details">
                             <li>
                                 <img src="{{asset('assets/images/svgs/map-marker-solid.svg')}}" alt="">
-                                Sharjah
+                                @lang('site.sharjah')
                             </li>
                             <li>
                                 <img src="{{asset('assets/images/svgs/dumbbells.svg')}}" alt="">
@@ -551,12 +551,17 @@
                                                         <li>
                                                             <img src="{{asset('assets/images/svgs/truck-fill.svg')}}"
                                                                  alt="">
-                                                            {{@$offers->user->userData->car->name_en}}
+                                                            {{ app()->getLocale() == 'ar'
+                                                                ? @$offers->user->userData->car->name_ar
+                                                                : @$offers->user->userData->car->name_en }}
 
                                                         </li>
                                                     </ul>
                                                 </div>
-                                                <h4 class="offer-cost special">{{$offers->price}} EGP</h4>
+                                                <h4 class="offer-cost special">
+                                                    {{$offers->price}}
+                                                    {{ setting('currency_atr') != '' ? setting('currency_atr') : '' }}
+                                                </h4>
                                             </div>
                                         </div>
                                         <button type="submit" class="offer-action" data-mdb-target="#orderSummary"
