@@ -159,7 +159,7 @@
                 <div class="position-relative">
                     <img src="{{asset('assets/images/svgs/type.svg')}}" alt="" class="icon">
                     <select class="form-control select2" id="shipment_type_id" name="shipment_type_id">
-                        <option value="" selected>@lang('site.choose_car')</option>
+                        <option value="" selected>@lang('site.choose_shipment_type')</option>
                         @foreach ($shipments as $shipment)
                             <option value="{{$shipment->id}}" {{ old('shipment_type_id')== $shipment->id ? 'selected' :'' }}>
                                 {{app()->getLocale()=='ar' ? $shipment->name_ar : $shipment->name_en}}</option>
@@ -310,13 +310,13 @@
             <div class="total-ticket flex-space mb-4">
                 <span class="title">
                     <img src="{{asset('assets/images/svgs/money-circle.svg')}}" alt="">
-                    Expected Final Total Price
+                    @lang('site.expected_final_total_price')
                 </span>
                 <span class="total">
     {{ old('ton_price') && old('weight_ton') 
         ? number_format(old('ton_price') * old('weight_ton', 1), 2, ".", "") 
         : '0.00' 
-    }} EGP
+    }} @lang('site.currency_egp')
 </span>
 
             </div>
@@ -346,13 +346,13 @@
                 <div class="modal-body position-relative px-0 pb-0">
                     <div class="map-search flex-col-center max-width-70 px-md-0 px-3">
                         <div class="search-group position-relative w-100">
-                           <input id="pickup" placeholder="Search pickup...">
+                           <input id="pickup" placeholder="@lang('site.search_pickup')">
                             <img src="{{asset('assets/images/svgs/search.svg')}}" alt="" class="icon">
                         </div>
                         <div class="flex-space yellow mt-3 mb-4">
                             <div class="flex-align-center">
                                 <img src="{{asset('assets/images/svgs/loacated.svg')}}" alt="">
-                                <span id="pickup_label">Cairo</span>
+                                <span id="pickup_label">@lang('site.cairo')</span>
                             </div>
                             <img src="{{asset('assets/images/svgs/check-circle-yellow.svg')}}" alt="">
                         </div>
@@ -360,7 +360,7 @@
                     <div id="map1" style="height: 460px; width: 100%;"></div>
                     <div class="flex-center">
                         <button type="submit" class="btn btn-navy shadow-none" data-dismiss="modal"
-                                aria-label="Close">Add Pick Up Location</button>
+                                aria-label="Close">@lang('site.add_pickup_location')</button>
                     </div>
                 </div>
             </div>
@@ -386,13 +386,13 @@
                 <div class="modal-body position-relative px-0 pb-0">
                     <div class="map-search flex-col-center max-width-70 px-md-0 px-3">
                         <div class="search-group position-relative w-100">
-                            <input type="text" name="" id="dropoff" placeholder="Search For Location ...">
+                            <input type="text" name="" id="dropoff" placeholder="@lang('site.search_dropoff')">
                             <img src="{{asset('assets/images/svgs/search.svg')}}" alt="" class="icon">
                         </div>
                         <div class="flex-space blue mt-3 mb-4">
                             <div class="flex-align-center">
                                 <img src="{{asset('assets/images/svgs/map-marker.svg')}}" alt="">
-                                <span id="dropoff_label">cairo</span>
+                                <span id="dropoff_label">@lang('site.cairo')</span>
                             </div>
                             <img src="{{asset('assets/images/svgs/check-circle-navy.svg')}}" alt="">
                         </div>
@@ -400,7 +400,7 @@
                     <div id="map2" style="height: 460px; width: 100%;"></div>
                     <div class="flex-center">
                         <button type="submit" class="btn btn-navy shadow-none" data-dismiss="modal"
-                                aria-label="Close">Add Drop Off Location</button>
+                                aria-label="Close">@lang('site.add_dropoff_location')</button>
                     </div>
                 </div>
             </div>
@@ -445,9 +445,15 @@
                 if (status === google.maps.DirectionsStatus.OK) {
                     directionsRenderer.setDirections(result);
                     const distance = result.routes[0].legs[0].distance.text;
-                    document.getElementById("distance_info").innerText = `Distance: ${distance}`;
+                    const distanceInfo = document.getElementById("distance_info");
+                    if (distanceInfo) {
+                        distanceInfo.innerText = `@lang('site.distance_label'): ${distance}`;
+                    }
                 } else {
-                    document.getElementById("distance_info").innerText = "Route not found.";
+                    const distanceInfo = document.getElementById("distance_info");
+                    if (distanceInfo) {
+                        distanceInfo.innerText = "@lang('site.route_not_found')";
+                    }
                 }
             });
         }
@@ -504,7 +510,7 @@
 
 
    <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCWsYnE6Jsdi4SGqw50cYLDcSYI8eAYL7k&libraries=places&callback=initMaps&language=en">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCWsYnE6Jsdi4SGqw50cYLDcSYI8eAYL7k&libraries=places&callback=initMaps&language={{ app()->getLocale() }}">
 </script>
     <script src="{{asset('assets/tiny/js/daterangepicker.js')}}"></script>
     <script>
@@ -561,4 +567,3 @@
 
 
 @endsection
-

@@ -5307,6 +5307,30 @@ ul.extra-precautions li::before {
 /* جملة “من إلى” في مسار الطلب */
 .rtl .order-path span.from, .rtl .order-path span.to { gap: .5rem; }
 .rtl .order-path img { transform: scaleX(-1); } /* إن احتجت تعكس أسهم المسار */
+.rtl .input-group .position-relative.before-icon img {
+  left: auto;
+  right: 24px;
+}
+.rtl .input-group .position-relative.before-icon input,
+.rtl .input-group a.position-relative.before-icon {
+  padding: 0 60px 0 24px;
+}
+.rtl .input-group a.open-modal input {
+  padding: 0 0 0 18px !important;
+}
+.rtl .input-group a.open-modal:not(.after-icon):after {
+  left: 12px;
+  right: auto;
+  content: '\f104';
+}
+.rtl .total-ticket img {
+  margin-right: 0;
+  margin-left: 10px;
+}
+.rtl .map-search > .flex-space .flex-align-center img {
+  margin-right: 0;
+  margin-left: 10px;
+}
 .rtl ul.order-details li {
   padding: 12px 40px 12px 16px;
 }
