@@ -742,6 +742,7 @@ return [
         'road_distance' => 'Road Distance',
         'back_to_order' => 'Back To Order',
         'tracking_placeholder_address' => 'UAE ,Sharjah ,Jaber Bin Abdallah st',
+        'sharjah' => 'Sharjah',
         'direction_problem_due_to' => 'Problem in showing direction due to',
         'pick_up_confirmation' => 'Pick Up Confirmation',
         'pick_up_confirmation_text' => 'Please share this code with the person receiving the shipment so the driver can confirm pickup.',

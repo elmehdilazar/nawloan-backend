@@ -13,7 +13,7 @@
                 <a href="{{ route('admin.orders.export') }}" class="btn btn-transparent navy">@lang('site.export')</a>
             @endif
             @if (auth()->user()->hasPermission('orders_delete'))
-                <a href="#" class="btn btn-danger onchange-visible">Delete</a>
+                <a href="#" class="btn btn-danger onchange-visible">@lang('site.delete')</a>
             @endif
             @if (auth()->user()->hasPermission('orders_create'))
                 <a href="{{ route('admin.orders.create') }}" class="btn btn-navy onchange-hidden">@lang('site.add_new_order')</a>
@@ -190,7 +190,7 @@
                     </td>
                     <td>
                         <a href="#" data-toggle="modal" data-target="#truckModal_{{ $index }}">
-                            {{ $order->car?->name_en }}
+                            {{ app()->getLocale() == 'ar' ? $order->car?->name_ar : $order->car?->name_en }}
                         </a>
                     </td>
                     <td>
@@ -458,7 +458,7 @@
                             @else
                                 <div class="no-offer flex-col-center max-width-80">
                                     <img src="{{ asset('assets/images/no-data.png') }}" alt="">
-                                    <h4>{{ __('There are no offers has been found for this order yet') }}</h4>
+                                    <h4>@lang('site.no_offers_found_for_order_yet')</h4>
                                 </div>
                             @endif
                         </div>
@@ -534,7 +534,7 @@
                                                 <li>
                                                     <img src="{{ asset('assets/images/svgs/map-marker-solid.svg') }}"
                                                         alt="">
-                                                    Sharjah
+                                                    @lang('site.sharjah')
                                                 </li>
                                                 <li>
                                                     <img src="{{ asset('assets/images/svgs/dumbbells.svg') }}"
@@ -568,7 +568,7 @@
                                                 <li>
                                                     <img src="{{ asset('assets/images/svgs/map-marker-solid.svg') }}"
                                                         alt="">
-                                                    Sharjah
+                                                    @lang('site.sharjah')
                                                 </li>
                                                 <li>
                                                     <img src="{{ asset('assets/images/svgs/dumbbells.svg') }}"
@@ -927,28 +927,28 @@
                                 <img src="{{ asset('assets/images/track-path.png') }}" alt="">
                                 <span class="flex-column">
                                     <span class="from">
-                                        <span id="from">UAE ,Sharjah ,Jaber Bin Abdallah st</span>
+                                        <span id="from">@lang('site.tracking_placeholder_address')</span>
                                     </span>
                                     <span class="to">
-                                        <span id="to">UAE ,Sharjah ,Jaber Bin Abdallah st</span>
+                                        <span id="to">@lang('site.tracking_placeholder_address')</span>
                                     </span>
                                 </span>
                             </div>
                             <ul class="tracking-informations">
                                 <li>
                                     <img src="{{ asset('assets/images/svgs/time-check.svg') }}" alt="">
-                                    Estimated Time:&nbsp;<span id="duration"></span>
+                                    @lang('site.estimated_time'):&nbsp;<span id="duration"></span>
                                 </li>
                                 <li>
                                     <img src="{{ asset('assets/images/svgs/road.svg') }}" alt="">
-                                    Road Distance:&nbsp;<span id="distance"></span>
+                                    @lang('site.road_distance'):&nbsp;<span id="distance"></span>
                                 </li>
                             </ul>
                         </div>
                         <div id="map" class="map" style="height: 460px; width: 100%;"></div>
                         <div class="flex-center">
                             <a href="#" class="btn btn-navy shadow-none" data-dismiss="modal"
-                                aria-label="Close">Back To Order</a>
+                                aria-label="Close">@lang('site.back_to_order')</a>
                         </div>
                     </div>
                 </div>
@@ -992,7 +992,7 @@
                         content: "@lang('site.drop_of_address')<br>" + " " + response.routes[0].legs[0].distance.text
                     })
                 } else {
-                    alert('Problem in showing direction due to ' + status);
+                    alert("@lang('site.direction_problem_due_to') " + status);
                 }
             });
         }

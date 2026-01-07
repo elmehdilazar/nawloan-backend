@@ -764,6 +764,7 @@
     'road_distance' => 'مسافة الطريق',
     'back_to_order' => 'العودة إلى الطلب',
     'tracking_placeholder_address' => 'الإمارات، الشارقة، شارع جابر بن عبد الله',
+    'sharjah' => 'الشارقة',
     'direction_problem_due_to' => 'مشكلة في عرض الاتجاه بسبب',
     'pick_up_confirmation' => 'تأكيد الاستلام',
     'pick_up_confirmation_text' => 'يرجى مشاركة هذا الرمز مع الشخص المستلم للشحنة ليتمكن السائق من تأكيد الاستلام.',
