@@ -16,14 +16,14 @@
             <a href="{{route('admin.offers.export')}}" class="btn btn-transparent navy">@lang('site.export')</a>
             @endif
             @if(auth()->user()->hasPermission('offers_delete'))
-                <a href="#" class="btn btn-danger onchange-visible">Delete</a>
+                <a href="#" class="btn btn-danger onchange-visible">@lang('site.delete')</a>
             @endif
         </div>
         <div class="quick-search">
             <div class="input-group mb-0">
                 <div class="position-relative">
                     <input class="fe-14 border-radius-24" type="search" name="" itemid=""
-                           placeholder="Quick Search">
+                           placeholder="@lang('site.quick_search')">
                     <img src="{{asset('assets/images/svgs/search.svg')}}" alt="" class="icon">
                 </div>
             </div>
@@ -204,7 +204,7 @@
             $('#end_date').val(picker.endDate.format('YYYY-MM-DD'));
             cb(picker.startDate.format('YYYY-MM-DD'),picker.endDate.format('YYYY-MM-DD'));
         });
-        $('[data-range-key="Custom Range"]').html('Translated text');
+        $('[data-range-key="Custom Range"]').html("@lang('site.custom_range')");
         if(req_start !='' && req_start !=null && req_end !='' && req_end !=null){
             $('#reportrange').daterangepicker(
             {

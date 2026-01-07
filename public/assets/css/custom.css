@@ -5315,6 +5315,9 @@ ul.extra-precautions li::before {
 .rtl .input-group a.position-relative.before-icon {
   padding: 0 60px 0 24px;
 }
+.rtl .input-group .position-relative input {
+  padding: 0 24px 0 48px;
+}
 .rtl .input-group a.open-modal input {
   padding: 0 0 0 18px !important;
 }
