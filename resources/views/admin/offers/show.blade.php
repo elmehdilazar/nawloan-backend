@@ -100,7 +100,7 @@
                     <div class="card-body p-0">
                         <table class="table secondary-table-bordered table-bordered">
                             <thead class="thead-secondary"><tr>
-                            <td>#</td>
+                            <td>@lang('site.num')</td>
                             <td>@lang('site.status')</td>
                             <td>@lang('site.change_by')</td>
                             <td>@lang('site.notes')</td>
