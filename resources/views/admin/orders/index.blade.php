@@ -203,7 +203,15 @@
                     </td>
                     <td>{{ number_format($order->ton_price * $order->weight_ton, 2, '.', '') }}{{ ' ' . setting('currency_atr') }}
                     </td>
-                    <td>{{ $order->transaction != '' ? $order->transaction->status : __('site.Delayed Payment') }}</td>
+                    @php
+                        $transactionStatus = $order->transaction?->status;
+                        $transactionStatusKey = $transactionStatus ? strtolower(trim($transactionStatus)) : null;
+                    @endphp
+                    <td>
+                        {{ $transactionStatusKey && \Illuminate\Support\Facades\Lang::has('site.' . $transactionStatusKey)
+                            ? __('site.' . $transactionStatusKey)
+                            : ($transactionStatus ?: __('site.Delayed Payment')) }}
+                    </td>
                     <td>
                         <span
                             class="badge badge-pill

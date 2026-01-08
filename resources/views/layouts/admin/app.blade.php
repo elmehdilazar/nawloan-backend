@@ -62,7 +62,10 @@
 @php
     $themeClass = request()->cookie('mode') === 'dark' ? 'theme-dark dark' : 'theme-light light';
 @endphp
-<body class="vertical {{ $themeClass }} {{ app()->isLocale('ar') ? 'rtl' : '' }}">
+<body class="vertical {{ $themeClass }} {{ app()->isLocale('ar') ? 'rtl' : '' }}"
+      data-dt-empty="@lang('site.datatable_empty')"
+      data-dt-previous="@lang('site.datatable_previous')"
+      data-dt-selected="@lang('site.datatable_selected_count')">
 <!--=== Start Wrapper ===-->
 <div class="wrapper">
     <!--=== Start TopNav ===-->
