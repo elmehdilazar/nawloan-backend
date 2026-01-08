@@ -1,3 +1,8 @@
+var dataTableRoot = document.body;
+var dataTableEmpty = dataTableRoot && dataTableRoot.dataset ? dataTableRoot.dataset.dtEmpty : null;
+var dataTablePrevious = dataTableRoot && dataTableRoot.dataset ? dataTableRoot.dataset.dtPrevious : null;
+var dataTableSelected = dataTableRoot && dataTableRoot.dataset ? dataTableRoot.dataset.dtSelected : null;
+
 var table = $('.datatables-active:not(.check-disabled)').DataTable({
     'columnDefs': [{
         'targets': 0,
@@ -18,8 +23,14 @@ var table = $('.datatables-active:not(.check-disabled)').DataTable({
     paging: false,
     searching: false,
     autoWidth: true,
+    language: {
+        emptyTable: dataTableEmpty || 'No data available in table',
+        paginate: {
+            previous: dataTablePrevious || 'Previous page'
+        }
+    },
     "oPaginate": {
-        "previous": "Previous page"
+        "previous": dataTablePrevious || "Previous page"
     },
     "bLengthChange": false,
     'order': [[1, 'asc']]
@@ -78,7 +89,8 @@ $('#frm-example').on('submit', function (e) {
 function updateSelectedCount() {
     var numChecked = $('.datatables tbody input[type="checkbox"]').not('#selectAll').filter(':checked').length;
     if (numChecked) {
-        $('#checks-count').html(`${numChecked} Selected`);
+        var selectedText = dataTableSelected || '{count} Selected';
+        $('#checks-count').html(selectedText.replace('{count}', numChecked));
     } else {
         $('#checks-count').html('');
     }
