@@ -1110,11 +1110,11 @@
                                         <div class="driver-actions">
                                             <a href="{{ $driverPhone ? 'tel:' . $driverPhone : '#' }}">
                                                 <img src="{{ asset('assets/images/svgs/call.svg') }}" alt="">
-                                                Call
+                                                @lang('site.call')
                                             </a>
                                             <a href="{{ $driverEmail ? 'mailto:' . $driverEmail : '#' }}">
                                                 <img src="{{ asset('assets/images/svgs/message.svg') }}" alt="">
-                                                Message
+                                                @lang('site.message')
                                             </a>
                                         </div>
                                     </div>
