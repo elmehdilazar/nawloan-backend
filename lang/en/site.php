@@ -483,6 +483,7 @@ return [
     'amount'                    =>      'Amount',
     'fee'                       =>      'Fee',
     'payment_type'              =>      'Payment Type',
+    'transaction_details'       =>      'Transaction Details',
     'name_in_card'              =>      'Name In Card',
     'breakable'                 =>      'Breakable',
     'spoil_quickly'             =>      'Spoil Quickly',

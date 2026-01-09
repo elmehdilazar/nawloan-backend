@@ -492,6 +492,7 @@
         'amount'                    =>      'المبلغ',
         'fee'                       =>      'Fee',
         'payment_type'              =>      'نوع الدفع',
+        'transaction_details'       =>      'تفاصيل المعاملة',
         'name_in_card'              =>      'الاسم على البطاقة',
         'breakable'                 =>      'قابلة للكسر',
         'spoil_quickly'             =>      'تفسد بسرعة',

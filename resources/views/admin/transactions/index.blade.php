@@ -223,7 +223,12 @@
             <td>{{ $tran->created_at ?? '-' }}</td>
             <td>
                 <ul class="actions">
-                    <li><a href="#" title="@lang('site.show')" class="show"><i class="fad fa-eye"></i></a></li>
+                    <li>
+                        <a href="#" title="@lang('site.show')" class="show" data-toggle="modal"
+                           data-target="#transactionModal_{{ $index }}">
+                            <i class="fad fa-eye"></i>
+                        </a>
+                    </li>
                     {{--<li><a href="#" class="cancel"><i class="fad fa-times"></i></a></li>--}}
                 </ul>
             </td>
@@ -234,6 +239,115 @@
 <div class="d-flex justify-content-center">
     {{$trans->appends(request()->query())->links()}}
 </div>
+
+@foreach ($trans as $index => $tran)
+    <div class="modal fade" id="transactionModal_{{ $index }}" tabindex="-1" role="dialog"
+         aria-labelledby="transactionModalLabel_{{ $index }}" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered zoom-animation">
+            <div class="modal-content fog-background">
+                <div class="bring-to-front">
+                    <div class="modal-header flex-center">
+                        <h4 class="modal-title text-navy mb-0" id="transactionModalLabel_{{ $index }}">
+                            @lang('site.transaction_details')
+                        </h4>
+                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="@lang('site.close')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 38 38">
+                                <path id="Exclusion_23" data-name="Exclusion 23"
+                                      d="M26.384,37.578h-14a12,12,0,0,1-12-12v-14a12,12,0,0,1,12-12h14a12,12,0,0,1,12,12v14a12,12,0,0,1-12,12Zm-7-16.4h0L26,27.793l2.6-2.6-6.617-6.617L28.6,11.961,26,9.363,19.384,15.98,12.767,9.363l-2.6,2.6,6.617,6.617-6.617,6.617,2.6,2.6,6.616-6.616Z"
+                                      transform="translate(-0.384 0.422)" fill="#d27979"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @php
+                            $transactionId = optional($tran->payTransaction)->transaction_id
+                                ?? optional($tran->payTransaction)->id
+                                ?? '-';
+                            $orderId = optional($tran->order)->id ?? '-';
+                            $customerName = optional($tran->user)->name ?? '-';
+                            $driverName = optional(optional($tran->order)->serviceProvider)->name ?? '-';
+                            $amount = optional($tran->payTransaction)->amount ?? '-';
+                            $fee = optional($tran->payTransaction)->fee ?? '-';
+                            $currency = optional($tran->payTransaction)->currency ?? '-';
+                            $paymentMethod = optional($tran->payMethod)->name ?? '-';
+                            $paymentType = optional($tran->payTransaction)->payment_type ?? '-';
+                            $payStatus = $tran->payTransaction?->status ?? '';
+                            $payStatusKey = $payStatus ? strtolower(trim($payStatus)) : null;
+                            $payStatusTranslationKey = $payStatusKey ? 'site.' . $payStatusKey : null;
+                            $payStatusLabel = $payStatusTranslationKey ? __($payStatusTranslationKey) : '';
+                            if (!$payStatusTranslationKey || $payStatusLabel === $payStatusTranslationKey) {
+                                $payStatusLabel = $payStatus ?: '-';
+                            }
+                            $createdAt = $tran->created_at ?? '-';
+                            $profit = '-';
+                            if (optional($tran->order)->serviceProvider) {
+                                if (optional($tran->order->serviceProvider)->type == 'driver') {
+                                    $profit = (optional($tran->payTransaction)->amount ?? 0) * 15 / 100;
+                                } elseif (optional($tran->order->serviceProvider)->type == 'driverCompany') {
+                                    $profit = (optional($tran->payTransaction)->amount ?? 0) * 10 / 100;
+                                }
+                            }
+                        @endphp
+                        <div class="table-responsive">
+                            <table class="table table-borderless mb-0">
+                                <tbody>
+                                <tr>
+                                    <th>@lang('site.pay_transaction_id')</th>
+                                    <td>{{ $transactionId }}</td>
+                                </tr>
+                                <tr>
+                                    <th>@lang('site.order_number')</th>
+                                    <td>{{ $orderId }}</td>
+                                </tr>
+                                <tr>
+                                    <th>@lang('site.customer')</th>
+                                    <td>{{ $customerName }}</td>
+                                </tr>
+                                <tr>
+                                    <th>@lang('site.driver')</th>
+                                    <td>{{ $driverName }}</td>
+                                </tr>
+                                <tr>
+                                    <th>@lang('site.amount')</th>
+                                    <td>{{ $amount }}</td>
+                                </tr>
+                                <tr>
+                                    <th>@lang('site.profit')</th>
+                                    <td>{{ $profit }}</td>
+                                </tr>
+                                <tr>
+                                    <th>@lang('site.fee')</th>
+                                    <td>{{ $fee }}</td>
+                                </tr>
+                                <tr>
+                                    <th>@lang('site.currency')</th>
+                                    <td>{{ $currency }}</td>
+                                </tr>
+                                <tr>
+                                    <th>@lang('site.payment_method')</th>
+                                    <td>{{ $paymentMethod }}</td>
+                                </tr>
+                                <tr>
+                                    <th>@lang('site.payment_type')</th>
+                                    <td>{{ $paymentType }}</td>
+                                </tr>
+                                <tr>
+                                    <th>@lang('site.status')</th>
+                                    <td>{{ $payStatusLabel }}</td>
+                                </tr>
+                                <tr>
+                                    <th>@lang('site.at')</th>
+                                    <td>{{ $createdAt }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endforeach
 @endsection
 @section('scripts')
     <!-- Data Tables -->
