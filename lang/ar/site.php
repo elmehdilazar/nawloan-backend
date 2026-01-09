@@ -626,6 +626,8 @@
         'service_provider_commission'=>     'نسبة العمولة',
         'service_provider_amount'   =>      'مستحقات مقدم الخدمة',
         'success'                   =>      'مكتمل',
+        'failed'                    =>      'فشل',
+        'refounded'                 =>      'مسترجع',
         'ulists'                    =>      'قوائم المستخدمين',
         'ulist_not_found'           =>      'قائمة المستخدمين غير موجودة',
         'ulist'                     =>      'قائمة مستخدمين',

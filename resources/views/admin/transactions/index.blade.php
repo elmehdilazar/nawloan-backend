@@ -22,7 +22,7 @@
             <div class="input-group mb-0">
                 <div class="position-relative">
                     <input class="fe-14 border-radius-24" type="search" name="" itemid=""
-                           placeholder="Quick Search">
+                           placeholder="@lang('site.quick_search')">
                     <img src="{{asset('assets/images/svgs/search.svg')}}" alt="" class="icon">
                 </div>
             </div>
@@ -197,14 +197,23 @@
             <td>{{$tran->payMethod->name}}</td>
             <td>{{$tran->payTransaction->payment_type}}</td>
             <td>
-                @if($tran->payTransaction->status=='success')
-                    <span class="badge badge-success">{{$tran->payTransaction->status}}</span>
-                @elseif($tran->payTransaction->status=='Refounded')
-                    <span class="badge badge-primary">{{$tran->payTransaction->status}}</span>
-                @elseif($tran->payTransaction->status=='Failed')
-                    <span class="badge badge-danger">{{$tran->payTransaction->status}}</span>
-                @elseif($tran->payTransaction->status=='pending')
-                    <span class="badge badge-warning">{{$tran->payTransaction->status}}</span>
+                @php
+                    $payStatus = $tran->payTransaction->status ?? '';
+                    $payStatusKey = $payStatus ? strtolower(trim($payStatus)) : null;
+                    $payStatusLabel = $payStatusKey && \Illuminate\Support\Facades\Lang::has('site.' . $payStatusKey)
+                        ? __('site.' . $payStatusKey)
+                        : $payStatus;
+                @endphp
+                @if($payStatusKey == 'success')
+                    <span class="badge badge-success">{{ $payStatusLabel }}</span>
+                @elseif($payStatusKey == 'refounded')
+                    <span class="badge badge-primary">{{ $payStatusLabel }}</span>
+                @elseif($payStatusKey == 'failed')
+                    <span class="badge badge-danger">{{ $payStatusLabel }}</span>
+                @elseif($payStatusKey == 'pending')
+                    <span class="badge badge-warning">{{ $payStatusLabel }}</span>
+                @elseif($payStatus)
+                    <span class="badge badge-secondary">{{ $payStatusLabel }}</span>
                 @endif
             </td>
             <td>{{$tran->created_at}}</td>
@@ -266,7 +275,7 @@
             $('#end_date').val(picker.endDate.format('YYYY-MM-DD'));
             cb(picker.startDate.format('YYYY-MM-DD'),picker.endDate.format('YYYY-MM-DD'));
         });
-        $('[data-range-key="Custom Range"]').html('Translated text');
+        $('[data-range-key="Custom Range"]').html("@lang('site.custom_range')");
         if(req_start !='' && req_start !=null && req_end !='' && req_end !=null){
             $('#reportrange').daterangepicker(
             {
