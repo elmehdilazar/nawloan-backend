@@ -167,38 +167,40 @@
             <td>{{$index + 1}}</td>
             <td>
                 <div class="user-col">
-                    <img src="{{$tran->order->user->image != '' ? asset($tran->order->user->image) : asset('uploads/users/default.png')}}" alt="">
-                    <span class="name">{{$tran->user->name}}</span>
+                    <img src="{{ optional(optional($tran->order)->user)->image != '' ? asset(optional(optional($tran->order)->user)->image) : asset('uploads/users/default.png') }}"
+                         alt="">
+                    <span class="name">{{ optional($tran->user)->name ?? '-' }}</span>
                 </div>
             </td>
             <td>
-                @if($tran->order->serviceProvider)
+                @if(optional($tran->order)->serviceProvider)
                 <div class="user-col">
-                    <img src="{{$tran->order->serviceProvider->image != '' ? asset($tran->order->serviceProvider->image) : asset('uploads/users/default.png')}}" alt="">
-                    <span class="name">{{$tran->order->serviceProvider->name}}</span>
+                    <img src="{{ optional(optional($tran->order)->serviceProvider)->image != '' ? asset(optional(optional($tran->order)->serviceProvider)->image) : asset('uploads/users/default.png') }}"
+                         alt="">
+                    <span class="name">{{ optional(optional($tran->order)->serviceProvider)->name ?? '-' }}</span>
                 </div>
                 @else
                     --
                 @endif
             </td>
-            <td>{{$tran->order->id}}</td>
-            <td>{{$tran->payTransaction->amount}}</td>
+            <td>{{ optional($tran->order)->id ?? '-' }}</td>
+            <td>{{ optional($tran->payTransaction)->amount ?? '-' }}</td>
             <td>
                 @if($tran->order->serviceProvider)
-                    @if($tran->order->serviceProvider->type=='driver')
-                        {{ $tran->payTransaction->amount * 15 / 100 }}
-                    @elseif($tran->order->serviceProvider->type=='driverCompany')
-                        {{ $tran->payTransaction->amount * 10 / 100 }}
+                    @if(optional($tran->order->serviceProvider)->type=='driver')
+                        {{ (optional($tran->payTransaction)->amount ?? 0) * 15 / 100 }}
+                    @elseif(optional($tran->order->serviceProvider)->type=='driverCompany')
+                        {{ (optional($tran->payTransaction)->amount ?? 0) * 10 / 100 }}
                     @endif
                 @endif
             </td>
-            <td>{{$tran->payTransaction->fee}}</td>
-            <td>{{$tran->payTransaction->currency}}</td>
-            <td>{{$tran->payMethod->name}}</td>
-            <td>{{$tran->payTransaction->payment_type}}</td>
+            <td>{{ optional($tran->payTransaction)->fee ?? '-' }}</td>
+            <td>{{ optional($tran->payTransaction)->currency ?? '-' }}</td>
+            <td>{{ optional($tran->payMethod)->name ?? '-' }}</td>
+            <td>{{ optional($tran->payTransaction)->payment_type ?? '-' }}</td>
             <td>
                 @php
-                    $payStatus = $tran->payTransaction->status ?? '';
+                    $payStatus = $tran->payTransaction?->status ?? '';
                     $payStatusKey = $payStatus ? strtolower(trim($payStatus)) : null;
                     $payStatusTranslationKey = $payStatusKey ? 'site.' . $payStatusKey : null;
                     $payStatusLabel = $payStatusTranslationKey ? __($payStatusTranslationKey) : '';
@@ -218,7 +220,7 @@
                     <span class="badge badge-secondary">{{ $payStatusLabel }}</span>
                 @endif
             </td>
-            <td>{{$tran->created_at}}</td>
+            <td>{{ $tran->created_at ?? '-' }}</td>
             <td>
                 <ul class="actions">
                     <li><a href="#" title="@lang('site.show')" class="show"><i class="fad fa-eye"></i></a></li>
