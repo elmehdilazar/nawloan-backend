@@ -619,6 +619,7 @@ return [
     'service_provider_commission'=>     'Commission Percentage',
     'service_provider_amount'   =>      'Service Provider Profits',
     'success'                   =>      'Success',
+    'unpaid'                    =>      'Unpaid',
     'failed'                    =>      'Failed',
     'refounded'                 =>      'Refunded',
     'ulists'                    =>      'Users Lists',
