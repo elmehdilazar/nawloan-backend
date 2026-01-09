@@ -200,9 +200,11 @@
                 @php
                     $payStatus = $tran->payTransaction->status ?? '';
                     $payStatusKey = $payStatus ? strtolower(trim($payStatus)) : null;
-                    $payStatusLabel = $payStatusKey && \Illuminate\Support\Facades\Lang::has('site.' . $payStatusKey)
-                        ? __('site.' . $payStatusKey)
-                        : $payStatus;
+                    $payStatusTranslationKey = $payStatusKey ? 'site.' . $payStatusKey : null;
+                    $payStatusLabel = $payStatusTranslationKey ? __($payStatusTranslationKey) : '';
+                    if (!$payStatusTranslationKey || $payStatusLabel === $payStatusTranslationKey) {
+                        $payStatusLabel = $payStatus;
+                    }
                 @endphp
                 @if($payStatusKey == 'success')
                     <span class="badge badge-success">{{ $payStatusLabel }}</span>

@@ -455,12 +455,13 @@
                     @php
                         $transactionStatus = $order->transaction?->status;
                         $transactionStatusKey = $transactionStatus ? strtolower(trim($transactionStatus)) : null;
+                        $transactionStatusTranslationKey = $transactionStatusKey ? 'site.' . $transactionStatusKey : null;
+                        $transactionStatusLabel = $transactionStatusTranslationKey ? __($transactionStatusTranslationKey) : '';
+                        if (!$transactionStatusTranslationKey || $transactionStatusLabel === $transactionStatusTranslationKey) {
+                            $transactionStatusLabel = $transactionStatus ?: __('site.Delayed Payment');
+                        }
                     @endphp
-                    <td>
-                        {{ $transactionStatusKey && \Illuminate\Support\Facades\Lang::has('site.' . $transactionStatusKey)
-                            ? __('site.' . $transactionStatusKey)
-                            : ($transactionStatus ?: __('site.Delayed Payment')) }}
-                    </td>
+                    <td>{{ $transactionStatusLabel }}</td>
                     <td>
                         <span
                             class="badge badge-pill
