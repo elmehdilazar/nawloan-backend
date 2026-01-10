@@ -560,6 +560,8 @@ return [
     'Address In English'        =>      'Address In English',
     'Primary Email'             =>      'Primary Email',
     'terms_conditions'          =>      'Terms & Conditions',
+    'terms_of_use'              =>      'Terms of Use',
+    'privacy_policy'            =>      'Privacy Policy',
     'vip_list'                  =>      'Vip List',
     'vip'                       =>      'Vip',
     'all'                       =>      'All',

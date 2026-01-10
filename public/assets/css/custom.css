@@ -2751,6 +2751,9 @@ ul.extra-precautions li::before {
     max-width: 75%;
     margin: 0 auto;
 }
+.auth-wrapper .input-group .position-relative {
+    position: relative;
+}
 
 .auth-wrapper .auth-field .form-group .form-check .form-check-label::after{
     font-size: 12px;
@@ -5507,6 +5510,10 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
     pointer-events: none;
     z-index: 3;
     right: unset;
+}
+.rtl .auth-wrapper .auth-field .form-group .form-check .form-check-label {
+    padding-left: 0;
+    padding-right: 30px;
 }
 .rtl .intl-tel-input .country-list {
     position: absolute;

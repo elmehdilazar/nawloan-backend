@@ -75,7 +75,7 @@
                     </div>
                 </form>
             </div>
-            <a href="#">Term of use. Privacy policy</a>
+            <a href="#">{{ __('site.terms_of_use') }}. {{ __('site.privacy_policy') }}</a>
         </div>
     </div>
     <!--=== End Wrapper ===-->

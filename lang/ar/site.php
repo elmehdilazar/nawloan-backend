@@ -567,6 +567,8 @@
         'Address In English'        =>      'العنوان بالإنجليزية',
         'Primary Email'             =>      'البريد الإلكتروني الرئيسي',
         'terms_conditions'          =>      'الشروط والأحكام',
+        'terms_of_use'              =>      'شروط الاستخدام',
+        'privacy_policy'            =>      'سياسة الخصوصية',
         'vip_list'                  =>      'قائمة Vip',
         'vip'                       =>      'Vip',
         'all'                       =>      'الكل',
