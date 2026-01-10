@@ -52,8 +52,9 @@
                 <td class="text-arabic">{{$list->name_ar}}</td>
                 <td>
                     <a href="#" data-toggle="modal" data-target="#showModal_{{$index}}" title="@lang('site.view')">
-                        {{$list->users->count()}}</td>
+                        {{$list->users->count()}}
                     </a>
+                </td>
                 <td>
                     <span class="badge badge-pill {{$list->active==1 ? 'badge-primary ': 'badge-danger'}}">
                         {{$list->getActive()}}
@@ -175,7 +176,14 @@
                                 <tr>
                                     <td>{{$index + 1}}</td>
                                     <td>{{$user->user->name}}</td>
-                                    <td>{{$user->user->type}}</td>
+                                    @php
+                                        $userTypeKey = $user->user?->type;
+                                        $userTypeLabel = $userTypeKey ? __('site.' . $userTypeKey) : '-';
+                                        if ($userTypeKey && $userTypeLabel === 'site.' . $userTypeKey) {
+                                            $userTypeLabel = $userTypeKey;
+                                        }
+                                    @endphp
+                                    <td>{{ $userTypeLabel }}</td>
                                     <td>
                                         <ul class="actions">
                                             <li>

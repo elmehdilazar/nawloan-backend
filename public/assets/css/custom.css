@@ -5374,6 +5374,22 @@ ul.extra-precautions li::before {
   margin-right: 0;
   margin-left: 10px;
 }
+.rtl .driver-card .driver-actions {
+  flex-direction: row-reverse;
+}
+.rtl .driver-card .driver-actions a {
+  flex-direction: row-reverse;
+}
+.rtl .mini-modal .modal-header {
+  flex-direction: row-reverse;
+}
+.rtl .mini-modal .modal-header .modal-title {
+  text-align: right;
+}
+.rtl .mini-modal .modal-header .btn-close {
+  margin-left: 0;
+  margin-right: auto;
+}
 
 /* SweetAlert/Dropzone/Select2 تحسينات بسيطة */
 .rtl .swal2-popup { direction: rtl; text-align: right; }
