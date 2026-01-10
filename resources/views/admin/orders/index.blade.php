@@ -762,7 +762,14 @@
                                 <ul class="shipment-details">
                                     <li class="flex-space">
                                         <span class="title">@lang('site.Shipment Size')</span>
-                                        <span>{{ $order->size }}</span>
+                                        @php
+                                            $sizeKey = strtolower($order->size ?? '');
+                                            $sizeLabel = $sizeKey ? __('site.' . $sizeKey) : '-';
+                                            if ($sizeKey && $sizeLabel === 'site.' . $sizeKey) {
+                                                $sizeLabel = $order->size;
+                                            }
+                                        @endphp
+                                        <span>{{ $sizeLabel }}</span>
                                     </li>
                                     <li class="flex-space">
                                         <span class="title">@lang('site.weight')</span>
