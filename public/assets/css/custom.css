@@ -5523,6 +5523,25 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
     flex-direction: row-reverse;
     width: 100%;
 }
+.rtl .input-group .international-phone>input,
+.rtl .input-group .international-phone .position-relative input {
+    border-radius: 16px 0 0 16px !important;
+}
+.rtl .intl-tel-input.allow-dropdown .flag-container {
+    border-radius: 0 16px 16px 0;
+}
+.rtl .intl-tel-input.allow-dropdown.separate-dial-code .selected-dial-code {
+    padding-left: 0;
+    padding-right: 5px;
+}
+.rtl .intl-tel-input.allow-dropdown.separate-dial-code.iti-sdc-3 input,
+.rtl .intl-tel-input.allow-dropdown.separate-dial-code.iti-sdc-3 input[type=text],
+.rtl .intl-tel-input.allow-dropdown.separate-dial-code.iti-sdc-3 input[type=tel] {
+    padding: 0 24px 0 48px;
+}
+.rtl .input-group .international-phone .position-relative .intl-tel-input.allow-dropdown .flag-container.dropdown-opened + input {
+    border-radius: 16px 0 0 0 !important;
+}
 
 .rtl tbody tr td .user-col {
     display: flex

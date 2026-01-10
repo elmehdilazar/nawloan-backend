@@ -101,7 +101,14 @@
                 <td>{{$index + 1}}</td>
                 <td>{{$user->name}}</td>
                 <td>{{$user->phone}}</td>
-                <td>@lang('site.'.$user->type.'')</td>
+                @php
+                    $userTypeKey = $user->type;
+                    $userTypeLabel = $userTypeKey ? __('site.' . $userTypeKey) : '-';
+                    if ($userTypeKey && $userTypeLabel === 'site.' . $userTypeKey) {
+                        $userTypeLabel = $userTypeKey;
+                    }
+                @endphp
+                <td>{{ $userTypeLabel }}</td>
                 <td>
                     <span class="badge badge-pill {{$user->active==1 ? 'badge-primary ': 'badge-danger'}}">{{$user->getActive()}}</span>
                 </td>
