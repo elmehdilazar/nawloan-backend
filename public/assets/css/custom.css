@@ -5542,6 +5542,14 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
 .rtl .input-group .international-phone .position-relative .intl-tel-input.allow-dropdown .flag-container.dropdown-opened + input {
     border-radius: 16px 0 0 0 !important;
 }
+.rtl .international-phone .position-relative i,
+.rtl .international-phone .position-relative img {
+    right: 24px;
+    left: auto;
+}
+.rtl .international-phone .position-relative input {
+    padding: 0 48px 0 24px;
+}
 
 .rtl tbody tr td .user-col {
     display: flex
