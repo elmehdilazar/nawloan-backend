@@ -5518,10 +5518,15 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
     padding: 20px;
 }
 .rtl .intl-tel-input {
-    display: flex
-;
-    flex-direction: row-reverse;
+    display: flex;
+    flex-direction: row;
     width: 100%;
+}
+.rtl .intl-tel-input .flag-container {
+    order: 2;
+}
+.rtl .intl-tel-input input {
+    order: 1;
 }
 .rtl .input-group .international-phone>input,
 .rtl .input-group .international-phone .position-relative input {
@@ -5584,10 +5589,11 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
     position: absolute;
     z-index: 2;
     list-style: none;
-    left: 0px;
+    right: 0;
+    left: auto;
     text-align: right;
     padding: 0;
-    margin: 0 0 0 0px;
+    margin: 0;
     box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
     background-color: white;
     border: 1px solid #CCC;
