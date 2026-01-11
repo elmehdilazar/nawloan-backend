@@ -152,7 +152,7 @@
             <div class="col-lg-6 col-12">
                 <div class="input-group">
                     <label for="">@lang('site.customers')</label>
-                    <textarea class="textarea" id="customers_terms_conditions" placeholder="@lang('site.customers_terms_conditions_placeholder')"
+                    <textarea class="textarea" id="customers_terms_conditions" placeholder="customers terms conditions"
                         style="width: 100%; height: 620px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"
                         name="customers_terms_conditions">
                     {{ setting('customers_terms_conditions') != '' ? setting('customers_terms_conditions') : old('customers_terms_conditions') }}
@@ -165,7 +165,7 @@
             <div class="col-lg-6 col-12">
                 <div class="input-group">
                     <label for="">@lang('site.factories')</label>
-                    <textarea class="textarea" id="factories_terms_conditions" placeholder="@lang('site.factories_terms_conditions_placeholder')"
+                    <textarea class="textarea" id="factories_terms_conditions" placeholder="factories terms conditions"
                         style="width: 100%; height: 620px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"
                         name="factories_terms_conditions">
                     {{ setting('factories_terms_conditions') != '' ? setting('factories_terms_conditions') : old('factories_terms_conditions') }}
@@ -178,7 +178,7 @@
             <div class="col-lg-6 col-12">
                 <div class="input-group">
                     <label for="">@lang('site.customers')</label>
-                    <textarea class="textarea" id="customers_terms_conditions_ar" placeholder="@lang('site.customers_terms_conditions_placeholder')"
+                    <textarea class="textarea" id="customers_terms_conditions_ar" placeholder="customers terms conditions"
                         style="width: 100%; height: 620px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"
                         name="customers_terms_conditions_ar">
                     {{ setting('customers_terms_conditions_ar') != '' ? setting('customers_terms_conditions_ar') : old('customers_terms_conditions_ar') }}
@@ -191,7 +191,7 @@
             <div class="col-lg-6 col-12">
                 <div class="input-group">
                     <label for="">@lang('site.factories')</label>
-                    <textarea class="textarea" id="factories_terms_conditions_ar" placeholder="@lang('site.factories_terms_conditions_placeholder')"
+                    <textarea class="textarea" id="factories_terms_conditions_ar" placeholder="factories terms conditions"
                         style="width: 100%; height: 620px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"
                         name="factories_terms_conditions_ar">
                     {{ setting('factories_terms_conditions_ar') != '' ? setting('factories_terms_conditions_ar') : old('factories_terms_conditions_ar') }}
@@ -204,7 +204,7 @@
             <div class="col-lg-6 col-12">
                 <div class="input-group">
                     <label for="">@lang('site.drivers')</label>
-                    <textarea class="textarea" id="drivers_terms_conditions" placeholder="@lang('site.drivers_terms_conditions_placeholder')"
+                    <textarea class="textarea" id="drivers_terms_conditions" placeholder="drivers terms conditions"
                         style="width: 100%; height: 620px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"
                         name="drivers_terms_conditions">
                     {{ setting('drivers_terms_conditions') != '' ? setting('drivers_terms_conditions') : old('drivers_terms_conditions') }}
@@ -218,7 +218,7 @@
                 <div class="input-group">
                     <label for="">@lang('site.shipping_company')</label>
 
-                    <textarea class="textarea" id="shipping_company_terms_conditions" placeholder="@lang('site.shipping_company_terms_conditions_placeholder')"
+                    <textarea class="textarea" id="shipping_company_terms_conditions" placeholder="shipping_company_terms_conditions"
                         style="width: 100%; height: 620px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"
                         name="shipping_company_terms_conditions">
                     {{ setting('shipping_company_terms_conditions') != '' ? setting('shipping_company_terms_conditions') : old('shipping_company_terms_conditions') }}
@@ -231,7 +231,7 @@
                 <div class="col-lg-6 col-12">
                 <div class="input-group">
                     <label for="">@lang('site.drivers')</label>
-                    <textarea class="textarea" id="drivers_terms_conditions_ar" placeholder="@lang('site.drivers_terms_conditions_placeholder')"
+                    <textarea class="textarea" id="drivers_terms_conditions_ar" placeholder="drivers terms conditions"
                         style="width: 100%; height: 620px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"
                         name="drivers_terms_conditions_ar">
                     {{ setting('drivers_terms_conditions_ar') != '' ? setting('drivers_terms_conditions_ar') : old('drivers_terms_conditions_ar') }}
@@ -245,7 +245,7 @@
                 <div class="input-group">
                     <label for="">@lang('site.shipping_company')</label>
 
-                    <textarea class="textarea" id="shipping_company_terms_conditions_ar" placeholder="@lang('site.shipping_company_terms_conditions_placeholder')"
+                    <textarea class="textarea" id="shipping_company_terms_conditions_ar" placeholder="shipping_company_terms_conditions_ar"
                         style="width: 100%; height: 620px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"
                         name="shipping_company_terms_conditions_ar">
                     {{ setting('shipping_company_terms_conditions_ar') != '' ? setting('shipping_company_terms_conditions_ar') : old('shipping_company_terms_conditions_ar') }}
@@ -258,8 +258,8 @@
 
             <div class="col-12">
                 <div class="input-group">
-                    <label for="">@lang('site.policy')</label>
-                    <textarea class="textarea" id="policy" placeholder="@lang('site.policy_placeholder')"
+                    <label for="">@lang('policy')</label>
+                    <textarea class="textarea" id="policy" placeholder="policy"
                         style="width: 100%; height: 620px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"
                         name="policy">
                     {{ setting('policy') != '' ? setting('policy') : old('policy') }}
@@ -268,8 +268,8 @@
             </div>
             <div class="col-12">
                 <div class="input-group">
-                    <label for="">@lang('site.policy')</label>
-                    <textarea class="textarea" id="policy_ar" placeholder="@lang('site.policy_placeholder')"
+                    <label for="">@lang('policy')</label>
+                    <textarea class="textarea" id="policy_ar" placeholder="policy_ar"
                         style="width: 100%; height: 620px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"
                         name="policy_ar">
                     {{ setting('policy_ar') != '' ? setting('policy_ar') : old('policy_ar') }}
