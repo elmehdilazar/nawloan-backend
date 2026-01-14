@@ -2794,6 +2794,18 @@ ul.extra-precautions li::before {
     right: 0;
     left: auto;
 }
+.rtl .auth-wrapper .international-phone .position-relative input {
+    border-radius: 16px 0 0 16px !important;
+    border-right: 0;
+}
+.rtl .auth-wrapper .intl-tel-input.allow-dropdown .flag-container {
+    border: 1px solid #D8DAD9;
+    border-left: 0;
+    border-radius: 0 16px 16px 0 !important;
+}
+.rtl .auth-wrapper .intl-tel-input.allow-dropdown.separate-dial-code .selected-flag {
+    border-radius: 0 16px 16px 0 !important;
+}
 
 .auth-wrapper .auth-field .form-group .form-check .form-check-label::after{
     font-size: 12px;
