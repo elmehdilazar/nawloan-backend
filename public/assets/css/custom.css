@@ -2754,6 +2754,28 @@ ul.extra-precautions li::before {
 .auth-wrapper .input-group .position-relative {
     position: relative;
 }
+.ltr .auth-wrapper .input-group .position-relative i,
+.ltr .auth-wrapper .input-group .position-relative img {
+    right: 24px;
+    left: auto;
+}
+.ltr .auth-wrapper .input-group .position-relative input {
+    padding: 0 48px 0 24px;
+}
+.rtl .auth-wrapper .input-group .position-relative i,
+.rtl .auth-wrapper .input-group .position-relative img {
+    left: 24px;
+    right: auto;
+}
+.rtl .auth-wrapper .input-group .position-relative input {
+    padding: 0 24px 0 48px;
+}
+.ltr .auth-wrapper .intl-tel-input {
+    flex-direction: row;
+}
+.rtl .auth-wrapper .intl-tel-input {
+    flex-direction: row-reverse;
+}
 
 .auth-wrapper .auth-field .form-group .form-check .form-check-label::after{
     font-size: 12px;
