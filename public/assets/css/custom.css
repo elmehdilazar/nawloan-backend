@@ -2774,7 +2774,22 @@ ul.extra-precautions li::before {
     flex-direction: row;
 }
 .rtl .auth-wrapper .intl-tel-input {
-    flex-direction: row-reverse;
+    flex-direction: row !important;
+}
+.rtl .auth-wrapper .intl-tel-input .flag-container {
+    order: 2;
+}
+.rtl .auth-wrapper .intl-tel-input input {
+    order: 1;
+}
+.rtl .auth-wrapper .intl-tel-input.separate-dial-code input,
+.rtl .auth-wrapper .intl-tel-input.separate-dial-code input[type="text"],
+.rtl .auth-wrapper .intl-tel-input.separate-dial-code input[type="tel"] {
+    padding: 0 48px 0 24px !important;
+}
+.rtl .auth-wrapper .intl-tel-input .country-list {
+    right: 0;
+    left: auto;
 }
 
 .auth-wrapper .auth-field .form-group .form-check .form-check-label::after{
