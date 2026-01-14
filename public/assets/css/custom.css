@@ -2775,15 +2775,15 @@ ul.extra-precautions li::before {
 }
 .rtl .auth-wrapper .intl-tel-input {
     flex-direction: row;
+    direction: ltr;
 }
 .rtl .auth-wrapper .intl-tel-input .flag-container {
-    order: 1;
-    border-radius: 16px 0 0 16px;
+    order: 2;
+    border-radius: 0 16px 16px 0;
 }
 .rtl .auth-wrapper .intl-tel-input input {
-    order: 2;
+    order: 1;
     text-align: right;
-    direction: rtl;
 }
 .rtl .auth-wrapper .intl-tel-input.separate-dial-code input,
 .rtl .auth-wrapper .intl-tel-input.separate-dial-code input[type="text"],
@@ -2791,20 +2791,20 @@ ul.extra-precautions li::before {
     padding: 0 24px 0 48px !important;
 }
 .rtl .auth-wrapper .intl-tel-input .country-list {
-    left: 0;
-    right: auto;
+    right: 0;
+    left: auto;
 }
 .rtl .auth-wrapper .international-phone .position-relative input {
-    border-radius: 0 16px 16px 0 !important;
-    border-left: 0;
+    border-radius: 16px 0 0 16px !important;
+    border-right: 0;
 }
 .rtl .auth-wrapper .intl-tel-input.allow-dropdown .flag-container {
     border: 1px solid #D8DAD9;
-    border-right: 0;
-    border-radius: 16px 0 0 16px !important;
+    border-left: 0;
+    border-radius: 0 16px 16px 0 !important;
 }
 .rtl .auth-wrapper .intl-tel-input.allow-dropdown.separate-dial-code .selected-flag {
-    border-radius: 16px 0 0 16px !important;
+    border-radius: 0 16px 16px 0 !important;
 }
 
 .auth-wrapper .auth-field .form-group .form-check .form-check-label::after{
