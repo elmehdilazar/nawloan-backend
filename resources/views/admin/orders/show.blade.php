@@ -148,7 +148,7 @@
                     <tbody>
                     <tr>
                         <td>{{date("Y-m-d",strtotime($order->shipping_date))}}</td>
-                        <td>{{date("h:i A",strtotime($order->shipping_date))}}</td>
+                        <td>{{ \Carbon\Carbon::parse($order->shipping_date)->locale(app()->getLocale())->translatedFormat('h:i A') }}</td>
                         <td>{{$order->ton_price}} {{setting('currency_atr') !='' ? ''. setting('currency_atr') : ''}}</td>
                     </tr>
                     </tbody>
@@ -161,7 +161,7 @@
                 <ul>
                     <li class="step completed">
                         <span class="title">@lang('site.Create Order')</span>
-                        <span class="time">{{date("h:i A",strtotime($order->created_at))}}</span>
+                        <span class="time">{{ \Carbon\Carbon::parse($order->created_at)->locale(app()->getLocale())->translatedFormat('h:i A') }}</span>
                         <span class="checkmark"></span>
                     </li>
                     <li class="step @if($order->status =='approve' ||
@@ -174,7 +174,7 @@
                                             @php $counter =1 @endphp
                             @forelse ($order->statuses as $stat )
                                 @if($stat->status=='approve' && $counter==1)
-                                    {{date("h:i A",strtotime($stat->created_at))}}
+                                    {{ \Carbon\Carbon::parse($stat->created_at)->locale(app()->getLocale())->translatedFormat('h:i A') }}
                                     @php $counter +=1 @endphp
                                 @endif
                             @empty
@@ -191,7 +191,7 @@
                                             @php $counter =1 @endphp
                             @forelse ($order->statuses as $stat )
                                 @if($stat->status=='pick_up' && $counter==1)
-                                    {{date("h:i A",strtotime($stat->created_at))}}
+                                    {{ \Carbon\Carbon::parse($stat->created_at)->locale(app()->getLocale())->translatedFormat('h:i A') }}
                                     @php $counter +=1 @endphp
                                 @endif
                             @empty
@@ -207,7 +207,7 @@
                                             @php $counter =1 @endphp
                             @forelse ($order->statuses as $stat )
                                 @if($stat->status=='delivered' && $counter==1)
-                                    {{date("h:i A",strtotime($stat->created_at))}}
+                                    {{ \Carbon\Carbon::parse($stat->created_at)->locale(app()->getLocale())->translatedFormat('h:i A') }}
                                     @php $counter +=1 @endphp
                                 @endif
                             @empty
@@ -222,7 +222,7 @@
                                             @php $counter =1 @endphp
                             @forelse ($order->statuses as $stat )
                                 @if($stat->status=='complete' && $counter==1)
-                                    {{date("h:i A",strtotime($stat->created_at))}}
+                                    {{ \Carbon\Carbon::parse($stat->created_at)->locale(app()->getLocale())->translatedFormat('h:i A') }}
                                     @php $counter +=1 @endphp
                                 @endif
                             @empty
@@ -238,7 +238,7 @@
                                             @php $counter =1 @endphp
                                 @forelse ($order->statuses as $index=>$stat)
                                     @if($stat->status=='cancel' && $index <1 && $counter==1)
-                                        {{date(" h:i A",strtotime($stat->created_at))}}
+                                        {{ \Carbon\Carbon::parse($stat->created_at)->locale(app()->getLocale())->translatedFormat('h:i A') }}
                                         @php $counter +=1 @endphp
                                     @endif
                                 @empty

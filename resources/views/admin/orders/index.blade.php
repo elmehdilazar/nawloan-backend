@@ -633,7 +633,7 @@
                                         <tbody>
                                             <tr>
                                                 <td>{{ date('Y-m-d', strtotime($order->shipping_date)) }}</td>
-                                                <td>{{ date('h:i A', strtotime($order->shipping_date)) }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($order->shipping_date)->locale(app()->getLocale())->translatedFormat('h:i A') }}</td>
                                                 <td>{{ $order->ton_price }}
                                                     {{ setting('currency_atr') != '' ? '' . setting('currency_atr') : '' }}
                                                 </td>
@@ -671,14 +671,14 @@
                                     <ul>
                                         <li class="step completed">
                                             <span class="title">@lang('site.Create Order')</span>
-                                            <span class="time">{{ date('h:i A', strtotime($order->created_at)) }}</span>
+                                            <span class="time">{{ \Carbon\Carbon::parse($order->created_at)->locale(app()->getLocale())->translatedFormat('h:i A') }}</span>
                                             <span class="checkmark"></span>
                                         </li>
                                         <li class="step @if ($reached(['approve','approved','pick_up','pickup','delivered','complete','completed','cancel','cancelled'])) completed @endif">
                                             <span class="title">@lang('site.Accept Offer')</span>
                                             <span class="time">
                                                 @if ($time = $firstTime(['approve','approved']))
-                                                    {{ date('h:i A', strtotime($time)) }}
+                                                    {{ \Carbon\Carbon::parse($time)->locale(app()->getLocale())->translatedFormat('h:i A') }}
                                                 @else
                                                     --
                                                 @endif
@@ -689,7 +689,7 @@
                                             <span class="title">@lang('site.Driver Pick Up')</span>
                                             <span class="time">
                                                 @if ($time = $firstTime(['pick_up','pickup']))
-                                                    {{ date('h:i A', strtotime($time)) }}
+                                                    {{ \Carbon\Carbon::parse($time)->locale(app()->getLocale())->translatedFormat('h:i A') }}
                                                 @else
                                                     --
                                                 @endif
@@ -700,7 +700,7 @@
                                             <span class="title">@lang('site.Driver Delivered')</span>
                                             <span class="time">
                                                 @if ($time = $firstTime(['delivered']))
-                                                    {{ date('h:i A', strtotime($time)) }}
+                                                    {{ \Carbon\Carbon::parse($time)->locale(app()->getLocale())->translatedFormat('h:i A') }}
                                                 @else
                                                     --
                                                 @endif
@@ -711,7 +711,7 @@
                                             <span class="title">@lang('site.Order Completed')</span>
                                             <span class="time">
                                                 @if ($time = $firstTime(['complete','completed']))
-                                                    {{ date('h:i A', strtotime($time)) }}
+                                                    {{ \Carbon\Carbon::parse($time)->locale(app()->getLocale())->translatedFormat('h:i A') }}
                                                 @else
                                                     --
                                                 @endif
@@ -723,7 +723,7 @@
                                                 <span class="title">@lang('site.Order Cancel')</span>
                                                 <span class="time">
                                                     @if ($time = $firstTime(['cancel','cancelled']))
-                                                        {{ date('h:i A', strtotime($time)) }}
+                                                        {{ \Carbon\Carbon::parse($time)->locale(app()->getLocale())->translatedFormat('h:i A') }}
                                                     @else
                                                         --
                                                     @endif
