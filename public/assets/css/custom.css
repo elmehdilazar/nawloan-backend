@@ -5629,6 +5629,18 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
     left: auto;
     right: 0;
 }
+.rtl .offers-list .offer-item .flex-space .flex-column ul {
+    padding-right: 0;
+    padding-left: 15px;
+}
+.rtl .offers-list .offer-item .flex-space .flex-column ul li {
+    flex-direction: row-reverse;
+    text-align: right;
+}
+.rtl .offers-list .offer-item .flex-space .flex-column ul li img {
+    margin-right: 0;
+    margin-left: 20px;
+}
 .rtl .intl-tel-input .country-list {
     position: absolute;
     z-index: 2;
