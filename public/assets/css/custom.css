@@ -5645,12 +5645,28 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
 .rtl .offers-show .table td {
     text-align: right !important;
 }
+.rtl .offers-show {
+    direction: rtl;
+    text-align: right;
+}
+.rtl .offers-show .card-header,
+.rtl .offers-show .card-body {
+    text-align: right;
+}
+.rtl .offers-show .table {
+    direction: rtl;
+}
+.rtl .offers-show .table thead td,
+.rtl .offers-show .table tbody td {
+    text-align: right !important;
+}
 .rtl .offers-show .page-titles {
     text-align: right;
 }
 .rtl .offers-show .page-titles .breadcrumb {
     justify-content: flex-end;
     direction: rtl;
+    text-align: right;
 }
 .rtl .offers-show .breadcrumb-item + .breadcrumb-item {
     padding-right: .5rem;
