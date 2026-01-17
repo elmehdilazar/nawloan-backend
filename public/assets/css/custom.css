@@ -5641,6 +5641,10 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
 .rtl .offers-list .offer-item .flex-space .flex-column ul li img {
     margin: 0;
 }
+.rtl .offers-show .table th,
+.rtl .offers-show .table td {
+    text-align: right;
+}
 .rtl .intl-tel-input .country-list {
     position: absolute;
     z-index: 2;

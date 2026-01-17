@@ -1,6 +1,7 @@
 @extends('layouts.admin.app')
 @section('title',' | ' .  __('site.show') . ' '. __('site.offer').' - '. $offer->id)
 @section('content')
+<div class="offers-show">
 <div class="row page-titles mx-2">
     <div class="col p-md-0">
         <h4>@lang('site.offers')</h4>
@@ -89,6 +90,7 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 <div class="row justify-content-center mb-2">
     <div class="col-12">
