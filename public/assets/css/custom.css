@@ -5634,12 +5634,12 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
     padding-left: 15px;
 }
 .rtl .offers-list .offer-item .flex-space .flex-column ul li {
-    flex-direction: row-reverse;
     text-align: right;
+    direction: rtl;
+    gap: 12px;
 }
 .rtl .offers-list .offer-item .flex-space .flex-column ul li img {
-    margin-right: 0;
-    margin-left: 20px;
+    margin: 0;
 }
 .rtl .intl-tel-input .country-list {
     position: absolute;
