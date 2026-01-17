@@ -5615,6 +5615,19 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
 .rtl .auth-wrapper .auth-field .form-group .form-check .form-check-label {
     padding-left: 0;
     padding-right: 30px;
+    text-align: right;
+}
+.rtl .auth-wrapper .auth-field .form-group .form-check .form-check-label::before,
+.rtl .auth-wrapper .auth-field .form-group .form-check .form-check-label::after {
+    left: auto;
+    right: 0;
+}
+.rtl .auth-wrapper .auth-field .form-group .form-check .form-check-label::after {
+    right: 3px;
+}
+.rtl .auth-wrapper .auth-field .form-group .form-check .form-check-input {
+    left: auto;
+    right: 0;
 }
 .rtl .intl-tel-input .country-list {
     position: absolute;
