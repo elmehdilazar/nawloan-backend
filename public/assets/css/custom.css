@@ -5643,7 +5643,22 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
 }
 .rtl .offers-show .table th,
 .rtl .offers-show .table td {
+    text-align: right !important;
+}
+.rtl .offers-show .page-titles {
     text-align: right;
+}
+.rtl .offers-show .page-titles .breadcrumb {
+    justify-content: flex-end;
+    direction: rtl;
+}
+.rtl .offers-show .breadcrumb-item + .breadcrumb-item {
+    padding-right: .5rem;
+    padding-left: 0;
+}
+.rtl .offers-show .breadcrumb-item + .breadcrumb-item::before {
+    padding-right: 0;
+    padding-left: .5rem;
 }
 .rtl .intl-tel-input .country-list {
     position: absolute;
