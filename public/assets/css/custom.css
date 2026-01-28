@@ -5822,6 +5822,17 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
 .rtl .offer-status-card .card-header h3 {
     text-align: right;
 }
+.rtl .card-header h3,
+.rtl .card-header h4,
+.rtl .card-header h5 {
+    text-align: right;
+}
+.rtl .table th,
+.rtl .table td,
+.rtl .table thead th,
+.rtl .table thead td {
+    text-align: right;
+}
 .rtl .input-group #reportrange {
     display: flex
 ;
