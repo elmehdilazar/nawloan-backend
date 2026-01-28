@@ -5806,6 +5806,12 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
     text-align: right;
 
 }
+.rtl .offers-show .table th,
+.rtl .offers-show .table td,
+.rtl .offers-show .table thead td,
+.rtl .offers-show .table thead th {
+    text-align: right;
+}
 .rtl .input-group #reportrange {
     display: flex
 ;

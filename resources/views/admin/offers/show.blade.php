@@ -35,7 +35,7 @@
                                     <td>@lang('site.number')</td><td>{{$offer->id}}</td>
                                 </tr>
                                 <tr>
-                                    <td>@lang('site.order_number')</td><td><<a href="{{route('admin.orders.show', $offer->order_id)}}" title="@lang('site.view')">{{$offer->order_id}}</a>
+                                    <td>@lang('site.order_number')</td><td><a href="{{route('admin.orders.show', $offer->order_id)}}" title="@lang('site.view')">{{$offer->order_id}}</a>
 </td>
                                 </tr>
                                 <tr>
