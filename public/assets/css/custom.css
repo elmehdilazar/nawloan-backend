@@ -5812,6 +5812,12 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
 .rtl .offers-show .table thead th {
     text-align: right;
 }
+.rtl .rtl-align th,
+.rtl .rtl-align td,
+.rtl .rtl-align thead td,
+.rtl .rtl-align thead th {
+    text-align: right;
+}
 .rtl .input-group #reportrange {
     display: flex
 ;

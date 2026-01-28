@@ -100,7 +100,7 @@
             </div>
             <div class="card-body">
                     <div class="card-body p-0">
-                        <table class="table secondary-table-bordered table-bordered">
+                        <table class="table secondary-table-bordered table-bordered rtl-align">
                             <thead class="thead-secondary"><tr>
                             <td>@lang('site.num')</td>
                             <td>@lang('site.status')</td>
