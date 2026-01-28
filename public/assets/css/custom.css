@@ -5818,6 +5818,10 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
 .rtl .rtl-align thead th {
     text-align: right;
 }
+.rtl .offers-show .card-header h3,
+.rtl .offer-status-card .card-header h3 {
+    text-align: right;
+}
 .rtl .input-group #reportrange {
     display: flex
 ;
