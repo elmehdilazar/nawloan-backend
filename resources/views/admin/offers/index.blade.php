@@ -108,9 +108,9 @@
             <td>{{$offer->id}}</td>
             <td>
                 <div class="user-col">
-                    <img src="{{$offer->user->userData->image !='' ? asset($offer->user->userData->image) : asset('uploads/users/default.png')}}"
-                         alt="{{$offer->user->name}}">
-                    <span class="name">{{$offer->user->name}}</span>
+                    <img src="{{ $offer->user?->userData?->image ? asset($offer->user->userData->image) : asset('uploads/users/default.png') }}"
+                         alt="{{ $offer->user?->name }}">
+                    <span class="name">{{ $offer->user?->name ?? '-' }}</span>
                 </div>
             </td>
             <td><a href="{{route('admin.orders.index',['number'=>$offer->order_id])}}">{{$offer->order_id}}</a></td>
