@@ -51,6 +51,11 @@ class OrderController extends Controller
         $users=User::select('id','name','type')->where('user_type','service_seeker')->get();
         $cars = Car::select('id', 'name_en','name_ar' )->get();
         $shipments = ShipmentType::select('id', 'name_en', 'name_ar')->get();
+        $tonPrice = null;
+        if ($request->filled('ton_price')) {
+            $normalized = preg_replace('/[^0-9.]/', '', (string) $request->ton_price);
+            $tonPrice = $normalized !== '' ? (float) $normalized : null;
+        }
             $orders = Order::when($request->number, function ($query) use ($request) {
                 return $query->where('id',  $request->number);
             })->when($request->user_id, function ($query) use ($request) {
@@ -61,8 +66,8 @@ class OrderController extends Controller
                 return $query->where('shipment_type_id', $request->shipment_type_id);
             })->when($request->size, function ($query) use ($request) {
                 return $query->where('size', $request->size);
-            })->when($request->ton_price, function ($query) use ($request) {
-                return $query->where('ton_price', $request->ton_price);
+            })->when($tonPrice !== null, function ($query) use ($tonPrice) {
+                return $query->where('ton_price', $tonPrice);
             })->when($request->weight_ton, function ($query) use ($request) {
                 return $query->where('weight_ton', $request->weight_ton);
             })->when($request->status, function ($query) use ($request) {
