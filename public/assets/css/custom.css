@@ -5588,10 +5588,15 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
 }
 
 .rtl tbody tr td .user-col {
-    display: flex
-;
+    display: flex;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: flex-start;
+    flex-direction: row-reverse;
+}
+.rtl tbody tr td .user-col>.position-relative,
+.rtl tbody tr td .user-col>img {
+    margin-right: 0;
+    margin-left: 12px;
 }
 .rtl .daterangepicker .ranges li {
     font-size: 12px;
