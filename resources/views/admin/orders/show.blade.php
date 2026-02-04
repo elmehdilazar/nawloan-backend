@@ -511,11 +511,11 @@
                     <div class="modal-body">
                         <ul class="offers-list max-width-80">
                             @foreach($offers as $offers)
-                                <form class="pt-2" action="{{ route('admin.orders.changeStatus', $order->id) }}"
-                                      method="put">
-                                    @method('put')
-                                    @csrf
-                                    <li class="offer-item">
+                                <li class="offer-item">
+                                    <form class="pt-2" action="{{ route('admin.orders.changeStatus', $order->id) }}"
+                                          method="POST">
+                                        @method('PUT')
+                                        @csrf
                                         <div class="flex-align-center">
                                             <a href="" class="flex-col-center">
                                                 <img src="{{asset('uploads/users/default.png')}}" alt="" class="avatar">
@@ -569,8 +569,8 @@
                                                 data-mdb-dismiss="modal">
                                             @lang('site.accept')
                                         </button>
-                                    </li>
-                                </form>
+                                    </form>
+                                </li>
                             @endforeach
                         </ul>
                     </div>
