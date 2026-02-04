@@ -5604,6 +5604,8 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
     direction: rtl;
     flex-direction: row-reverse !important;
     gap: 10px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
 }
 .rtl tbody tr td .user-col>img {
     margin-left: 0 !important;
@@ -5611,6 +5613,7 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
 }
 .rtl tbody tr td .user-col .name {
     text-align: right;
+    white-space: nowrap;
 }
 .rtl .daterangepicker .ranges li {
     font-size: 12px;
