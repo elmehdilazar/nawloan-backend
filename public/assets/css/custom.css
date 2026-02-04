@@ -5599,11 +5599,11 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
     margin-left: 12px;
 }
 .rtl tbody tr td .user-col {
-    justify-content: flex-end;
+    justify-content: flex-start;
     text-align: right;
     direction: rtl;
     flex-direction: row-reverse !important;
-    gap: 10px;
+    gap: 12px;
     flex-wrap: nowrap;
     white-space: nowrap;
 }
@@ -5614,6 +5614,7 @@ body.rtl .searchform { margin-left: 0; margin-right: auto; }        /* mirror â€
 .rtl tbody tr td .user-col .name {
     text-align: right;
     white-space: nowrap;
+    display: inline-block;
 }
 .rtl .daterangepicker .ranges li {
     font-size: 12px;
